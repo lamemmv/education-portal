@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.10
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{F2ABF927-827B-403D-B1F1-D90D52D2337F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EP.API", "EP.API\EP.API.csproj", "{D0DABCAD-111F-40EA-A7F2-E1E3DACA2438}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EP.Data", "EP.Data\EP.Data.csproj", "{B112BDB3-8416-44DB-91BF-F33B5CCCA643}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EP.Services", "EP.Services\EP.Services.csproj", "{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0DABCAD-111F-40EA-A7F2-E1E3DACA2438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0DABCAD-111F-40EA-A7F2-E1E3DACA2438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0DABCAD-111F-40EA-A7F2-E1E3DACA2438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0DABCAD-111F-40EA-A7F2-E1E3DACA2438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B112BDB3-8416-44DB-91BF-F33B5CCCA643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B112BDB3-8416-44DB-91BF-F33B5CCCA643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B112BDB3-8416-44DB-91BF-F33B5CCCA643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B112BDB3-8416-44DB-91BF-F33B5CCCA643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B112BDB3-8416-44DB-91BF-F33B5CCCA643} = {F2ABF927-827B-403D-B1F1-D90D52D2337F}
+		{3FEABB92-2C74-45C1-9BBE-03E1F82A96CF} = {F2ABF927-827B-403D-B1F1-D90D52D2337F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9233B091-8156-43E4-8368-8F8FC53E6833}
+	EndGlobalSection
+EndGlobal
