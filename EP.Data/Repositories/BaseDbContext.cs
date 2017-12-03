@@ -1,4 +1,5 @@
-﻿using EP.Data.Entities.News;
+﻿using EP.Data.Entities.Blobs;
+using EP.Data.Entities.News;
 using MongoDB.Driver;
 
 namespace EP.Data.Repositories
@@ -10,6 +11,8 @@ namespace EP.Data.Repositories
         public IMongoDatabase MongoDatabase { get; set; }
 
         public abstract void SetupCollections();
+
+        public abstract IRepository<Blob> Blobs { get; }
 
         public abstract IRepository<NewsItem> News { get; }
     }

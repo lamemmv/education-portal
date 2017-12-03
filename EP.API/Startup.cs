@@ -12,22 +12,22 @@ namespace EP.API
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
 
             StartupMapper.RegisterMapping();
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMongoDbContext<MongoDbContext>(opts =>
             {
-                opts.ConnectionString = Configuration.GetSection("MongoDb:ConnectionString").Value;
-                opts.DatabaseName = Configuration.GetSection("MongoDb:Database").Value;
+                opts.ConnectionString = _configuration.GetSection("MongoDb:ConnectionString").Value;
+                opts.DatabaseName = _configuration.GetSection("MongoDb:Database").Value;
                 // Further configuration can be used as such:
                 //opts.ClientSettings = new MongoClientSettings
                 //{
@@ -58,7 +58,7 @@ namespace EP.API
                     serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            return services.AddInternalServices();
+            return services.AddInternalServices(_configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

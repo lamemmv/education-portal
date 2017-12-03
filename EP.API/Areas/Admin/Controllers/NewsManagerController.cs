@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace EP.API.Areas.Admin.Controllers
 {
-    [Route("api/admin/[controller]")]
-    public class NewsManagerController : Controller
+    public class NewsManagerController : AdminController
     {
         private readonly INewsService _newsService;
 
