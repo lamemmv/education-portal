@@ -1,6 +1,8 @@
-﻿using EP.Data;
+﻿using EP.API.Filters;
+using EP.Data;
 using EP.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,17 @@ namespace EP.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            // Enable CORS.
+            var corsBuilder = new CorsPolicyBuilder()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin()
+                .AllowCredentials();
+            services.AddCors(opts =>
+            {
+                opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
+            });
+
             services.AddMongoDbContext<MongoDbContext>(opts =>
             {
                 opts.ConnectionString = _configuration.GetSection("MongoDb:ConnectionString").Value;
@@ -46,8 +59,13 @@ namespace EP.API
                 //.AddCustomIdentity(_connectionString)
                 .AddMemoryCache()
                 .AddDistributedMemoryCache()
-                //.AddAutoMapper()
-                .AddMvc()
+                .AddMvc(opts =>
+                {
+                    var filters = opts.Filters;
+
+                    filters.Add(typeof(ValidateViewModelFilter));
+                    filters.Add(typeof(GlobalExceptionFilter));
+                })
                 .AddJsonOptions(opts =>
                 {
                     var serializerSettings = opts.SerializerSettings;
@@ -70,8 +88,9 @@ namespace EP.API
             }
 
             app
+                .UseCors("AllowAllOrigins")
                 //.UseAuthentication()
-                .UseMvc()
+                .UseMvcWithDefaultRoute()
                 .InitDefaultData();
         }
     }

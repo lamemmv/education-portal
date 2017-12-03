@@ -1,6 +1,8 @@
-﻿using EP.Data.Entities.Blobs;
+﻿using EP.API.Extensions;
+using EP.Data.Entities.Blobs;
 using EP.Services;
 using EP.Services.Blobs;
+using EP.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,41 +33,49 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var entity = await _blobService.FindAsync(id);
+            string physicalPath = entity?.PhysicalPath;
 
-            if (entity != null)
+            if (string.IsNullOrEmpty(physicalPath) || !System.IO.File.Exists(physicalPath))
             {
-                string physicalPath = Path.Combine(_serverUploadPath, entity.FileName);
-                Stream fileStream = new FileStream(physicalPath, FileMode.Open);
-
-                return File(fileStream, entity.ContentType);
+                return NotFound();
             }
 
-            return NotFound();
+            Stream fileStream = new FileStream(physicalPath, FileMode.Open);
+
+            return File(fileStream, entity.ContentType);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(IFormFile file)
         {
-            if (!IsMultipartContentType())
+            if (!IsMultipartContentType(HttpContext.Request.ContentType))
             {
                 return new StatusCodeResult((int)HttpStatusCode.UnsupportedMediaType);
             }
 
-            if (file != null && file.Length > 0)
+            if (file == null || file.Length == 0)
             {
-                CreateServerUploadPathDirectory(_serverUploadPath);
+                ModelState.AddModelError(string.Empty, "File should not be empty.");
 
-                var entity = ToBlob(file);
-
-                var content = await _blobService.UploadFileAsync(file.OpenReadStream(), entity.PhysicalPath);
-                await _blobService.CreateAsync(entity);
-
-                return Created(nameof(Post), new { entity.Id, content });
+                return BadRequest(ModelState);
             }
 
-            ModelState.AddModelError(string.Empty, "File should not be empty.");
+            CreateServerUploadPathDirectory(_serverUploadPath);
 
-            return BadRequest(ModelState);
+            string newFileName = GenerateNewFileName(file.ContentDisposition);
+
+            var entity = new Blob
+            {
+                FileName = newFileName,
+                ContentType = file.ContentType,
+                PhysicalPath = Path.Combine(_serverUploadPath, newFileName),
+                CreatedOnUtc = DateTime.UtcNow
+            };
+
+            entity = await _blobService.CreateAsync(entity);
+            var content = await file.SaveAsAsync(entity.PhysicalPath);
+
+            return Created(nameof(Post), new { entity.Id, content });
         }
 
         [HttpDelete]
@@ -81,6 +91,12 @@ namespace EP.API.Areas.Admin.Controllers
             return NoContent();
         }
 
+        private static bool IsMultipartContentType(string contentType)
+        {
+            return !string.IsNullOrEmpty(contentType) &&
+                contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         private static void CreateServerUploadPathDirectory(string phisicalPath)
         {
             if (!Directory.Exists(phisicalPath))
@@ -89,26 +105,14 @@ namespace EP.API.Areas.Admin.Controllers
             }
         }
 
-        private bool IsMultipartContentType()
+        private static string GenerateNewFileName(string contentDisposition, int randomSize = 7)
         {
-            string contentType = HttpContext.Request.ContentType;
+            string fileName = ContentDispositionHeaderValue.Parse(contentDisposition).FileName.ToString().Trim('"');
 
-            return !string.IsNullOrEmpty(contentType) &&
-                contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
+            string name = Path.GetFileNameWithoutExtension(fileName);
+            string extension = Path.GetExtension(fileName);
 
-        private Blob ToBlob(IFormFile file)
-        {
-            string fileName = file.FileName; //ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-            string newFileName = _blobService.GetRandomFileName(fileName);
-
-            return new Blob
-            {
-                FileName = newFileName,
-                ContentType = file.ContentType,
-                PhysicalPath = Path.Combine(_serverUploadPath, newFileName),
-                CreatedOnUtc = DateTime.UtcNow
-            };
+            return $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
         }
     }
 }

@@ -8,12 +8,6 @@ namespace EP.Data.Entities.Blobs
         public string FileName { get; set; }
 
         [BsonIgnoreIfNull]
-        public int? Width { get; set; }
-
-        [BsonIgnoreIfNull]
-        public int? Height { get; set; }
-
-        [BsonIgnoreIfNull]
         public string ContentType { get; set; }
 
         public string PhysicalPath { get; set; }

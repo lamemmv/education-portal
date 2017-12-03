@@ -1,5 +1,4 @@
 ﻿using EP.Data.Entities.Blobs;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -11,9 +10,5 @@ namespace EP.Services.Blobs
         Task<Blob> CreateAsync(Blob entity);
 
         Task<Blob> DeleteAsync(string id);
-
-        Task<byte[]> UploadFileAsync(Stream stream, string physicalPath);
-
-        string GetRandomFileName(string fileName);
     }
 }
