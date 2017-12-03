@@ -1,8 +1,9 @@
 ﻿using EP.Data.Entities;
 using EP.Data.Entities.Blobs;
 using EP.Data.Entities.News;
+using EP.Data.Repositories;
 
-namespace EP.Data.Repositories
+namespace EP.Data
 {
     public sealed class MongoDbContext : BaseDbContext
     {

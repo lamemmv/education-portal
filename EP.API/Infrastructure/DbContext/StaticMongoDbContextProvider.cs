@@ -1,7 +1,7 @@
-﻿using EP.Data.Repositories;
+﻿using EP.Data;
 using MongoDB.Driver;
 
-namespace EP.Data
+namespace EP.API.Infrastructure.DbContext
 {
     public sealed class StaticMongoDbContextProvider<TContext> where TContext : BaseDbContext, new()
     {

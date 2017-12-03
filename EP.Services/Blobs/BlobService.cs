@@ -1,5 +1,5 @@
-﻿using EP.Data.Entities.Blobs;
-using EP.Data.Repositories;
+﻿using EP.Data;
+using EP.Data.Entities.Blobs;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 

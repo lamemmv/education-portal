@@ -1,6 +1,6 @@
-﻿using EP.Data.Entities.News;
+﻿using EP.Data;
+using EP.Data.Entities.News;
 using EP.Data.Paginations;
-using EP.Data.Repositories;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 

@@ -1,7 +1,7 @@
-﻿using EP.Data.Repositories;
+﻿using EP.Data;
 using Microsoft.Extensions.Options;
 
-namespace EP.Data
+namespace EP.API.Infrastructure.DbContext
 {
     public sealed class MongoDbContextProvider<TContext> where TContext : BaseDbContext, new()
     {

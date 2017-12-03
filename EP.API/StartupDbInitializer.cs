@@ -1,4 +1,4 @@
-using EP.Data.Repositories;
+using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

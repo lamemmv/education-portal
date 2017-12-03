@@ -1,6 +1,6 @@
 ﻿using EP.API.Filters;
+using EP.API.Infrastructure.DbContext;
 using EP.Data;
-using EP.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
