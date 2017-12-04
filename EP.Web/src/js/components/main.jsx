@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, HashRouter } from 'react-router-dom';
 import Home from './home/home';
-import Roster from './roster/roster';
+import FileList from './files/list';
 import Schedule from './schedule/schedule';
 
 // The Main component renders one of the three provided
@@ -15,7 +15,7 @@ class Main extends Component {
             <HashRouter>
                 <div>
                     <Route exact path='/' component={Home} />
-                    <Route path='/roster' component={Roster} />
+                    <Route path='/files' component={FileList} />
                     <Route path='/schedule' component={Schedule} />
                 </div>
             </HashRouter>

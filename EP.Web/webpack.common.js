@@ -46,39 +46,37 @@ module.exports = {
             // which will write it to the file we defined above
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                    use: ['style-loader', 'css-loader'],
-                }),
+                loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader'] }),
             },
             // Loader configurations for semantic-ui-less
-            {
-                // Load .less files from semantic-ui-less module folder
-                test: /\.less$/i,
-                include: /[/\\]node_modules[/\\]semantic-ui-less[/\\]/,
-                use: ExtractTextPlugin.extract({
-                    use: [
-                        // Set importLoaders to 2, because there are two more loaders in the chain (postcss-loader
-                        // and semantic-ui-less-module-loader), which shall be used when loading @import resources
-                        // in CSS files:
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 2,
-                                sourceMap: true,
-                                minimize: true
-                            }
-                        },
-                        { loader: 'postcss-loader', options: { sourceMap: true } },
-                        {
-                            loader: 'semantic-ui-less-module-loader',
-                            options: {
-                                siteFolder: path.resolve(paths.SRC, 'semantic-ui-theme/site'),
-                                themeConfigPath: path.resolve(paths.SRC, 'semantic-ui-theme/theme.config'),
-                            }
-                        }
-                    ]
-                })
-            },
+            // {
+            //     // Load .less files from semantic-ui-less module folder
+            //     test: /\.less$/i,
+            //     include: /[/\\]node_modules[/\\]semantic-ui-less[/\\]/,
+            //     use: ExtractTextPlugin.extract({
+            //         use: [
+            //             // Set importLoaders to 2, because there are two more loaders in the chain (postcss-loader
+            //             // and semantic-ui-less-module-loader), which shall be used when loading @import resources
+            //             // in CSS files:
+            //             {
+            //                 loader: 'css-loader',
+            //                 options: {
+            //                     importLoaders: 2,
+            //                     sourceMap: true,
+            //                     minimize: true
+            //                 }
+            //             },
+            //             { loader: 'postcss-loader', options: { sourceMap: true } },
+            //             {
+            //                 loader: 'semantic-ui-less-module-loader',
+            //                 options: {
+            //                     siteFolder: path.resolve(paths.SRC, 'semantic-ui-theme/site'),
+            //                     themeConfigPath: path.resolve(paths.SRC, 'semantic-ui-theme/theme.config'),
+            //                 }
+            //             }
+            //         ]
+            //     })
+            // },
             // for .less files:
             // {
             //     test: /\.less$/,

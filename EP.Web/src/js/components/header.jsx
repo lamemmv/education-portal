@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { render } from 'react-dom';
-import { HashRouter, NavLink } from 'react-router-dom';
+import { HashRouter, NavLink, Link } from 'react-router-dom';
 import {
     Container, Divider, Dropdown, Header, Image, Menu, Visibility,
 } from 'semantic-ui-react';
@@ -37,9 +37,9 @@ class EPHeader extends Component {
                             <Menu.Item>
                                 <Image size='mini' src='/logo.png' />
                             </Menu.Item>
-                            <Menu.Item header><NavLink to="/">Home</NavLink></Menu.Item>
-                            <Menu.Item as='a'><NavLink to="/roster">Roster</NavLink></Menu.Item>
-                            <Menu.Item as='a'><NavLink to="/schedule">Schedule</NavLink></Menu.Item>
+                            <Menu.Item as={Link} to="/">Home</Menu.Item>
+                            <Menu.Item as={Link} to='/files'>Files</Menu.Item>
+                            <Menu.Item as={Link} to='/schedule'>Schedule</Menu.Item>
 
                             <Menu.Menu position='right'>
                                 <Dropdown text='Dropdown' pointing className='link item'>
