@@ -60,22 +60,24 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            CreateServerUploadPathDirectory(_serverUploadPath);
-
+            string contentType = file.ContentType;
+            string physicalPath = CreateServerUploadPathDirectory(_serverUploadPath, contentType);
             string newFileName = GenerateNewFileName(file.ContentDisposition);
 
             var entity = new Blob
             {
                 FileName = newFileName,
-                ContentType = file.ContentType,
-                PhysicalPath = Path.Combine(_serverUploadPath, newFileName),
+                ContentType = contentType,
+                PhysicalPath = Path.Combine(physicalPath, newFileName),
                 CreatedOnUtc = DateTime.UtcNow
             };
 
-            entity = await _blobService.CreateAsync(entity);
-            var content = await file.SaveAsAsync(entity.PhysicalPath);
 
-            return Created(nameof(Post), new { entity.Id, content });
+            await Task.WhenAll(
+                _blobService.CreateAsync(entity),
+                file.SaveAsAsync(entity.PhysicalPath));
+
+            return Created(nameof(Post), entity.Id);
         }
 
         [HttpDelete]
@@ -97,12 +99,29 @@ namespace EP.API.Areas.Admin.Controllers
                 contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        private static void CreateServerUploadPathDirectory(string phisicalPath)
+        private static string CreateServerUploadPathDirectory(string physicalPath, string contentType)
         {
-            if (!Directory.Exists(phisicalPath))
+            if (!Directory.Exists(physicalPath))
             {
-                Directory.CreateDirectory(phisicalPath);
+                Directory.CreateDirectory(physicalPath);
             }
+
+            if (!string.IsNullOrWhiteSpace(contentType))
+            {
+                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
+                {
+                    physicalPath = Path.Combine(physicalPath, types[0]);
+
+                    if (!Directory.Exists(physicalPath))
+                    {
+                        Directory.CreateDirectory(physicalPath);
+                    }
+                }
+            }
+
+            return physicalPath;
         }
 
         private static string GenerateNewFileName(string contentDisposition, int randomSize = 7)
