@@ -2,32 +2,45 @@ import React, { Component } from "react";
 import { render } from 'react-dom';
 import { Container, Header, Image, Table, Form, List } from 'semantic-ui-react';
 
-import { squareImage } from '../../../assets/keen.png';
+import { squareImage } from '../../../assets/images/image.png';
+import API from '../api';
 
 const styles = {
-    marginTop: '5em'
+    marginTop: '5em',
+    marginLeft: '0.5em'
 };
 
 class FileList extends Component {
-    constructor(props, context) {
-        super(props, context);
+    constructor(props) {
+        super(props);
+        this.state = {
+            files: []
+        }
+
+        API.getNews();
     }
 
-    files = [];
     onUpload = (file) => {
-        this.files.push(file);
-        console.log(file);
-        console.log(this.files.length);
+        let reader = new FileReader();
+        reader.onloadend = () => {
+            this.setState((preState, props) => {
+                var arrayvar = preState.files.slice();
+                file.url = reader.result;
+                arrayvar.push(file);
+                return { files: arrayvar };
+            });
+        }
+        reader.readAsDataURL(file);
     }
 
     render() {
         let fileInput = null;
         const uid = 'testinput';
         const color = 'red';
-        return (<Container style={styles}>
+        return (<Container >
             <Form>
                 <Form.Group widths='equal'>
-                    <label htmlFor={uid} className="ui icon button">
+                    <label htmlFor={uid} style={styles} className="ui icon button">
                         <i className="upload icon"></i>
                         Upload
                 </label>
@@ -43,39 +56,34 @@ class FileList extends Component {
                 </Form.Group>
             </Form>
             <List>
-                {this.files.map(file => (
+                {this.state.files.map(file => (
                     <List.Item key={file.name}>
-                        <List.Content>{file.name}</List.Content>
+                        <Image avatar src={file.url} size='small' />
+                        <List.Content>
+                            {file.name}
+                        </List.Content>
                     </List.Item>
                 ))}
             </List>
             <Table color={color} key={color}>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>Employee</Table.HeaderCell>
-                        <Table.HeaderCell>Correct Guesses</Table.HeaderCell>
+                        <Table.HeaderCell>File name</Table.HeaderCell>
+                        <Table.HeaderCell>Preview</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
                     <Table.Row>
                         <Table.Cell>
-                            <Header as='h4' image>
-                                <Image src={squareImage} />
-                                <Header.Content>
-                                    Lena
-                                    <Header.Subheader>Human Resources</Header.Subheader>
-                                </Header.Content>
-                            </Header>
+                            test.png
                         </Table.Cell>
                         <Table.Cell>
-                            22
+                            <Image avatar src={require('../../../assets/images/image.png')} />
                         </Table.Cell>
                     </Table.Row>
                 </Table.Body>
             </Table>
-
-        </Container>
-        );
+        </Container>);
     };
 }
 
