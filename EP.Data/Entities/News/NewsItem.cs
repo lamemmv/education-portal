@@ -14,10 +14,7 @@ namespace EP.Data.Entities.News
 
         public bool Published { get; set; }
 
-        [BsonIgnoreIfNull]
-        public DateTime? CreatedOnUtc { get; set; }
-
-        [BsonIgnoreIfNull]
-        public DateTime? UpdatedOnUtc { get; set; }
+        [BsonDateTimeOptions(DateOnly = true, Kind = DateTimeKind.Local)]
+        public DateTime? PublishedDate { get; set; }
     }
 }

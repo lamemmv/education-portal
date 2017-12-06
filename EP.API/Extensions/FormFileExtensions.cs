@@ -14,20 +14,21 @@ namespace EP.API.Extensions
             string physicalPath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var fileStream = new FileStream(physicalPath, FileMode.Create))
+            using (Stream fileStream = new FileStream(physicalPath, FileMode.Create))
             {
-                var inputStream = formFile.OpenReadStream();
+                Stream inputStream = formFile.OpenReadStream();
                 await inputStream.CopyToAsync(fileStream, DefaultBufferSize, cancellationToken);
 
                 return ReadFile(inputStream);
             }
         }
 
-        private static byte[] ReadFile(Stream stream)
+        private static byte[] ReadFile(Stream inputStream)
         {
-            var binaryReader = new BinaryReader(stream);
+            inputStream.Position = 0;
+            var binaryReader = new BinaryReader(inputStream);
 
-            return binaryReader.ReadBytes((int)stream.Length);
+            return binaryReader.ReadBytes((int)inputStream.Length);
         }
     }
 }

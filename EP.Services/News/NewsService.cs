@@ -37,6 +37,7 @@ namespace EP.Services.News
                 .Set(e => e.ShortContent, entity.ShortContent)
                 .Set(e => e.FullContent, entity.FullContent)
                 .Set(e => e.Published, entity.Published)
+                .Set(e => e.PublishedDate, entity.PublishedDate)
                 .CurrentDate(s => s.UpdatedOnUtc);
 
             return await _dbContext.News.UpdatePartiallyAsync(id, update);

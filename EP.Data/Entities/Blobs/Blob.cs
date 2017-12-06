@@ -11,8 +11,5 @@ namespace EP.Data.Entities.Blobs
         public string ContentType { get; set; }
 
         public string PhysicalPath { get; set; }
-
-        [BsonIgnoreIfNull]
-        public DateTime? CreatedOnUtc { get; set; }
     }
 }

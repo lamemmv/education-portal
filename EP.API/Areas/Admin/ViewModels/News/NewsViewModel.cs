@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EP.API.Areas.Admin.ViewModels.News
 {
@@ -13,5 +14,7 @@ namespace EP.API.Areas.Admin.ViewModels.News
         public string FullContent { get; set; }
 
         public bool Published { get; set; }
+
+        public DateTime? PublishedDate { get; set; }
     }
 }

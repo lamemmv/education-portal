@@ -1,5 +1,6 @@
 ﻿using EP.Data.Entities;
 using EP.Data.Entities.Blobs;
+using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Repositories;
 
@@ -10,6 +11,22 @@ namespace EP.Data
         public override void SetupCollections()
         {
         }
+
+        #region Logs
+
+        private IRepository<Log> _logs;
+
+        public override IRepository<Log> Logs
+        {
+            get
+            {
+                _logs = _logs ?? CreateRepository<Log>("Logs");
+
+                return _logs;
+            }
+        }
+
+        #endregion
 
         #region Blobs
 
