@@ -59,7 +59,7 @@ namespace EP.Data.Repositories
 
         public async Task<TEntity> FindAsync(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return default(TEntity);
             }
@@ -83,7 +83,7 @@ namespace EP.Data.Repositories
 
         public async Task<bool> UpdateAsync(string id, TEntity entity)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return false;
             }
@@ -99,7 +99,7 @@ namespace EP.Data.Repositories
             TEntity entity,
             FindOneAndReplaceOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return default(TEntity);
             }
@@ -111,7 +111,7 @@ namespace EP.Data.Repositories
 
         public async Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return false;
             }
@@ -127,7 +127,7 @@ namespace EP.Data.Repositories
             UpdateDefinition<TEntity> definition,
             FindOneAndUpdateOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return default(TEntity);
             }
@@ -139,7 +139,7 @@ namespace EP.Data.Repositories
 
         public async Task<bool> DeleteAsync(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return false;
             }
@@ -154,7 +154,7 @@ namespace EP.Data.Repositories
             string id,
             FindOneAndDeleteOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
                 return default(TEntity);
             }
@@ -179,5 +179,12 @@ namespace EP.Data.Repositories
         }
 
         #endregion
+
+        private static bool IsValidObjectId(string id)
+        {
+            ObjectId objectId;
+
+            return ObjectId.TryParse(id, out objectId);
+        }
     }
 }

@@ -85,7 +85,12 @@ namespace EP.API.Areas.Admin.Controllers
         {
             var entity = await _blobService.DeleteAsync(id);
 
-            if (!string.IsNullOrEmpty(entity?.PhysicalPath) && System.IO.File.Exists(entity.PhysicalPath))
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(entity.PhysicalPath) && System.IO.File.Exists(entity.PhysicalPath))
             {
                 System.IO.File.Delete(entity.PhysicalPath);
             }
