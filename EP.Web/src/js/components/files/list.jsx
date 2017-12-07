@@ -1,14 +1,10 @@
 import React, { Component } from "react";
 import { render } from 'react-dom';
-import { Container, Header, Image, Table, Form, List } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
-import { squareImage } from '../../../assets/images/image.png';
+import { Container, Image, Table } from 'semantic-ui-react';
+import Upload from './upload';
 import API from '../api';
-
-const styles = {
-    marginTop: '5em',
-    marginLeft: '0.5em'
-};
 
 class FileList extends Component {
     constructor(props) {
@@ -17,20 +13,25 @@ class FileList extends Component {
             files: []
         }
 
-        API.getNews();
+        this.getFiles();
     }
 
-    onUpload = (file) => {
-        let reader = new FileReader();
-        reader.onloadend = () => {
-            this.setState((preState, props) => {
-                var arrayvar = preState.files.slice();
-                file.url = reader.result;
-                arrayvar.push(file);
-                return { files: arrayvar };
-            });
-        }
-        reader.readAsDataURL(file);
+    getFiles() {
+        let url = API.getBaseUri() + 'admin/blobManager';
+        fetch(url, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => { return response.json(); })
+            .then(response => {
+                this.setState((preState, props) => {
+                    return { files: response.items };
+                });
+            })
+            .catch(error => { console.log('request failed', error); });
     }
 
     render() {
@@ -38,33 +39,7 @@ class FileList extends Component {
         const uid = 'testinput';
         const color = 'red';
         return (<Container >
-            <Form>
-                <Form.Group widths='equal'>
-                    <label htmlFor={uid} style={styles} className="ui icon button">
-                        <i className="upload icon"></i>
-                        Upload
-                </label>
-                    <input type="file" id={uid}
-                        style={{ display: "none" }}
-                        onChange={() => {
-                            this.onUpload(fileInput.files[0]);
-                        }}
-                        ref={input => {
-                            fileInput = input;
-                        }}
-                    />
-                </Form.Group>
-            </Form>
-            <List>
-                {this.state.files.map(file => (
-                    <List.Item key={file.name}>
-                        <Image avatar src={file.url} size='small' />
-                        <List.Content>
-                            {file.name}
-                        </List.Content>
-                    </List.Item>
-                ))}
-            </List>
+            <Upload />
             <Table color={color} key={color}>
                 <Table.Header>
                     <Table.Row>
@@ -73,14 +48,18 @@ class FileList extends Component {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    <Table.Row>
-                        <Table.Cell>
-                            test.png
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Image avatar src={require('../../../assets/images/image.png')} />
-                        </Table.Cell>
-                    </Table.Row>
+                    {this.state.files.map(file => (
+                        <Table.Row key={file.id}>
+                            <Table.Cell>
+                                {file.fileName}
+                            </Table.Cell>
+                            <Table.Cell>
+                                <Link to={'/api/admin/blobManager/${file.id}'}>
+                                    <Image avatar src={require('../../../assets/images/image.png')} />
+                                </Link>
+                            </Table.Cell>
+                        </Table.Row>
+                    ))}
                 </Table.Body>
             </Table>
         </Container>);
