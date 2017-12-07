@@ -1,66 +1,79 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System.Net;
 using System;
-using System.Linq;
-using System.Text;
 
 namespace EP.API.Filters
 {
     public sealed class GlobalExceptionFilter : IExceptionFilter
     {
-        private readonly ILogger<GlobalExceptionFilter> _logger;
+        private readonly ILogger _logger;
 
-        public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger)
+        public GlobalExceptionFilter(ILogger logger)
         {
             _logger = logger;
         }
 
         public void OnException(ExceptionContext context)
         {
-            //Exception exception = context.Exception;
-            //ApiError apiError = new ApiError(exception);
-            //WriteLog(context.HttpContext, exception, apiError);
+            string errorMessage;
+            HttpStatusCode httpStatusCode;
 
-            //HttpResponse response = context.HttpContext.Response;
-            //response.StatusCode = (int)apiError.StatusCode;
-            //response.ContentType = "application/json";
+            Exception exception = context.Exception;
+            Type exceptionType = exception.GetType();
 
-            //context.ExceptionHandled = true;
-            //context.Result = new JsonResult(apiError);
+            if (exceptionType == typeof(UnauthorizedAccessException))
+            {
+                errorMessage = "Unauthorized Access.";
+                httpStatusCode = HttpStatusCode.Unauthorized;
+            }
+            else if (exceptionType == typeof(TimeoutException) &&
+                exception.Source.StartsWith("MongoDB", StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage = "Server is unavailable.";
+                httpStatusCode = HttpStatusCode.ServiceUnavailable;
+            }
+            else
+            {
+                errorMessage = "An unhandled error occurred.";
+                httpStatusCode = HttpStatusCode.InternalServerError;
+            }
+
+            HttpContext httpContext = context.HttpContext;
+            WriteLog(httpContext, exception);
+
+            HttpResponse response = httpContext.Response;
+            response.StatusCode = (int)httpStatusCode;
+            response.ContentType = "application/json";
+
+            context.ExceptionHandled = true;
+            context.Result = new JsonResult(new { httpStatusCode, errorMessage });
         }
 
-        //private void WriteLog(HttpContext httpContext, Exception exception, ApiError apiError)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-
-        //    try
-        //    {
-        //        sb = LogHttpContext(httpContext)
-        //            .Append(apiError.ExceptionDetail ?? string.Empty);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        sb.Append(apiError.ExceptionDetail ?? string.Empty);
-        //    }
-
-        //    _logger.LogError(new EventId(apiError.ErrorCode), exception, sb.ToString());
-        //}
-
-        private StringBuilder LogHttpContext(HttpContext httpContext)
+        private void WriteLog(HttpContext httpContext, Exception exception)
         {
-            StringBuilder sb = new StringBuilder(256);
-            HttpRequest request = httpContext.Request;
+            try
+            {
+                HttpRequest request = httpContext.Request;
+                ConnectionInfo connection = httpContext.Connection;
 
-            sb.Append("Url: ").Append(request.Path.Value).Append("\r\n");
-            sb.Append("QueryString: ").Append(request.QueryString.ToString()).Append("\r\n");
-            //sb.Append("Form: ").Append(request.Form.ToString()).Append("\r\n");
-            sb.Append("Content Type: ").Append(request.ContentType).Append("\r\n");
-            sb.Append("Content Length: ").Append(request.ContentLength).Append("\r\n");
-            sb.Append("Remote IP: ").Append(httpContext.Connection.RemoteIpAddress.ToString());
-
-            return sb;
+                _logger.Error(
+                    exception,
+                    "Source: {Source}, TraceIdentifier: {TraceIdentifier}, HTTP: {RequestMethod} {RequestPath}?{QueryString}, ConnectionId: {ConnectionId}, RemoteIp: {RemoteIp}, LocalIp: {LocalIp}",
+                    exception.Source,
+                    httpContext.TraceIdentifier,
+                    request.Method,
+                    request.Path.Value,
+                    request.QueryString.ToString(),
+                    connection.Id,
+                    connection.RemoteIpAddress.ToString(),
+                    connection.LocalIpAddress.ToString());
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

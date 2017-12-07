@@ -1,13 +1,16 @@
 ﻿using EP.API.Filters;
 using EP.API.Infrastructure.DbContext;
+using EP.API.Infrastructure.Logger;
 using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using Serilog.Events;
+using Serilog;
 using System;
 
 namespace EP.API
@@ -15,10 +18,18 @@ namespace EP.API
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
 
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .WriteTo.MongoDb(_connectionString, restrictedToMinimumLevel: LogEventLevel.Warning)
+                .CreateLogger();
 
             StartupMapper.RegisterMapping();
         }
@@ -39,8 +50,7 @@ namespace EP.API
 
             services.AddMongoDbContext<MongoDbContext>(opts =>
             {
-                opts.ConnectionString = _configuration.GetSection("MongoDb:ConnectionString").Value;
-                opts.DatabaseName = _configuration.GetSection("MongoDb:Database").Value;
+                opts.ConnectionString = _connectionString;
                 // Further configuration can be used as such:
                 //opts.ClientSettings = new MongoClientSettings
                 //{
@@ -75,6 +85,10 @@ namespace EP.API
                     serializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
+            
+            services
+                .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
+                .AddSingleton<Serilog.ILogger>(Log.Logger);
 
             return services.AddInternalServices(_configuration);
         }

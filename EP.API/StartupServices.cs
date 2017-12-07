@@ -1,8 +1,8 @@
-﻿using EP.Services;
-using EP.Services.Blobs;
+﻿using EP.Services.Blobs;
 using EP.Services.News;
-using LightInject;
+using EP.Services;
 using LightInject.Microsoft.DependencyInjection;
+using LightInject;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;

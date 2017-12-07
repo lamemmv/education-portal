@@ -14,34 +14,40 @@ namespace EP.API.Infrastructure.DbContext
 
         public TContext CreateContext()
         {
-            var ctx = new TContext();
+            MongoUrl url = new MongoUrl(_configuration.ConnectionString);
+            IMongoClient client = _configuration.ClientSettings == null ?
+                new MongoClient(url) :
+                new MongoClient(_configuration.ClientSettings);
 
-            ctx.MongoClient = GetMongoClient();
-            ctx.MongoDatabase = GetMongoDatabase(ctx.MongoClient);
+            var ctx = new TContext
+            {
+                MongoClient = client,
+                MongoDatabase = client.GetDatabase(url.DatabaseName, _configuration.DatabaseSettings)
+            };
 
             ctx.SetupCollections();
 
             return ctx;
         }
 
-        private IMongoClient GetMongoClient()
+        private TContext AssignFromConnectionString(TContext ctx)
         {
-            if (_configuration.ConnectionString != null && _configuration.DatabaseName != null)
-            {
-                return new MongoClient(_configuration.ConnectionString);
-            }
+            MongoUrl url = new MongoUrl(_configuration.ConnectionString);
+            IMongoClient client = new MongoClient(url);
 
-            if (_configuration.ClientSettings != null)
-            {
-                return new MongoClient(_configuration.ClientSettings);
-            }
+            ctx.MongoClient = client;
+            ctx.MongoDatabase = client.GetDatabase(url.DatabaseName, _configuration.DatabaseSettings);
 
-            return null;
+            return ctx;
         }
 
-        private IMongoDatabase GetMongoDatabase(IMongoClient client)
+        private TContext AssignFromClientSettings(TContext ctx)
         {
-            return client.GetDatabase(_configuration.DatabaseName, _configuration.DatabaseSettings);
+            IMongoClient client = new MongoClient(_configuration.ClientSettings);
+
+            ctx.MongoClient = client;
+
+            return ctx;
         }
     }
 }
