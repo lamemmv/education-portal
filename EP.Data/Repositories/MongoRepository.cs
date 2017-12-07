@@ -10,6 +10,9 @@ namespace EP.Data.Repositories
 {
     public class MongoRepository<TEntity> : IRepository<TEntity> where TEntity : IEntity
     {
+        private const int DefaultPage = 1;
+        private const int DefaultSize = 10;
+
         private readonly IMongoCollection<TEntity> _collection;
 
         public MongoRepository(IMongoCollection<TEntity> collection)
@@ -46,6 +49,9 @@ namespace EP.Data.Repositories
             {
                 return PagedList<TEntity>.Empty(page, size);
             }
+
+            page = page <= 0 ? DefaultPage : page;
+            size = size <= 0 ? DefaultSize : size;
 
             int totalPages = (int)Math.Ceiling(totalItems / (double)size);
 

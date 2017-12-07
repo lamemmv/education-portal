@@ -2,19 +2,18 @@
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
+using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Utilities;
-using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -54,8 +53,7 @@ namespace EP.API.Areas.Admin.Controllers
             return File(fileStream, entity.ContentType);
         }
 
-        [HttpPost]
-        [ServiceFilter(typeof(ValidateMimeMultipartContentFilter))]
+        [HttpPost, ValidateMimeMultipartContent]
         public async Task<IActionResult> Post(IFormFile[] files)
         {
             if (files == null || files.Length == 0)

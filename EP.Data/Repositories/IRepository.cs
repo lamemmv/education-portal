@@ -15,8 +15,8 @@ namespace EP.Data.Repositories
         Task<IPagedList<TEntity>> FindAsync(
             FilterDefinition<TEntity> filter,
             SortDefinition<TEntity> sort,
-            int page = 1,
-            int size = 10);
+            int page,
+            int size);
 
         Task<TEntity> FindAsync(string id);
 

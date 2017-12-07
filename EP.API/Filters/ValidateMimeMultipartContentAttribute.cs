@@ -1,23 +1,21 @@
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using System.Net;
 
 namespace EP.API.Filters
 {
-    public sealed class ValidateMimeMultipartContentFilter : IActionFilter
+    public sealed class ValidateMimeMultipartContentAttribute : ActionFilterAttribute
     {
-        public void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
             if (!IsMultipartContentType(context.HttpContext.Request.ContentType))
             {
                 context.Result = new StatusCodeResult((int)HttpStatusCode.UnsupportedMediaType);
                 return;
             }
-        }
 
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
+            base.OnActionExecuting(context);
         }
 
         private static bool IsMultipartContentType(string contentType)
