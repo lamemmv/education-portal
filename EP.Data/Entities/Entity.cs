@@ -15,8 +15,6 @@ namespace EP.Data.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        public ObjectId ObjectId => ObjectId.Parse(Id);
-
         public ShortUser CreatedBy { get; set; }
 
         public DateTime? CreatedOnUtc { get; set; }
