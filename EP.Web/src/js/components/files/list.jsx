@@ -7,12 +7,12 @@ import Upload from './upload';
 import API from '../api';
 
 class FileList extends Component {
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             files: []
         }
-
+        this.getFiles = this.getFiles.bind(this);
         this.getFiles();
     }
 
@@ -27,9 +27,11 @@ class FileList extends Component {
         })
             .then(response => { return response.json(); })
             .then(response => {
-                this.setState((preState, props) => {
-                    return { files: response.items };
-                });
+                if (response.items != null){
+                    this.setState((preState, props) => {
+                        return { files: response.items };
+                    });
+                }                
             })
             .catch(error => { console.log('request failed', error); });
     }
@@ -39,7 +41,7 @@ class FileList extends Component {
         const uid = 'testinput';
         const color = 'red';
         return (<Container >
-            <Upload />
+            <Upload onUploaded={this.getFiles} />
             <Table color={color} key={color}>
                 <Table.Header>
                     <Table.Row>
@@ -54,7 +56,9 @@ class FileList extends Component {
                                 {file.fileName}
                             </Table.Cell>
                             <Table.Cell>
-                                <Link to={'/api/admin/blobManager/${file.id}'}>
+                                <Link to={`/files/${file.id}`} onClick={() => {
+                                        this.context.history.push(`http://localhost:52860/api/admin/blobmanager/${file.id}`)
+                                      }}>
                                     <Image avatar src={require('../../../assets/images/image.png')} />
                                 </Link>
                             </Table.Cell>

@@ -15,6 +15,8 @@ class Upload extends Component {
             files: []
         }
 
+        this.supportedImages = ['png', 'jpg', 'gif', 'jpeg']
+
         this.onUpload = this.onUpload.bind(this);
         this.removeItem = this.removeItem.bind(this);
         this.submit = this.submit.bind(this);
@@ -41,9 +43,26 @@ class Upload extends Component {
     }
 
     submit() {
-        this.state.files.map((file, index) => (
-            API.upload(file)
-        ));
+        let body = new FormData();
+        this.state.files.map(file => {
+            body.append("files", file);
+        });
+
+        let header = new Headers({
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'multipart/form-data'
+        });
+
+        fetch(API.getBaseUri() + 'admin/blobManager', {
+            method: 'post',
+            header: header,
+            body: body
+        })
+            .then(response => { return response.json(); })
+            .then((json) => {
+                this.props.onUploaded();
+            })
+            .catch(error => { console.log('request failed', error); });
     }
 
     render() {
@@ -66,7 +85,10 @@ class Upload extends Component {
                             fileInput = input;
                         }}
                     />
-                    <Form.Button onClick={() => this.submit()} style={styles}>Upload all</Form.Button>
+                    <Form.Button
+                        onClick={() => this.submit()}
+                        style={styles}
+                        disabled={this.state.files.length == 0}>Upload all</Form.Button>
                 </Form.Group>
             </Form>
             <List divided verticalAlign='middle'>
@@ -75,10 +97,12 @@ class Upload extends Component {
                         <List.Content floated='right'>
                             <Button onClick={() => this.removeItem(file)}>Remove</Button>
                         </List.Content>
-                        <Image avatar src={file.url} />
+                        {this.supportedImages.indexOf(file.name.substring(file.name.lastIndexOf(".") + 1)) >= 0 ?
+                            <Image avatar src={file.url} /> : null}
                         <List.Content>
                             {file.name}
                         </List.Content>
+
                     </List.Item>
                 ))}
             </List>
