@@ -1,6 +1,7 @@
-﻿using EP.Data;
-using EP.Data.Entities.News;
+﻿using EP.Data.Entities.News;
 using EP.Data.Paginations;
+using EP.Data.Repositories;
+using EP.Data;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -8,26 +9,26 @@ namespace EP.Services.News
 {
     public sealed class NewsService : INewsService
     {
-        private readonly MongoDbContext _dbContext;
+        private readonly IRepository<NewsItem> _news;
 
         public NewsService(MongoDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _news = dbContext.News;
         }
 
         public async Task<IPagedList<NewsItem>> FindAsync(int page, int size)
         {
-            return await _dbContext.News.FindAsync(page, size);
+            return await _news.FindAsync(page, size);
         }
 
         public async Task<NewsItem> FindAsync(string id)
         {
-            return await _dbContext.News.FindAsync(id);
+            return await _news.FindAsync(id);
         }
 
         public async Task<NewsItem> CreateAsync(NewsItem entity)
         {
-            return await _dbContext.News.CreateAsync(entity);
+            return await _news.CreateAsync(entity);
         }
 
         public async Task<bool> UpdateAsync(string id, NewsItem entity)
@@ -40,12 +41,12 @@ namespace EP.Services.News
                 .Set(e => e.PublishedDate, entity.PublishedDate)
                 .CurrentDate(s => s.UpdatedOnUtc);
 
-            return await _dbContext.News.UpdatePartiallyAsync(id, update);
+            return await _news.UpdatePartiallyAsync(id, update);
         }
 
         public async Task<bool> DeleteAsync(string id)
         {
-            return await _dbContext.News.DeleteAsync(id);
+            return await _news.DeleteAsync(id);
         }
     }
 }

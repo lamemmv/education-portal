@@ -1,5 +1,7 @@
-﻿using EP.Data;
-using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities.Blobs;
+using EP.Data.Paginations;
+using EP.Data.Repositories;
+using EP.Data;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -7,21 +9,26 @@ namespace EP.Services.Blobs
 {
     public sealed class BlobService : IBlobService
     {
-        private readonly MongoDbContext _dbContext;
+        private readonly IRepository<Blob> _blobs;
 
         public BlobService(MongoDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _blobs = dbContext.Blobs;
+        }
+
+        public async Task<IPagedList<Blob>> FindAsync(int page, int size)
+        {
+            return await _blobs.FindAsync(page, size);
         }
 
         public async Task<Blob> FindAsync(string id)
         {
-            return await _dbContext.Blobs.FindAsync(id);
+            return await _blobs.FindAsync(id);
         }
 
         public async Task<Blob> CreateAsync(Blob entity)
         {
-            return await _dbContext.Blobs.CreateAsync(entity);
+            return await _blobs.CreateAsync(entity);
         }
 
         public async Task<Blob> DeleteAsync(string id)
@@ -31,7 +38,7 @@ namespace EP.Services.Blobs
                 //Projection = Builders<Blob>.Projection.Include(e => e.Path)
             };
 
-            return await _dbContext.Blobs.DeleteAsync(id, deleteOpts);
+            return await _blobs.DeleteAsync(id, deleteOpts);
         }
     }
 }

@@ -1,17 +1,20 @@
 ﻿using EP.API.Extensions;
+using EP.API.Filters;
 using EP.Data.Entities.Blobs;
-using EP.Services;
+using EP.Data.Paginations;
 using EP.Services.Blobs;
 using EP.Services.Utilities;
+using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -27,6 +30,12 @@ namespace EP.API.Areas.Admin.Controllers
         {
             _blobService = blobService;
             _serverUploadPath = Path.Combine(hostingEnvironment.WebRootPath, options.Value.ServerUploadFolder);
+        }
+
+        [HttpGet]
+        public async Task<IPagedList<Blob>> Get(int page, int size)
+        {
+            return await _blobService.FindAsync(page, size);
         }
 
         [HttpGet("{id}")]
@@ -46,38 +55,24 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file)
+        [ServiceFilter(typeof(ValidateMimeMultipartContentFilter))]
+        public async Task<IActionResult> Post(IFormFile[] files)
         {
-            if (!IsMultipartContentType(HttpContext.Request.ContentType))
+            if (files == null || files.Length == 0)
             {
-                return new StatusCodeResult((int)HttpStatusCode.UnsupportedMediaType);
-            }
-
-            if (file == null || file.Length == 0)
-            {
-                ModelState.AddModelError(string.Empty, "File should not be empty.");
+                ModelState.AddModelError(string.Empty, "Files should not be empty.");
 
                 return BadRequest(ModelState);
             }
 
-            string contentType = file.ContentType;
-            string physicalPath = CreateServerUploadPathDirectory(_serverUploadPath, contentType);
-            string newFileName = GenerateNewFileName(file.ContentDisposition);
+            IList<string> ids = new List<string>();
 
-            var entity = new Blob
+            foreach (var file in files)
             {
-                FileName = newFileName,
-                ContentType = contentType,
-                PhysicalPath = Path.Combine(physicalPath, newFileName),
-                CreatedOnUtc = DateTime.UtcNow
-            };
+                ids.Add(await UploadFileAsync(file));
+            }
 
-
-            await Task.WhenAll(
-                _blobService.CreateAsync(entity),
-                file.SaveAsAsync(entity.PhysicalPath));
-
-            return Created(nameof(Post), entity.Id);
+            return Created(nameof(Post), ids);
         }
 
         [HttpDelete]
@@ -96,12 +91,6 @@ namespace EP.API.Areas.Admin.Controllers
             }
 
             return NoContent();
-        }
-
-        private static bool IsMultipartContentType(string contentType)
-        {
-            return !string.IsNullOrEmpty(contentType) &&
-                contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static string CreateServerUploadPathDirectory(string physicalPath, string contentType)
@@ -137,6 +126,27 @@ namespace EP.API.Areas.Admin.Controllers
             string extension = Path.GetExtension(fileName);
 
             return $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
+        }
+
+        private async Task<string> UploadFileAsync(IFormFile file)
+        {
+            string contentType = file.ContentType;
+            string physicalPath = CreateServerUploadPathDirectory(_serverUploadPath, contentType);
+            string newFileName = GenerateNewFileName(file.ContentDisposition);
+
+            var entity = new Blob
+            {
+                FileName = newFileName,
+                ContentType = contentType,
+                PhysicalPath = Path.Combine(physicalPath, newFileName),
+                CreatedOnUtc = DateTime.UtcNow
+            };
+
+            await Task.WhenAll(
+                _blobService.CreateAsync(entity),
+                file.SaveAsAsync(entity.PhysicalPath));
+            
+            return entity.Id;
         }
     }
 }
