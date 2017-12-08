@@ -6,6 +6,7 @@ namespace EP.Data.Paginations
     public sealed class PagedList<TEntity> : IPagedList<TEntity> where TEntity : IEntity
     {
         private PagedList(int page, int size)
+            : this(0, null, 0, page, size)
         {
         }
 
