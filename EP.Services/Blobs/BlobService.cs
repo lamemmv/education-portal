@@ -1,11 +1,11 @@
-﻿using EP.Data.Entities.Blobs;
+﻿using EP.Data;
+using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
-using EP.Data;
 using MongoDB.Driver;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Services.Blobs
 {
@@ -18,12 +18,13 @@ namespace EP.Services.Blobs
             _blobs = dbContext.Blobs;
         }
 
-        public async Task<IPagedList<Blob>> FindAsync(string fileExtension, int? page, int? size)
+        public async Task<IPagedList<Blob>> FindAsync(string[] fileExtensions, int? page, int? size)
         {
-            var filter = string.IsNullOrWhiteSpace(fileExtension) ?
+            var filter = fileExtensions == null || fileExtensions.Length == 0 ?
                 Builders<Blob>.Filter.Empty :
-                Builders<Blob>.Filter.Eq(e => e.FileExtension, fileExtension.Trim());
-                
+                Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions);
+                //Builders<Blob>.Filter.Regex(e => e.FileExtension, BsonRegularExpression.Create(new Regex(fileExtension.Trim(), RegexOptions.IgnoreCase)));
+
             var project = Builders<Blob>.Projection
                 .Exclude(e => e.PhysicalPath);
 
