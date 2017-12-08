@@ -11,7 +11,7 @@ namespace EP.Data.Entities
             Id = ObjectId.GenerateNewId().ToString();
         }
 
-        [BsonElement(Order = 0)]
+        [BsonElement(Order = 1)]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 

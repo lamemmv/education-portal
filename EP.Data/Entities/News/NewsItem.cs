@@ -5,16 +5,21 @@ namespace EP.Data.Entities.News
 {
     public class NewsItem : Entity
     {
+        [BsonElement("title")]
         public string Title { get; set; }
 
         [BsonIgnoreIfNull]
-        public string ShortContent { get; set; }
+        [BsonElement("ingress")]
+        public string Ingress { get; set; }
 
-        public string FullContent { get; set; }
+        [BsonElement("content")]
+        public string Content { get; set; }
 
+        [BsonElement("published")]
         public bool Published { get; set; }
 
         [BsonDateTimeOptions(DateOnly = true, Kind = DateTimeKind.Local)]
+        [BsonElement("pdate")]
         public DateTime? PublishedDate { get; set; }
     }
 }

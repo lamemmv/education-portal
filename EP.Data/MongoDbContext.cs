@@ -1,13 +1,17 @@
-﻿using EP.Data.Entities;
-using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
+using EP.Data.Entities;
 using EP.Data.Repositories;
 
 namespace EP.Data
 {
     public sealed class MongoDbContext : BaseDbContext
     {
+        private const string LogsCollectionName = "logs";
+        private const string BlobsCollectionName = "blobs";
+        private const string NewsCollectionName = "news";
+
         public override void SetupCollections()
         {
         }
@@ -20,7 +24,7 @@ namespace EP.Data
         {
             get
             {
-                _logs = _logs ?? CreateRepository<Log>("Logs");
+                _logs = _logs ?? CreateRepository<Log>(LogsCollectionName);
 
                 return _logs;
             }
@@ -36,7 +40,7 @@ namespace EP.Data
         {
             get
             {
-                _blobs = _blobs ?? CreateRepository<Blob>("Blobs");
+                _blobs = _blobs ?? CreateRepository<Blob>(BlobsCollectionName);
 
                 return _blobs;
             }
@@ -52,7 +56,7 @@ namespace EP.Data
         {
             get
             {
-                _news = _news ?? CreateRepository<NewsItem>("News");
+                _news = _news ?? CreateRepository<NewsItem>(NewsCollectionName);
 
                 return _news;
             }

@@ -16,9 +16,9 @@ namespace EP.Services.News
             _news = dbContext.News;
         }
 
-        public async Task<IPagedList<NewsItem>> FindAsync(int page, int size)
+        public async Task<IPagedList<NewsItem>> FindAsync(int? page, int? size)
         {
-            return await _news.FindAsync(page, size);
+            return await _news.FindAsync(skip: page, take: size);
         }
 
         public async Task<NewsItem> FindAsync(string id)
@@ -35,8 +35,8 @@ namespace EP.Services.News
         {
             var update = Builders<NewsItem>.Update
                 .Set(e => e.Title, entity.Title)
-                .Set(e => e.ShortContent, entity.ShortContent)
-                .Set(e => e.FullContent, entity.FullContent)
+                .Set(e => e.Ingress, entity.Ingress)
+                .Set(e => e.Content, entity.Content)
                 .Set(e => e.Published, entity.Published)
                 .Set(e => e.PublishedDate, entity.PublishedDate)
                 .CurrentDate(s => s.UpdatedOnUtc);

@@ -19,7 +19,7 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<NewsItem>> Get(int page, int size)
+        public async Task<IPagedList<NewsItem>> Get(int? page, int? size)
         {
             return await _newsService.FindAsync(page, size);
         }

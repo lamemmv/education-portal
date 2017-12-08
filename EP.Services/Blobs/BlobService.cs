@@ -1,9 +1,11 @@
-﻿using EP.Data;
-using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
+using EP.Data;
 using MongoDB.Driver;
+using System.IO;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Services.Blobs
 {
@@ -16,9 +18,16 @@ namespace EP.Services.Blobs
             _blobs = dbContext.Blobs;
         }
 
-        public async Task<IPagedList<Blob>> FindAsync(int page, int size)
+        public async Task<IPagedList<Blob>> FindAsync(string fileExtension, int? page, int? size)
         {
-            return await _blobs.FindAsync(page, size);
+            var filter = string.IsNullOrWhiteSpace(fileExtension) ?
+                Builders<Blob>.Filter.Empty :
+                Builders<Blob>.Filter.Eq(e => e.FileExtension, fileExtension.Trim());
+                
+            var project = Builders<Blob>.Projection
+                .Exclude(e => e.PhysicalPath);
+
+            return await _blobs.FindAsync(filter: filter, project: project, skip: page, take: size);
         }
 
         public async Task<Blob> FindAsync(string id)
@@ -35,10 +44,37 @@ namespace EP.Services.Blobs
         {
             var deleteOpts = new FindOneAndDeleteOptions<Blob>
             {
-                //Projection = Builders<Blob>.Projection.Include(e => e.Path)
+                //Projection = Builders<Blob>.Projection.Include(e => e.Id)
             };
 
             return await _blobs.DeleteAsync(id, deleteOpts);
+        }
+
+        public string GetServerUploadPathDirectory(string physicalPath, string contentType)
+        {
+            CheckAndCreateDirectory(physicalPath);
+
+            if (!string.IsNullOrWhiteSpace(contentType))
+            {
+                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
+                {
+                    physicalPath = Path.Combine(physicalPath, types[0]);
+
+                    CheckAndCreateDirectory(physicalPath);
+                }
+            }
+
+            return physicalPath;
+        }
+
+        private static void CheckAndCreateDirectory(string physicalPath)
+        {
+            if (!Directory.Exists(physicalPath))
+            {
+                Directory.CreateDirectory(physicalPath);
+            }
         }
     }
 }

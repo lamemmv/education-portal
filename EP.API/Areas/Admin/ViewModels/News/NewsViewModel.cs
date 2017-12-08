@@ -8,10 +8,10 @@ namespace EP.API.Areas.Admin.ViewModels.News
         [Required]
         public string Title { get; set; }
 
-        public string ShortContent { get; set; }
+        public string Ingress { get; set; }
 
         [Required]
-        public string FullContent { get; set; }
+        public string Content { get; set; }
 
         public bool Published { get; set; }
 

@@ -17,8 +17,8 @@ namespace EP.API
         {
             Mapper.Register<NewsViewModel, NewsItem>()
                 .Member(dest => dest.Title, src => src.Title.Trim())
-                .Member(dest => dest.ShortContent, src => src.ShortContent.TrimNull())
-                .Member(dest => dest.FullContent, src => src.FullContent.Trim());
+                .Member(dest => dest.Ingress, src => src.Ingress.TrimNull())
+                .Member(dest => dest.Content, src => src.Content.Trim());
         }
 
         private static string TrimNull(this string value)

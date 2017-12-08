@@ -2,9 +2,9 @@
 using EP.Data.Paginations;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Data.Repositories
 {
@@ -22,48 +22,65 @@ namespace EP.Data.Repositories
 
         #region Query
 
-        public async Task<IEnumerable<TEntity>> FindAsync()
+        public async Task<IEnumerable<TEntity>> FindAsync(
+            FilterDefinition<TEntity> filter = null,
+            SortDefinition<TEntity> sort = null,
+            ProjectionDefinition<TEntity, TEntity> project = null)
         {
-            var cursor = await _collection.FindAsync(_ => true);
+            filter = filter ?? Builders<TEntity>.Filter.Empty;
+            var options = new FindOptions<TEntity, TEntity>
+            { 
+                Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id)
+            };
+
+            if (project != null)
+            {
+                options.Projection = project;
+            }
+
+            var cursor = await _collection.FindAsync(filter, options);
 
             return await cursor.ToListAsync();
         }
 
-        public async Task<IPagedList<TEntity>> FindAsync(int page, int size)
-        {
-            var filter = Builders<TEntity>.Filter.Empty;
-            var sort = Builders<TEntity>.Sort.Descending(e => e.Id);
-
-            return await FindAsync(filter, sort, page, size);
-        }
-
         public async Task<IPagedList<TEntity>> FindAsync(
-            FilterDefinition<TEntity> filter,
-            SortDefinition<TEntity> sort,
-            int page,
-            int size)
+            FilterDefinition<TEntity> filter = null,
+            SortDefinition<TEntity> sort = null,
+            ProjectionDefinition<TEntity, TEntity> project = null,
+            int? skip = null,
+            int? take = null)
         {
-            long totalItems = await _collection.CountAsync(filter);
+            var page = skip ?? DefaultPage;
+            var size = take ?? DefaultSize;
+
+            filter = filter ?? Builders<TEntity>.Filter.Empty;
+            var totalItems = await _collection.CountAsync(filter);
 
             if (totalItems == 0)
             {
                 return PagedList<TEntity>.Empty(page, size);
             }
 
-            page = page <= 0 ? DefaultPage : page;
-            size = size <= 0 ? DefaultSize : size;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)size);
 
-            int totalPages = (int)Math.Ceiling(totalItems / (double)size);
+            var options = new FindOptions<TEntity, TEntity>
+            { 
+                Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id),
+                Skip = (page - 1) * size,
+                Limit = size
+            };
 
-            var source = _collection.Find(filter).Sort(sort);
-            source = page > 1 ?
-                source.Skip((page - 1) * size).Limit(size) :
-                source.Limit(size);
+            if (project != null)
+            {
+                options.Projection = project;
+            }
 
-            return PagedList<TEntity>.Create(totalItems, await source.ToListAsync(), totalPages, page, size);
+            var cursor = await _collection.FindAsync(filter, options);
+
+            return PagedList<TEntity>.Create(totalItems, await cursor.ToListAsync(), totalPages, page, size);
         }
 
-        public async Task<TEntity> FindAsync(string id)
+        public async Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null)
         {
             if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
             {
@@ -71,7 +88,13 @@ namespace EP.Data.Repositories
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
-            var cursor = await _collection.FindAsync(filter);
+            var options = project == null ?
+                null :
+                new FindOptions<TEntity, TEntity>
+                {
+                    Projection = project
+                };
+            var cursor = await _collection.FindAsync(filter, options);
 
             return await cursor.FirstOrDefaultAsync();
         }

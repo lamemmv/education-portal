@@ -2,18 +2,18 @@
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
-using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Utilities;
+using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -32,9 +32,9 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<Blob>> Get(int page, int size)
+        public async Task<IPagedList<Blob>> Get(string ext, int? page, int? size)
         {
-            return await _blobService.FindAsync(page, size);
+            return await _blobService.FindAsync(ext, page, size);
         }
 
         [HttpGet("{id}")]
@@ -63,11 +63,18 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
+            Blob entity;
             IList<string> ids = new List<string>();
 
             foreach (var file in files)
             {
-                ids.Add(await UploadFileAsync(file));
+                entity = BuildBlob(file);
+
+                await Task.WhenAll(
+                    _blobService.CreateAsync(entity),
+                    file.SaveAsAsync(entity.PhysicalPath));
+
+                ids.Add(entity.Id);
             }
 
             return Created(nameof(Post), ids);
@@ -77,74 +84,41 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var entity = await _blobService.DeleteAsync(id);
+            string physicalPath = entity?.PhysicalPath;
 
-            if (entity == null)
+            if (string.IsNullOrEmpty(physicalPath))
             {
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(entity.PhysicalPath) && System.IO.File.Exists(entity.PhysicalPath))
+            if (System.IO.File.Exists(physicalPath))
             {
-                System.IO.File.Delete(entity.PhysicalPath);
+                System.IO.File.Delete(physicalPath);
             }
 
             return NoContent();
         }
 
-        private static string CreateServerUploadPathDirectory(string physicalPath, string contentType)
-        {
-            if (!Directory.Exists(physicalPath))
-            {
-                Directory.CreateDirectory(physicalPath);
-            }
-
-            if (!string.IsNullOrWhiteSpace(contentType))
-            {
-                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
-                {
-                    physicalPath = Path.Combine(physicalPath, types[0]);
-
-                    if (!Directory.Exists(physicalPath))
-                    {
-                        Directory.CreateDirectory(physicalPath);
-                    }
-                }
-            }
-
-            return physicalPath;
-        }
-
-        private static string GenerateNewFileName(string contentDisposition, int randomSize = 7)
-        {
-            string fileName = ContentDispositionHeaderValue.Parse(contentDisposition).FileName.ToString().Trim('"');
-
-            string name = Path.GetFileNameWithoutExtension(fileName);
-            string extension = Path.GetExtension(fileName);
-
-            return $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
-        }
-
-        private async Task<string> UploadFileAsync(IFormFile file)
+        private Blob BuildBlob(IFormFile file, int randomSize = 7)
         {
             string contentType = file.ContentType;
-            string physicalPath = CreateServerUploadPathDirectory(_serverUploadPath, contentType);
-            string newFileName = GenerateNewFileName(file.ContentDisposition);
+            string physicalPath = _blobService.GetServerUploadPathDirectory(_serverUploadPath, contentType);
+
+            string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
+            string name = Path.GetFileNameWithoutExtension(fileName);
+            string extension = Path.GetExtension(fileName);
+            string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
 
             var entity = new Blob
             {
                 FileName = newFileName,
+                FileExtension = extension,
                 ContentType = contentType,
                 PhysicalPath = Path.Combine(physicalPath, newFileName),
                 CreatedOnUtc = DateTime.UtcNow
             };
 
-            await Task.WhenAll(
-                _blobService.CreateAsync(entity),
-                file.SaveAsAsync(entity.PhysicalPath));
-            
-            return entity.Id;
+            return entity;
         }
     }
 }

@@ -8,17 +8,19 @@ namespace EP.Data.Repositories
 {
     public interface IRepository<TEntity> where TEntity : IEntity
     {
-        Task<IEnumerable<TEntity>> FindAsync();
-
-        Task<IPagedList<TEntity>> FindAsync(int page, int size);
+        Task<IEnumerable<TEntity>> FindAsync(
+            FilterDefinition<TEntity> filter = null,
+            SortDefinition<TEntity> sort = null,
+            ProjectionDefinition<TEntity, TEntity> project = null);
 
         Task<IPagedList<TEntity>> FindAsync(
-            FilterDefinition<TEntity> filter,
-            SortDefinition<TEntity> sort,
-            int page,
-            int size);
+            FilterDefinition<TEntity> filter = null,
+            SortDefinition<TEntity> sort = null,
+            ProjectionDefinition<TEntity, TEntity> project = null,
+            int? skip = null,
+            int? take = null);
 
-        Task<TEntity> FindAsync(string id);
+        Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null);
 
         Task<TEntity> CreateAsync(TEntity entity);
 
