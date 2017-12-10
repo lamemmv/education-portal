@@ -5,6 +5,7 @@ using EP.Data.Repositories;
 using MongoDB.Driver;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -22,8 +23,7 @@ namespace EP.Services.Blobs
         {
             var filter = fileExtensions == null || fileExtensions.Length == 0 ?
                 Builders<Blob>.Filter.Empty :
-                Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions);
-                //Builders<Blob>.Filter.Regex(e => e.FileExtension, BsonRegularExpression.Create(new Regex(fileExtension.Trim(), RegexOptions.IgnoreCase)));
+                Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions.Select(ext => ext.ToLowerInvariant()));
 
             var project = Builders<Blob>.Projection
                 .Exclude(e => e.PhysicalPath);
@@ -45,7 +45,6 @@ namespace EP.Services.Blobs
         {
             var deleteOpts = new FindOneAndDeleteOptions<Blob>
             {
-                //Projection = Builders<Blob>.Projection.Include(e => e.Id)
             };
 
             return await _blobs.DeleteAsync(id, deleteOpts);

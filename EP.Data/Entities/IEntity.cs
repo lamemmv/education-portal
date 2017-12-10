@@ -9,16 +9,16 @@ namespace EP.Data.Entities
         string Id { get; set; }
 
         [BsonIgnoreIfNull]
-        [BsonElement("cby")]
-        ShortUser CreatedBy { get; set; }
+        [BsonElement("cor")]
+        ShortUser Creator { get; set; }
 
         [BsonIgnoreIfNull]
         [BsonElement("con")]
         DateTime? CreatedOnUtc { get; set; }
 
         [BsonIgnoreIfNull]
-        [BsonElement("uby")]
-        ShortUser UpdatedBy { get; set; }
+        [BsonElement("uer")]
+        ShortUser Updater { get; set; }
 
         [BsonIgnoreIfNull]
         [BsonElement("uon")]

@@ -2,18 +2,18 @@
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
+using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Utilities;
-using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -112,7 +112,7 @@ namespace EP.API.Areas.Admin.Controllers
             var entity = new Blob
             {
                 FileName = newFileName,
-                FileExtension = extension,
+                FileExtension = extension.ToLowerInvariant(),
                 ContentType = contentType,
                 PhysicalPath = Path.Combine(physicalPath, newFileName),
                 CreatedOnUtc = DateTime.UtcNow
