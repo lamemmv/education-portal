@@ -14,6 +14,10 @@ namespace EP.Data
 
         public abstract void SetupCollections();
 
+        public abstract IRepository<ActivityLogType> ActivityLogTypes { get; }
+
+        public abstract IRepository<ActivityLog> ActivityLogs { get; }
+
         public abstract IRepository<Log> Logs { get; }
 
         public abstract IRepository<Blob> Blobs { get; }

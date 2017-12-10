@@ -2,9 +2,9 @@
 using EP.Data.Paginations;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Data.Repositories
 {
@@ -66,7 +66,7 @@ namespace EP.Data.Repositories
             var options = new FindOptions<TEntity, TEntity>
             { 
                 Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id),
-                Skip = (page - 1) * size,
+                Skip = page <= 1 ? new int?() : (page - 1) * size,
                 Limit = size
             };
 

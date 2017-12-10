@@ -15,11 +15,11 @@ namespace EP.Data.Entities.News
         [BsonElement("content")]
         public string Content { get; set; }
 
-        [BsonElement("published")]
+        [BsonElement("pub")]
         public bool Published { get; set; }
 
         [BsonDateTimeOptions(DateOnly = true, Kind = DateTimeKind.Local)]
-        [BsonElement("pdate")]
+        [BsonElement("pubdate")]
         public DateTime? PublishedDate { get; set; }
     }
 }

@@ -1,15 +1,13 @@
-﻿using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities;
+using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
-using EP.Data.Entities;
 using EP.Data.Repositories;
 
 namespace EP.Data
 {
     public sealed class MongoDbContext : BaseDbContext
     {
-        private const string LogsCollectionName = "logs";
-        private const string BlobsCollectionName = "blobs";
         private const string NewsCollectionName = "news";
 
         public override void SetupCollections()
@@ -18,13 +16,35 @@ namespace EP.Data
 
         #region Logs
 
+        private IRepository<ActivityLogType> _activityLogTypes;
+        private IRepository<ActivityLog> _activityLogs;
         private IRepository<Log> _logs;
+
+        public override IRepository<ActivityLogType> ActivityLogTypes
+        {
+            get
+            {
+                _activityLogTypes = _activityLogTypes ?? CreateRepository<ActivityLogType>();
+
+                return _activityLogTypes;
+            }
+        }
+
+        public override IRepository<ActivityLog> ActivityLogs
+        {
+            get
+            {
+                _activityLogs = _activityLogs ?? CreateRepository<ActivityLog>();
+
+                return _activityLogs;
+            }
+        }
 
         public override IRepository<Log> Logs
         {
             get
             {
-                _logs = _logs ?? CreateRepository<Log>(LogsCollectionName);
+                _logs = _logs ?? CreateRepository<Log>();
 
                 return _logs;
             }
@@ -40,7 +60,7 @@ namespace EP.Data
         {
             get
             {
-                _blobs = _blobs ?? CreateRepository<Blob>(BlobsCollectionName);
+                _blobs = _blobs ?? CreateRepository<Blob>();
 
                 return _blobs;
             }
@@ -64,8 +84,9 @@ namespace EP.Data
 
         #endregion
 
-        private IRepository<TEntity> CreateRepository<TEntity>(string collectionName) where TEntity : IEntity
+        private IRepository<TEntity> CreateRepository<TEntity>(string collectionName = null) where TEntity : IEntity
         {
+            collectionName = collectionName ?? typeof(TEntity).Name.ToLowerInvariant() + "s";
             var collection = MongoDatabase.GetCollection<TEntity>(collectionName);
 
             return new MongoRepository<TEntity>(collection);
