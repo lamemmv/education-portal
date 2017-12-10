@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using Serilog.Events;
+using Newtonsoft.Json.Serialization;
 using Serilog;
+using Serilog.Events;
 using System;
 
 namespace EP.API
@@ -37,17 +37,6 @@ namespace EP.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // Enable CORS.
-            var corsBuilder = new CorsPolicyBuilder()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .AllowCredentials();
-            services.AddCors(opts =>
-            {
-                opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
-            });
-
             services.AddMongoDbContext<MongoDbContext>(opts =>
             {
                 opts.ConnectionString = _connectionString;
@@ -85,10 +74,21 @@ namespace EP.API
                     serializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
-            
+
+            // Enable CORS.
+            var corsBuilder = new CorsPolicyBuilder()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin()
+                .AllowCredentials();
+            services.AddCors(opts =>
+            {
+                opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
+            });
+
             services
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
-                .AddSingleton<Serilog.ILogger>(Log.Logger);
+                .AddSingleton(Log.Logger);
 
             return services.AddInternalServices(_configuration);
         }

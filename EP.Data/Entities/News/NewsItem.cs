@@ -15,6 +15,10 @@ namespace EP.Data.Entities.News
         [BsonElement("content")]
         public string Content { get; set; }
 
+        [BsonElement("img")]
+        [BsonIgnoreIfNull]
+        public string Image { get; set; }
+
         [BsonElement("pub")]
         public bool Published { get; set; }
 
