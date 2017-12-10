@@ -7,8 +7,10 @@ const API = {
         return baseUri;
     },
 
-    upload(files) {
-        
+    queryParams(params) {
+        return Object.keys(params)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
     }
 }
 

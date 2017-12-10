@@ -16,7 +16,7 @@ class Main extends Component {
             <HashRouter>
                 <div>
                     <Route exact path='/' component={Home} />
-                    <Route path='/files' component={FileList} />
+                    <Route exact path='/files' component={FileList} />
                     <Route path='/files/:id' component={FilePreview} />
                     <Route path='/schedule' component={Schedule} />
                 </div>

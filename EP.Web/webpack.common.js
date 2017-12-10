@@ -11,11 +11,13 @@ const paths = {
     DIST: path.resolve(__dirname, 'dist'),
     SRC: path.resolve(__dirname, 'src'), // source folder path 
     JS: path.resolve(__dirname, 'src/js'),
+    // JS: path.resolve(__dirname, 'src/js/components/redux'),
 };
 
 module.exports = {
     entry: {
         app: path.join(paths.JS, 'index.jsx')
+            // app: path.join(paths.JS, 'app.jsx')
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),

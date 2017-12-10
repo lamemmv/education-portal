@@ -61,6 +61,9 @@ class Upload extends Component {
             .then(response => { return response.json(); })
             .then((json) => {
                 this.props.onUploaded();
+                this.setState((prevState, props) => {
+                    return { files: [] };
+                });
             })
             .catch(error => { console.log('request failed', error); });
     }
