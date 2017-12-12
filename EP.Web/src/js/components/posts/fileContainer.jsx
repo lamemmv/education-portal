@@ -1,5 +1,12 @@
 import { connect } from 'react-redux'
-import { getFiles, getFilesSuccess, getFilesFailure } from './fileActions';
+import {
+    getFiles,
+    getFilesSuccess,
+    getFilesFailure
+} from './fileActions';
+
+import { askForDeleting } from './delete/deleteActions';
+
 import FileList from './fileList';
 
 
@@ -15,6 +22,9 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(getFiles(currentPage)).then((response) => {
                 !response.error ? dispatch(getFilesSuccess(response.payload.data)) : dispatch(getFilesFailure(response.payload.data));
             });
+        },
+        askForDeleting: (id) => {
+            dispatch(askForDeleting(id));
         }
     }
 }

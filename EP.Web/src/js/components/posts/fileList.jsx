@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { render } from 'react-dom';
 import { Link } from 'react-router-dom';
 
-import { Container, Image, Table, Menu, Icon, Button, Modal } from 'semantic-ui-react';
-import Upload from '../files/upload';
+import { Container, Image, Table, Button } from 'semantic-ui-react';
+import UploadIndex from './upload/index';
 import Pagination from './pagination/index';
-import PageSetting from '../../settings/page';
+import DeleteFile from './delete/index';
 
 class FileList extends Component {
     componentWillMount() {
@@ -15,12 +15,13 @@ class FileList extends Component {
     renderTableFooter(pages, currentPage, showPagination) {
         return (
             showPagination ? (
-                <Pagination/>
+                <Pagination />
             ) : null
         );
     }
 
     renderTableBody(files) {
+        const { askForDeleting } = this.props;
         return (
             files.map((file) => {
                 return (<Table.Row key={file.id}>
@@ -33,8 +34,7 @@ class FileList extends Component {
                         </Link>
                     </Table.Cell>
                     <Table.Cell>
-                        {/* <Button onClick={() => this.askForDeleting(file)}>Delete</Button> */}
-                        <Button >Delete</Button>
+                        <Button onClick={() => askForDeleting(file.id)}>Delete</Button>
                     </Table.Cell>
                 </Table.Row>)
             })
@@ -51,8 +51,9 @@ class FileList extends Component {
             showPagination
         } = this.props.fileState;
         const color = 'red';
+        const { closeModal } = this.props;
         return (<Container >
-            {/* <Upload onUploaded={this.onUploaded} /> */}
+            <UploadIndex />
             <Table color={color} key={color}>
                 <Table.Header>
                     <Table.Row>
@@ -66,30 +67,7 @@ class FileList extends Component {
                 </Table.Body>
                 {this.renderTableFooter(pages, currentPage, showPagination)}
             </Table>
-            <Modal
-                open={showDeleteConfirmation}
-                closeOnEscape={false}
-                closeOnRootNodeClick={false}
-                onClose={this.close}>
-                <Modal.Header>
-                    Delete File
-                </Modal.Header>
-                <Modal.Content>
-                    <p>Are you sure you want to delete file</p>
-                </Modal.Content>
-                <Modal.Actions>
-                    {/* <Button negative onClick={this.closeModal}>No</Button> */}
-                    <Button negative>No</Button>
-                    {/* <Button positive
-                        labelPosition='right'
-                        icon='checkmark'
-                        content='Yes' onClick={this.confirmDeleteFile} /> */}
-                    <Button positive
-                        labelPosition='right'
-                        icon='checkmark'
-                        content='Yes' />
-                </Modal.Actions>
-            </Modal>
+            <DeleteFile/>
         </Container>);
     };
 }
