@@ -120,7 +120,7 @@ namespace EP.Data.Repositories
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
             var result = await _collection.ReplaceOneAsync(filter, entity);
 
-            return result.IsAcknowledged && result.ModifiedCount > 0;
+            return IsSuccess(result);
         }
 
         public async Task<TEntity> UpdateAsync(
@@ -148,7 +148,7 @@ namespace EP.Data.Repositories
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
             var result = await _collection.UpdateOneAsync(filter, definition);
 
-            return result.IsAcknowledged && result.ModifiedCount > 0;
+            return IsSuccess(result);
         }
 
         public async Task<TEntity> UpdatePartiallyAsync(
@@ -176,7 +176,7 @@ namespace EP.Data.Repositories
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
             var result = await _collection.DeleteOneAsync(filter);
 
-            return result.IsAcknowledged && result.DeletedCount > 0;
+            return IsSuccess(result);
         }
 
         public async Task<TEntity> DeleteAsync(
@@ -198,7 +198,7 @@ namespace EP.Data.Repositories
             var document = new BsonDocument();
             var result = await _collection.DeleteManyAsync(document);
 
-            return result.IsAcknowledged && result.DeletedCount > 0;
+            return IsSuccess(result);
         }
 
         public async Task DropCollectionAsync()
@@ -209,11 +209,26 @@ namespace EP.Data.Repositories
 
         #endregion
 
-        private static bool IsValidObjectId(string id)
+        protected static bool IsValidObjectId(string id)
         {
             ObjectId objectId;
 
             return ObjectId.TryParse(id, out objectId);
+        }
+
+        protected static bool IsSuccess(ReplaceOneResult result)
+        {
+            return result.IsAcknowledged && result.ModifiedCount > 0;
+        }
+        
+        protected static bool IsSuccess(UpdateResult result)
+        {
+            return result.IsAcknowledged && result.ModifiedCount > 0;
+        }
+
+        protected static bool IsSuccess(DeleteResult result)
+        {
+            return result.IsAcknowledged && result.DeletedCount > 0;
         }
     }
 }
