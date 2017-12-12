@@ -1,19 +1,32 @@
 import React, { Component } from 'react';
-import { render } from 'react-dom';
+import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
 import EPHeader from './header';
-import Main from './main';
 
-export default class App extends Component {
-    constructor(props, context) {
-        super(props, context);
-    }
+import { Route, HashRouter } from 'react-router-dom';
+import Home from './home/home';
+import FileIndex from './posts/index';
+import FilePreview from './files/preview';
+import Schedule from './schedule/schedule';
 
-    render() {
-        return (
-            <div>
-                <EPHeader />
-                <Main />
-            </div>
-        );
-    }
+const App = ({ store }) => (
+    <Provider store={store}>
+        <div>
+            <EPHeader />
+            <HashRouter>
+                <div>
+                    <Route exact path='/' component={Home} />
+                    <Route exact path='/files' component={FileIndex} />
+                    <Route path='/files/:id' component={FilePreview} />
+                    <Route path='/schedule' component={Schedule} />
+                </div>
+            </HashRouter>
+        </div>
+    </Provider>
+)
+
+App.propTypes = {
+    store: PropTypes.object.isRequired,
 }
+
+export default App

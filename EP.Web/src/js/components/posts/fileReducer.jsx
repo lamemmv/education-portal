@@ -1,10 +1,9 @@
 import {
-    FETCH_POSTS, FETCH_POSTS_SUCCESS, FETCH_POSTS_FAILURE, RESET_POSTS,
-    CREATE_POST, CREATE_POST_SUCCESS, CREATE_POST_FAILURE, RESET_NEW_POST
-} from './postActions';
+    GET_FILES, GET_FILES_SUCCESS, GET_FILES_FAILURE
+} from './fileActions';
 
 const INITIAL_STATE = {
-    postsList: {
+    fileState: {
         files: [],
         showDeleteConfirmation: false,
         fileTobeDeleted: null,
@@ -19,9 +18,9 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
-        case FETCH_POSTS:// start fetching posts and set loading = true
-            return { ...state, postsList: { files: [], error: null, loading: true } };
-        case FETCH_POSTS_SUCCESS:// return list of posts and make loading = false
+        case GET_FILES:// start fetching files and set loading = true
+            return { ...state, fileState: { files: [], error: null, loading: true } };
+        case GET_FILES_SUCCESS:// return list of files and make loading = false
             let pages = [], showPagination = false;
             if (action.payload.totalPages > 1) {
                 for (let i = 0; i < action.payload.totalPages; i++) {
@@ -30,19 +29,18 @@ export default function (state = INITIAL_STATE, action) {
                 showPagination = true;
             }
             return {
-                ...state, postsList: {
-                    files: action.payload,
+                ...state, fileState: {
+                    currentPage: action.payload.page,
+                    files: action.payload.items,
                     pages: pages,
                     showPagination: showPagination,
                     error: null,
                     loading: false
                 }
             };
-        case FETCH_POSTS_FAILURE:// return error and make loading = false
+        case GET_FILES_FAILURE:// return error and make loading = false
             error = action.payload || { message: action.payload.message };//2nd one is network or server down errors
-            return { ...state, postsList: { files: [], error: error, loading: false } };
-        case RESET_POSTS:// reset postList to initial state
-            return { ...state, postsList: { files: [], error: null, loading: false } };
+            return { ...state, fileState: { files: [], error: error, loading: false } };
         default:
             return state;
     }
