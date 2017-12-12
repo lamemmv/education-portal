@@ -8,11 +8,22 @@ const styles = {
 };
 
 class Upload extends Component {
+
+    selectFile(file) {
+        let reader = new FileReader();
+        reader.onloadend = () => {
+            file.url = reader.result;            
+            this.props.selectFile(file);
+        }
+        reader.readAsDataURL(file);
+    }
+
     render() {
         let fileInput = null;
         const uid = 'testinput';
         const { removeItem, selectFile, uploadFile } = this.props;
         const { files } = this.props.uploadState;
+        const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (<Container >
             <Form>
                 <Form.Group>
@@ -23,7 +34,7 @@ class Upload extends Component {
                     <input type="file" id={uid}
                         style={{ display: "none" }}
                         onChange={() => {
-                            selectFile(fileInput.files[0]);
+                            this.selectFile(fileInput.files[0]);
                         }}
                         ref={input => {
                             fileInput = input;

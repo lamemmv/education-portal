@@ -10,15 +10,10 @@ export const REMOVE_FILE = 'REMOVE_FILE';
 const ROOT_URL = API.getBaseUri();
 
 export function selectFile(file) {
-    let reader = new FileReader();
-    reader.onloadend = () => {
-        file.url = reader.result;
-        return {
-            type: SELECTED_FILE,
-            payload: file
-        };
-    }
-    reader.readAsDataURL(file);
+    return {
+        type: SELECTED_FILE,
+        payload: file
+    };
 }
 
 export function uploadFile(files) {

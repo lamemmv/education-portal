@@ -14,14 +14,16 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case SELECTED_FILE:
+            let files = state.uploadState.files.slice();
+            files.push(action.payload);
             return {
                 ...state,
                 uploadState: {
-                    files: state.files.push(action.payload),
+                    files: files,
                     loading: true,
                     error: null
                 }
@@ -60,7 +62,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 uploadState: {
-                    files: state.files.filter(el => el != action.payload),
+                    files: state.uploadState.files.filter(el => el != action.payload),
                     loading: true,
                     error: null
                 }
