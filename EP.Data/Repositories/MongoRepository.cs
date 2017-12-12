@@ -1,4 +1,5 @@
 ﻿using EP.Data.Entities;
+using EP.Data.Extensions;
 using EP.Data.Paginations;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -82,12 +83,12 @@ namespace EP.Data.Repositories
 
         public async Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return default(TEntity);
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
             var options = project == null ?
                 null :
                 new FindOptions<TEntity, TEntity>
@@ -112,15 +113,15 @@ namespace EP.Data.Repositories
 
         public async Task<bool> UpdateAsync(string id, TEntity entity)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return false;
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
             var result = await _collection.ReplaceOneAsync(filter, entity);
 
-            return IsSuccess(result);
+            return result.IsSuccess();
         }
 
         public async Task<TEntity> UpdateAsync(
@@ -128,27 +129,27 @@ namespace EP.Data.Repositories
             TEntity entity,
             FindOneAndReplaceOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return default(TEntity);
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
 
             return await _collection.FindOneAndReplaceAsync(filter, entity, options);
         }
 
         public async Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return false;
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
             var result = await _collection.UpdateOneAsync(filter, definition);
 
-            return IsSuccess(result);
+            return result.IsSuccess();
         }
 
         public async Task<TEntity> UpdatePartiallyAsync(
@@ -156,39 +157,39 @@ namespace EP.Data.Repositories
             UpdateDefinition<TEntity> definition,
             FindOneAndUpdateOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return default(TEntity);
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
 
             return await _collection.FindOneAndUpdateAsync(filter, definition, options);
         }
 
         public async Task<bool> DeleteAsync(string id)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return false;
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
             var result = await _collection.DeleteOneAsync(filter);
 
-            return IsSuccess(result);
+            return result.IsSuccess();
         }
 
         public async Task<TEntity> DeleteAsync(
             string id,
             FindOneAndDeleteOptions<TEntity, TEntity> options = null)
         {
-            if (string.IsNullOrWhiteSpace(id) || !IsValidObjectId(id))
+            if (id.IsInvalidObjectId())
             {
                 return default(TEntity);
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id.Trim());
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
 
             return await _collection.FindOneAndDeleteAsync(filter, options);
         }
@@ -198,7 +199,7 @@ namespace EP.Data.Repositories
             var document = new BsonDocument();
             var result = await _collection.DeleteManyAsync(document);
 
-            return IsSuccess(result);
+            return result.IsSuccess();
         }
 
         public async Task DropCollectionAsync()
@@ -208,27 +209,5 @@ namespace EP.Data.Repositories
         }
 
         #endregion
-
-        protected static bool IsValidObjectId(string id)
-        {
-            ObjectId objectId;
-
-            return ObjectId.TryParse(id, out objectId);
-        }
-
-        protected static bool IsSuccess(ReplaceOneResult result)
-        {
-            return result.IsAcknowledged && result.ModifiedCount > 0;
-        }
-        
-        protected static bool IsSuccess(UpdateResult result)
-        {
-            return result.IsAcknowledged && result.ModifiedCount > 0;
-        }
-
-        protected static bool IsSuccess(DeleteResult result)
-        {
-            return result.IsAcknowledged && result.DeletedCount > 0;
-        }
     }
 }

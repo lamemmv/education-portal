@@ -41,14 +41,13 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var entity = await _blobService.FindAsync(id);
-            string physicalPath = entity?.PhysicalPath;
 
-            if (string.IsNullOrEmpty(physicalPath) || !System.IO.File.Exists(physicalPath))
+            if (entity == null || !System.IO.File.Exists(entity.PhysicalPath))
             {
                 return NotFound();
             }
 
-            Stream fileStream = new FileStream(physicalPath, FileMode.Open);
+            Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
 
             return File(fileStream, entity.ContentType);
         }
@@ -84,16 +83,15 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var entity = await _blobService.DeleteAsync(id);
-            string physicalPath = entity?.PhysicalPath;
 
-            if (string.IsNullOrEmpty(physicalPath))
+            if (entity == null)
             {
                 return NotFound();
             }
 
-            if (System.IO.File.Exists(physicalPath))
+            if (System.IO.File.Exists(entity.PhysicalPath))
             {
-                System.IO.File.Delete(physicalPath);
+                System.IO.File.Delete(entity.PhysicalPath);
             }
 
             return NoContent();
