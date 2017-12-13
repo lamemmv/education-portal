@@ -1,17 +1,18 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using System;
+using EP.Data.Entities;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
+using System;
 
-namespace EP.Data.Entities.Accounts
+namespace EP.Data.AspNetIdentity
 {
-    public class ApplicationUser : Entity
+    public class AppUser : Entity
     {
-        public ApplicationUser()
+        public AppUser()
             : base()
         {
         }
 
-        public ApplicationUser(string userName)
+        public AppUser(string userName)
             : base()
         {
             UserName = userName;
@@ -72,15 +73,15 @@ namespace EP.Data.Entities.Accounts
 
         [BsonIgnoreIfNull]
         [BsonElement("logins")]
-        public virtual List<ApplicationUserLogin> Logins { get; set; }
+        public virtual List<AppUserLogin> Logins { get; set; }
 
         [BsonIgnoreIfNull]
         [BsonElement("claims")]
-        public virtual List<ApplicationUserClaim> Claims { get; set; }
+        public virtual List<AppUserClaim> Claims { get; set; }
 
         [BsonIgnoreIfNull]
         [BsonElement("tokens")]
-        public virtual IList<ApplicationUserToken> Tokens { get; set; }
+        public virtual IList<AppUserToken> Tokens { get; set; }
 
         public override string ToString()
         {

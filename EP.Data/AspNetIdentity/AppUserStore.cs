@@ -1,17 +1,16 @@
-﻿using EP.Data.Entities.Accounts;
 using EP.Data.Extensions;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
 
-namespace EP.Data.Repositories
+namespace EP.Data.AspNetIdentity
 {
-    public sealed class ApplicationUserStore<TUser> :
+    public sealed class AppUserStore<TUser> :
         IQueryableUserStore<TUser>,
         IUserClaimStore<TUser>,
         IUserLoginStore<TUser>,
@@ -21,13 +20,14 @@ namespace EP.Data.Repositories
         IUserTwoFactorStore<TUser>,
         IUserPhoneNumberStore<TUser>,
         IUserEmailStore<TUser>,
-        IUserLockoutStore<TUser> where TUser : ApplicationUser
+        IUserLockoutStore<TUser> where TUser : AppUser
     {
         private readonly IMongoCollection<TUser> _users;
 
-        public ApplicationUserStore(IMongoCollection<TUser> users)
+        public AppUserStore(IMongoCollection<TUser> users)
         {
             _users = users;
+            EnsureIndexes(users).GetAwaiter().GetResult();
         }
 
         #region IUserStore
@@ -136,9 +136,9 @@ namespace EP.Data.Repositories
         public Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             var userClaims = user.Claims;
-            userClaims = userClaims ?? new List<ApplicationUserClaim>();
+            userClaims = userClaims ?? new List<AppUserClaim>();
 
-            userClaims.AddRange(claims.Select(clm => new ApplicationUserClaim(clm.Type, clm.Value)));
+            userClaims.AddRange(claims.Select(clm => new AppUserClaim(clm.Type, clm.Value)));
 
             return Task.CompletedTask;
         }
@@ -153,11 +153,7 @@ namespace EP.Data.Repositories
                     c.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
                     c.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
 
-                user.Claims.Add(new ApplicationUserClaim
-                {
-                    ClaimType = newClaim.Type,
-                    ClaimValue = newClaim.Value
-                });
+                user.Claims.Add(new AppUserClaim(newClaim.Type, newClaim.Value));
             }
 
             return Task.CompletedTask;
@@ -183,9 +179,9 @@ namespace EP.Data.Repositories
         public async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
             var filter = Builders<TUser>.Filter.ElemMatch(e => e.Claims,
-                Builders<ApplicationUserClaim>.Filter.And(
-                    Builders<ApplicationUserClaim>.Filter.Eq(clm => clm.ClaimType, claim.Type),
-                    Builders<ApplicationUserClaim>.Filter.Eq(clm => clm.ClaimValue, claim.Value)
+                Builders<AppUserClaim>.Filter.And(
+                    Builders<AppUserClaim>.Filter.Eq(clm => clm.ClaimType, claim.Type),
+                    Builders<AppUserClaim>.Filter.Eq(clm => clm.ClaimValue, claim.Value)
                 )
             );
 
@@ -201,13 +197,13 @@ namespace EP.Data.Repositories
         public Task AddLoginAsync(TUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             var userLogins = user.Logins;
-            userLogins = userLogins ?? new List<ApplicationUserLogin>();
+            userLogins = userLogins ?? new List<AppUserLogin>();
 
             if (!userLogins.Any(e =>
                 e.LoginProvider.Equals(login.LoginProvider, StringComparison.OrdinalIgnoreCase) &&
                 e.ProviderKey.Equals(login.ProviderKey, StringComparison.OrdinalIgnoreCase)))
             {
-                userLogins.Add(new ApplicationUserLogin(login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+                userLogins.Add(new AppUserLogin(login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
             }
 
             return Task.CompletedTask;
@@ -241,9 +237,9 @@ namespace EP.Data.Repositories
         public async Task<TUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             var filter = Builders<TUser>.Filter.ElemMatch(e => e.Logins,
-                Builders<ApplicationUserLogin>.Filter.And(
-                    Builders<ApplicationUserLogin>.Filter.Eq(lg => lg.LoginProvider, loginProvider),
-                    Builders<ApplicationUserLogin>.Filter.Eq(lg => lg.ProviderKey, providerKey)
+                Builders<AppUserLogin>.Filter.And(
+                    Builders<AppUserLogin>.Filter.Eq(lg => lg.LoginProvider, loginProvider),
+                    Builders<AppUserLogin>.Filter.Eq(lg => lg.ProviderKey, providerKey)
                 )
             );
 
@@ -482,5 +478,29 @@ namespace EP.Data.Repositories
         }
 
         #endregion
+
+        private async static Task EnsureIndexes(IMongoCollection<TUser> users)
+		{
+            await Task.WhenAll(
+                EnsureUniqueIndexOnNormalizedUserName(users),
+                EnsureUniqueIndexOnNormalizedEmail(users)
+            );
+		}
+
+        private async static Task EnsureUniqueIndexOnNormalizedUserName(IMongoCollection<TUser> users)
+		{
+			var userName = Builders<TUser>.IndexKeys.Ascending(e => e.NormalizedUserName);
+			var unique = new CreateIndexOptions { Unique = true };
+			
+            await users.Indexes.CreateOneAsync(userName, unique);
+		}
+
+        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TUser> users)
+		{
+			var email = Builders<TUser>.IndexKeys.Ascending(t => t.NormalizedEmail);
+			var unique = new CreateIndexOptions { Unique = true };
+
+			await users.Indexes.CreateOneAsync(email, unique);
+		}
     }
 }

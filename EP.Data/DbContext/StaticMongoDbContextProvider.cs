@@ -1,7 +1,6 @@
-﻿using EP.Data;
 using MongoDB.Driver;
 
-namespace EP.API.Infrastructure.DbContext
+namespace EP.Data.DbContext
 {
     public sealed class StaticMongoDbContextProvider<TContext> where TContext : BaseDbContext, new()
     {
@@ -26,26 +25,6 @@ namespace EP.API.Infrastructure.DbContext
             };
 
             ctx.SetupCollections();
-
-            return ctx;
-        }
-
-        private TContext AssignFromConnectionString(TContext ctx)
-        {
-            MongoUrl url = new MongoUrl(_configuration.ConnectionString);
-            IMongoClient client = new MongoClient(url);
-
-            ctx.MongoClient = client;
-            ctx.MongoDatabase = client.GetDatabase(url.DatabaseName, _configuration.DatabaseSettings);
-
-            return ctx;
-        }
-
-        private TContext AssignFromClientSettings(TContext ctx)
-        {
-            IMongoClient client = new MongoClient(_configuration.ClientSettings);
-
-            ctx.MongoClient = client;
 
             return ctx;
         }

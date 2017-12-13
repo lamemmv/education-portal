@@ -4,7 +4,7 @@ using EP.Data.Entities.News;
 using EP.Data.Repositories;
 using MongoDB.Driver;
 
-namespace EP.Data
+namespace EP.Data.DbContext
 {
     public abstract class BaseDbContext
     {

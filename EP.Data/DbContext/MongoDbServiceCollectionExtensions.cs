@@ -1,8 +1,7 @@
-﻿using EP.Data;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace EP.API.Infrastructure.DbContext
+namespace EP.Data.DbContext
 {
     public static class MongoDbServiceCollectionExtensions
     {

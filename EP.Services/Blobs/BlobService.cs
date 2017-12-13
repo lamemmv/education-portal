@@ -1,5 +1,4 @@
-﻿using EP.Data;
-using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using MongoDB.Driver;
@@ -7,6 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EP.Data.DbContext;
 
 namespace EP.Services.Blobs
 {
