@@ -22,7 +22,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case CREATE_NEWS:
@@ -68,7 +68,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 listState: {
-                    items: action.payload.items,
+                    items: action.payload.items ? action.payload.items : [],
                     loading: false,
                     error: null
                 }

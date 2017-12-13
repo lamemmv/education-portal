@@ -18,10 +18,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getFiles: (currentPage) => {
-            dispatch(getFiles(currentPage)).then((response) => {
-                !response.error ? dispatch(getFilesSuccess(response.payload.data)) : dispatch(getFilesFailure(response.payload.data));
-            });
+        getFiles: (page) => {
+            dispatch(getFiles(page));
         },
         askForDeleting: (id) => {
             dispatch(askForDeleting(id));

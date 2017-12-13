@@ -27,6 +27,18 @@ const API = {
             url: url,
             headers: headers
         });
+    },
+
+    getFiles(page) {
+        let params = { page: page ? page : 1, size: PageSetting.getPageSize() };
+        let url = `${baseUri}admin/blobManager`;
+        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: []
+        });
     }
 }
 

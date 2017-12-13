@@ -5,8 +5,6 @@ import {
 const INITIAL_STATE = {
     fileState: {
         files: [],
-        showDeleteConfirmation: false,
-        fileTobeDeleted: null,
         showPagination: false,
         pages: [],
         currentPage: 1,
@@ -19,7 +17,14 @@ export default function (state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES:// start fetching files and set loading = true
-            return { ...state, fileState: { files: [], error: null, loading: true } };
+            return {
+                ...state, fileState: {
+                    files: [],
+                    pages: [],
+                    error: null,
+                    loading: true
+                }
+            };
         case GET_FILES_SUCCESS:// return list of files and make loading = false
             let pages = [], showPagination = false;
             if (action.payload.totalPages > 1) {
@@ -40,7 +45,14 @@ export default function (state = INITIAL_STATE, action) {
             };
         case GET_FILES_FAILURE:// return error and make loading = false
             error = action.payload || { message: action.payload.message };//2nd one is network or server down errors
-            return { ...state, fileState: { files: [], error: error, loading: false } };
+            return {
+                ...state, fileState: {
+                    files: [],
+                    pages: [],
+                    error: error,
+                    loading: false
+                }
+            };
         default:
             return state;
     }
