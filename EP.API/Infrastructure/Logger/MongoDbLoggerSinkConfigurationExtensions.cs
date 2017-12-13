@@ -4,7 +4,7 @@ using Serilog;
 
 namespace EP.API.Infrastructure.Logger
 {
-    public static class LoggerConfigurationMongoDbExtensions
+    public static class MongoDbLoggerSinkConfigurationExtensions
     {
         public static LoggerConfiguration MongoDb(
             this LoggerSinkConfiguration loggerConfiguration,

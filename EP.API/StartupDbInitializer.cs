@@ -1,6 +1,10 @@
+using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EP.API
 {
@@ -13,69 +17,70 @@ namespace EP.API
                 var serviceProvider = scope.ServiceProvider;
 
                 var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
-                //var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-                //var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
+                var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
 
                 // This protects from deadlocks by starting the async method on the ThreadPool.
-                //Task.Run(() => Initialize(dbContext, roleManager, userManager)).Wait();
+                Task.Run(() => Initialize(dbContext, roleManager, userManager)).Wait();
             }
 
             return app;
         }
 
-        //private static async Task Initialize(
-        //    MongoDbContext dbContext,
-        //    RoleManager<ApplicationRole> roleManager,
-        //    UserManager<ApplicationUser> userManager)
-        //{
-        //    await dbContext.Database.EnsureCreatedAsync();
+        private static async Task Initialize(
+            MongoDbContext dbContext,
+            RoleManager<AppRole> roleManager,
+            UserManager<AppUser> userManager)
+        {
+            //await dbContext.Database.EnsureCreatedAsync();
 
-        //    await SeedIdentityAsync(roleManager, userManager);
+            await SeedIdentityAsync(roleManager, userManager);
 
-        //    await SeedEmailAccountAsync(dbContext);
+            //await SeedEmailAccountAsync(dbContext);
 
-        //    await SeedActivityLogTypeAsync(dbContext);
-        //}
+            //await SeedActivityLogTypeAsync(dbContext);
+        }
 
-        //private static async Task SeedIdentityAsync(
-        //    RoleManager<ApplicationRole> roleManager,
-        //    UserManager<ApplicationUser> userManager)
-        //{
-        //    var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
+        private static async Task SeedIdentityAsync(
+            RoleManager<AppRole> roleManager,
+            UserManager<AppUser> userManager)
+        {
+            var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
 
-        //    foreach (var roleName in roles)
-        //    {
-        //        var identityRole = await roleManager.FindByNameAsync(roleName);
+            foreach (var roleName in roles)
+            {
+                var identityRole = await roleManager.FindByNameAsync(roleName.ToUpperInvariant());
 
-        //        if (identityRole == null)
-        //        {
-        //            await roleManager.CreateAsync(new ApplicationRole(roleName));
-        //        }
-        //    }
+                if (identityRole == null)
+                {
+                    await roleManager.CreateAsync(new AppRole(roleName));
+                }
+            }
 
-        //    string email = "ankn85@yahoo.com";
-        //    string password = "1qazXSW@";
+            string email = "ankn85@yahoo.com";
+            string password = "1qazXSW@";
 
-        //    var user = await userManager.FindByNameAsync(email);
+            var user = await userManager.FindByNameAsync(email.ToUpperInvariant());
 
-        //    if (user == null)
-        //    {
-        //        user = new ApplicationUser
-        //        {
-        //            UserName = email,
-        //            Email = email,
-        //            EmailConfirmed = true,
-        //            FullName = "System Administrator"
-        //        };
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true,
+                    //FullName = "System Administrator"
+                    Roles = roles.ToList()
+                };
 
-        //        var result = await userManager.CreateAsync(user, password);
+                var result = await userManager.CreateAsync(user, password);
 
-        //        if (result.Succeeded)
-        //        {
-        //            await userManager.AddToRolesAsync(user, roles);
-        //        }
-        //    }
-        //}
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRolesAsync(user, roles);
+                }
+            }
+        }
 
         //private static async Task SeedEmailAccountAsync(ObjectDbContext dbContext)
         //{
