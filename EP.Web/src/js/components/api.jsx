@@ -1,7 +1,8 @@
-// A simple data API that will be used to get the data for our
-// components. On a real website, a more robust data fetching
-// solution would be more appropriate.
+import axios from 'axios';
+import PageSetting from '../settings/page';
+
 const baseUri = 'http://localhost:52860/api/';
+
 const API = {
     getBaseUri() {
         return baseUri;
@@ -11,6 +12,21 @@ const API = {
         return Object.keys(params)
             .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
             .join('&');
+    },
+
+    getNews(page) {
+        let params = { page: page ? page : 1, size: PageSetting.getPageSize() };
+        let url = `${baseUri}admin/newsManager`;
+        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+        let headers = new Headers({
+            'Access-Control-Allow-Origin': '*'
+        });
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: headers
+        });
     }
 }
 

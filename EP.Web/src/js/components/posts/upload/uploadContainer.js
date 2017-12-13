@@ -9,6 +9,12 @@ import {
     removeFile
 } from './uploadActions';
 
+import {
+    getFiles,
+    getFilesSuccess,
+    getFilesFailure
+} from '../fileActions';
+
 import Upload from './upload';
 
 const mapStateToProps = (state) => {
@@ -27,6 +33,12 @@ const mapDispatchToProps = (dispatch) => {
                 !response.error ?
                     dispatch(uploadFileSuccess(response.payload.data)) :
                     dispatch(uploadFileFailure(response.payload.data));
+            }).then(() => {
+                dispatch(getFiles(1)).then((response) => {
+                    !response.error ?
+                        dispatch(getFilesSuccess(response.payload.data)) :
+                        dispatch(getFilesFailure(response.payload.data));
+                })
             });
         },
         removeFile: (file) => {

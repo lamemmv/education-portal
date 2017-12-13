@@ -23,7 +23,6 @@ class EPHeader extends Component {
     unStickOverlay = () => this.setState({ overlayFixed: false })
 
     render() {
-        const { menuFixed, overlayFixed, overlayRect } = this.state;
         return (
             <HashRouter>
                 <Visibility
@@ -32,14 +31,14 @@ class EPHeader extends Component {
                     once={false} >
                     <Menu
                         borderless
-                        fixed={menuFixed && 'top'}>
+                        fixed={'top'}>
                         <Container text>
                             <Menu.Item>
                                 <Image size='mini' src='/logo.png' />
                             </Menu.Item>
                             <Menu.Item as={Link} to="/">Home</Menu.Item>
                             <Menu.Item as={Link} to='/files'>Files</Menu.Item>
-                            <Menu.Item as={Link} to='/schedule'>Schedule</Menu.Item>
+                            <Menu.Item as={Link} to='/news'>News</Menu.Item>
 
                             <Menu.Menu position='right'>
                                 <Dropdown text='Dropdown' pointing className='link item'>

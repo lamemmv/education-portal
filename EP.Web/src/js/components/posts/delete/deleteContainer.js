@@ -1,4 +1,6 @@
-import { connect } from 'react-redux'
+import {
+    connect
+} from 'react-redux'
 import {
     closeModal,
     deleteFile,
@@ -30,6 +32,12 @@ const mapDispatchToProps = (dispatch) => {
         confirmDeleteFile: (id) => {
             dispatch(deleteFile(id)).then((response) => {
                 !response.error ? dispatch(deleteFileSuccess(response.payload.data)) : dispatch(deleteFileFailure(response.payload.data));
+            }).then(() => {
+                dispatch(getFiles(1)).then((response) => {
+                    !response.error ?
+                        dispatch(getFilesSuccess(response.payload.data)) :
+                        dispatch(getFilesFailure(response.payload.data));
+                })
             });
         }
     }

@@ -43,15 +43,12 @@ class FileList extends Component {
 
     render() {
         const {
-            showDeleteConfirmation,
             files,
             currentPage,
             pages,
-            fileToBeDeleted,
             showPagination
         } = this.props.fileState;
         const color = 'red';
-        const { closeModal } = this.props;
         return (<Container >
             <UploadIndex />
             <Table color={color} key={color}>

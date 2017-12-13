@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { render } from 'react-dom';
-import { Container, Card, Image } from 'semantic-ui-react';
+import { Container, Image } from 'semantic-ui-react';
 import API from '../api';
 
 class Preview extends Component {
@@ -13,9 +13,7 @@ class Preview extends Component {
 
     render() {
         return (<Container >
-            <Card>
-                <Image src={this.state.url} fluid />
-            </Card>
+            <Image src={this.state.url} fluid />
         </Container>);
     };
 }

@@ -7,7 +7,7 @@ import { Route, HashRouter } from 'react-router-dom';
 import Home from './home/home';
 import FileIndex from './posts/index';
 import FilePreview from './files/preview';
-import Schedule from './schedule/schedule';
+import NewsIndex from './news/index';
 
 const App = ({ store }) => (
     <Provider store={store}>
@@ -18,7 +18,7 @@ const App = ({ store }) => (
                     <Route exact path='/' component={Home} />
                     <Route exact path='/files' component={FileIndex} />
                     <Route path='/files/:id' component={FilePreview} />
-                    <Route path='/schedule' component={Schedule} />
+                    <Route path='/news' component={NewsIndex} />
                 </div>
             </HashRouter>
         </div>
