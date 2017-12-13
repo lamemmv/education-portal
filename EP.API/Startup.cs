@@ -5,12 +5,13 @@ using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using Serilog.Events;
+using Newtonsoft.Json.Serialization;
 using Serilog;
+using Serilog.Events;
 using System;
 
 namespace EP.API
@@ -34,7 +35,6 @@ namespace EP.API
             StartupMapper.RegisterMapping();
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMongoDbContext<MongoDbContext>(opts =>
@@ -54,10 +54,11 @@ namespace EP.API
                 //};
             });
 
-            services.AddIdentityWithMongoStores(_connectionString);
+            services
+                .AddIdentityWithMongoStores<AppUser, AppRole>(_connectionString)
+                .AddDefaultTokenProviders();
 
             services
-                //.AddCustomIdentity(_connectionString)
                 .AddMemoryCache()
                 .AddDistributedMemoryCache()
                 .AddMvc(opts =>
