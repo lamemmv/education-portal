@@ -1,15 +1,15 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Security.Claims;
 
-namespace EP.Data.Entities.Accounts
+namespace EP.Data.AspNetIdentity
 {
-    public class ApplicationUserClaim
+    public class AppUserClaim
     {
-        public ApplicationUserClaim()
+        public AppUserClaim()
         {
         }
 
-        public ApplicationUserClaim(string claimType, string claimValue)
+        public AppUserClaim(string claimType, string claimValue)
         {
             ClaimType = claimType;
             ClaimValue = claimValue;

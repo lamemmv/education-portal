@@ -3,7 +3,7 @@ using MongoDB.Driver;
 
 namespace EP.Data.Extensions
 {
-    public static class MongoDbExtensions
+    public static class MongoDbHelperExtensions
     {
         public static bool IsInvalidObjectId(this string id)
         {

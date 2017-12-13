@@ -1,21 +1,21 @@
-﻿using EP.Data.Entities.Accounts;
 using EP.Data.Extensions;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
 
-namespace EP.Data.Repositories
+namespace EP.Data.AspNetIdentity
 {
-    public sealed class ApplicationRoleStore<TRole> : IQueryableRoleStore<TRole>
-        where TRole : ApplicationRole
+    public sealed class AppRoleStore<TRole> : IQueryableRoleStore<TRole>
+        where TRole : AppRole
     {
         private readonly IMongoCollection<TRole> _roles;
 
-        public ApplicationRoleStore(IMongoCollection<TRole> roles)
+        public AppRoleStore(IMongoCollection<TRole> roles)
         {
             _roles = roles;
+            EnsureUniqueIndexOnNormalizedEmail(roles).GetAwaiter().GetResult();
         }
 
         public IQueryable<TRole> Roles => _roles.AsQueryable();
@@ -107,5 +107,13 @@ namespace EP.Data.Repositories
 
             return result.IsSuccess() ? IdentityResult.Success : IdentityResult.Failed();
         }
+
+        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TRole> roles)
+		{
+            var roleName = Builders<TRole>.IndexKeys.Ascending(t => t.NormalizedName);
+			var unique = new CreateIndexOptions { Unique = true };
+
+			await roles.Indexes.CreateOneAsync(roleName, unique);
+		}
     }
 }

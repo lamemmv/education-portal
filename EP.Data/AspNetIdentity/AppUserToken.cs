@@ -1,14 +1,14 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Attributes;
 
-namespace EP.Data.Entities.Accounts
+namespace EP.Data.AspNetIdentity
 {
-    public class ApplicationUserToken
+    public class AppUserToken
     {
-        public ApplicationUserToken()
+        public AppUserToken()
         {
         }
 
-        public ApplicationUserToken(string loginProvider, string name, string value)
+        public AppUserToken(string loginProvider, string name, string value)
         {
             LoginProvider = loginProvider;
             Name = name;

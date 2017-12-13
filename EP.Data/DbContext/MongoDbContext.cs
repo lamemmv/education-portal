@@ -4,7 +4,7 @@ using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Repositories;
 
-namespace EP.Data
+namespace EP.Data.DbContext
 {
     public sealed class MongoDbContext : BaseDbContext
     {

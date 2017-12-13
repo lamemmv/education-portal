@@ -1,6 +1,6 @@
-﻿using EP.Data;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using EP.Data.DbContext;
 
 namespace EP.API.Infrastructure.DbContext
 {

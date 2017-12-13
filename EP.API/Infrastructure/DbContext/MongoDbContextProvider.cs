@@ -1,4 +1,4 @@
-﻿using EP.Data;
+﻿using EP.Data.DbContext;
 using Microsoft.Extensions.Options;
 
 namespace EP.API.Infrastructure.DbContext

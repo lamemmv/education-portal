@@ -1,16 +1,17 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+using EP.Data.Entities;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace EP.Data.Entities.Accounts
+namespace EP.Data.AspNetIdentity
 {
-    public class ApplicationRole : Entity
+    public class AppRole : Entity
     {
-        public ApplicationRole()
+        public AppRole()
             : base()
         {
         }
 
-        public ApplicationRole(string roleName)
+        public AppRole(string roleName)
             : base()
         {
             Name = roleName;

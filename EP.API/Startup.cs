@@ -1,16 +1,16 @@
 ﻿using EP.API.Filters;
 using EP.API.Infrastructure.DbContext;
 using EP.API.Infrastructure.Logger;
-using EP.Data;
+using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using Newtonsoft.Json;
 using Serilog.Events;
+using Serilog;
 using System;
 
 namespace EP.API
