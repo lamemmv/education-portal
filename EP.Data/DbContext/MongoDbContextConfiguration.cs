@@ -1,7 +1,6 @@
-﻿using EP.Data.DbContext;
 using MongoDB.Driver;
 
-namespace EP.API.Infrastructure.DbContext
+namespace EP.Data.DbContext
 {
     public class MongoDbContextConfiguration
     {

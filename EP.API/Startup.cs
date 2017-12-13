@@ -1,6 +1,6 @@
 ﻿using EP.API.Filters;
-using EP.API.Infrastructure.DbContext;
 using EP.API.Infrastructure.Logger;
+using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -53,6 +53,8 @@ namespace EP.API
                 //    WriteConcern = new WriteConcern(1)
                 //};
             });
+
+            services.AddIdentityWithMongoStores(_connectionString);
 
             services
                 //.AddCustomIdentity(_connectionString)

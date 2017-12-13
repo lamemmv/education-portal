@@ -1,8 +1,7 @@
-﻿using EP.Data.DbContext;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace EP.API.Infrastructure.DbContext
+namespace EP.Data.DbContext
 {
     public sealed class MongoDbContextBuilder<TContext> where TContext : BaseDbContext, new()
     {
