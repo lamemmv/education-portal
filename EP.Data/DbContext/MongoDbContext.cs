@@ -1,5 +1,4 @@
-﻿using EP.Data.Entities;
-using EP.Data.Entities.Blobs;
+﻿using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Repositories;
@@ -24,7 +23,8 @@ namespace EP.Data.DbContext
         {
             get
             {
-                _activityLogTypes = _activityLogTypes ?? CreateRepository<ActivityLogType>();
+                _activityLogTypes = _activityLogTypes ??
+                    MongoDbHelper.CreateRepository<ActivityLogType>(MongoDatabase);
 
                 return _activityLogTypes;
             }
@@ -34,7 +34,8 @@ namespace EP.Data.DbContext
         {
             get
             {
-                _activityLogs = _activityLogs ?? CreateRepository<ActivityLog>();
+                _activityLogs = _activityLogs ??
+                    MongoDbHelper.CreateRepository<ActivityLog>(MongoDatabase);
 
                 return _activityLogs;
             }
@@ -44,7 +45,7 @@ namespace EP.Data.DbContext
         {
             get
             {
-                _logs = _logs ?? CreateRepository<Log>();
+                _logs = _logs ?? MongoDbHelper.CreateRepository<Log>(MongoDatabase);
 
                 return _logs;
             }
@@ -60,7 +61,7 @@ namespace EP.Data.DbContext
         {
             get
             {
-                _blobs = _blobs ?? CreateRepository<Blob>();
+                _blobs = _blobs ?? MongoDbHelper.CreateRepository<Blob>(MongoDatabase);
 
                 return _blobs;
             }
@@ -76,20 +77,13 @@ namespace EP.Data.DbContext
         {
             get
             {
-                _news = _news ?? CreateRepository<NewsItem>(NewsCollectionName);
+                _news = _news ??
+                    MongoDbHelper.CreateRepository<NewsItem>(MongoDatabase, NewsCollectionName);
 
                 return _news;
             }
         }
 
         #endregion
-
-        private IRepository<TEntity> CreateRepository<TEntity>(string collectionName = null) where TEntity : IEntity
-        {
-            collectionName = collectionName ?? typeof(TEntity).Name.ToLowerInvariant() + "s";
-            var collection = MongoDatabase.GetCollection<TEntity>(collectionName);
-
-            return new MongoRepository<TEntity>(collection);
-        }
     }
 }

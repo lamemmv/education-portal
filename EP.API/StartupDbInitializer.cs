@@ -3,6 +3,7 @@ using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -70,7 +71,13 @@ namespace EP.API
                     Email = email,
                     EmailConfirmed = true,
                     //FullName = "System Administrator"
-                    Roles = roles.ToList()
+                    Roles = roles.ToList(),
+                    Claims = new List<AppUserClaim>
+                    {
+                        new AppUserClaim("name", email),
+                        new AppUserClaim("email", email),
+                        new AppUserClaim("website", "http://localhost:52860/api/admin/dashboard")
+                    }
                 };
 
                 var result = await userManager.CreateAsync(user, password);

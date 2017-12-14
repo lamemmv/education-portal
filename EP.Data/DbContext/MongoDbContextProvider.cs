@@ -4,26 +4,34 @@ namespace EP.Data.DbContext
 {
     public sealed class MongoDbContextProvider<TContext> where TContext : BaseDbContext, new()
     {
-        private readonly StaticMongoDbContextProvider<TContext> _staticProvider;
+        private readonly MongoDbContextConfiguration _configuration;
 
         public MongoDbContextProvider(
             IOptions<MongoDbContextConfiguration<TContext>> options,
             IConfigureOptions<MongoDbContextConfiguration<TContext>> configure)
         {
-            MongoDbContextConfiguration config = options.Value;
+            _configuration = options.Value;
             var configOptions = configure as ConfigureOptions<MongoDbContextConfiguration<TContext>>;
 
             if (configOptions != null)
             {
                 configOptions.Configure(options.Value);
             }
-
-            _staticProvider = new StaticMongoDbContextProvider<TContext>(config);
         }
 
         public TContext CreateContext()
         {
-            return _staticProvider.CreateContext();
+            var ctx = new TContext
+            {
+                MongoDatabase = MongoDbHelper.GetMongoDatabase(
+                    _configuration.ConnectionString,
+                    _configuration.ClientSettings,
+                    _configuration.DatabaseSettings)
+            };
+
+            ctx.SetupCollections();
+
+            return ctx;
         }
     }
 }

@@ -1,6 +1,7 @@
 using EP.Data.Entities;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 
 namespace EP.Data.AspNetIdentity
 {
@@ -28,6 +29,8 @@ namespace EP.Data.AspNetIdentity
         /// </summary>
         [BsonElement("concurrencystamp")]
         public virtual string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
+
+        public virtual List<AppRoleClaim> Claims { get; set; }
 
         public override string ToString()
         {
