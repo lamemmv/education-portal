@@ -1,16 +1,26 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { render } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
+import * as FetchNewsActions from './newsActions';
+import { NewsModel, NewsItem, NewsListState, NewsFilter } from './models';
+
 import { Container, Image, Table, Button } from 'semantic-ui-react';
 
-class NewsList extends Component {
-    
+export interface Props extends RouteComponentProps<void> {
+    news: NewsModel;
+    actions: typeof FetchNewsActions;
+}
+
+class NewsList extends React.Component<Props, {}> {
+
     componentWillMount() {
-        this.props.getNews(this.props.listState.page);
+        let filter = new NewsFilter();
+        filter.page = 1;
+        this.props.actions.getNews(filter);
     }
 
-    renderTableBody(items) {
-        const { askForDeleting } = this.props;
+    renderTableBody(items: NewsItem[]) {
         return (
             items.map((news) => {
                 return (<Table.Row key={news.id}>
@@ -23,7 +33,8 @@ class NewsList extends Component {
                         </Link>
                     </Table.Cell>
                     <Table.Cell>
-                        <Button onClick={() => askForDeleting(news.id)}>Delete</Button>
+                        {/* <Button onClick={() => askForDeleting(news.id)}>Delete</Button> */}
+                        <Button>Delete</Button>
                     </Table.Cell>
                 </Table.Row>)
             })
@@ -31,7 +42,7 @@ class NewsList extends Component {
     }
 
     render() {
-        const { items } = this.props.listState;
+        const { items } = this.props.news;
         return (
             <Container >
                 <Table color={'red'} key={'red'}>

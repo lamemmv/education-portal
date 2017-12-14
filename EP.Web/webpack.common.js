@@ -17,7 +17,7 @@ const paths = {
 module.exports = {
     entry: {
         app: path.join(paths.JS, 'index.jsx')
-            // app: path.join(paths.JS, 'app.jsx')
+        // app: path.join(paths.JS, 'app.jsx')
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -48,7 +48,10 @@ module.exports = {
             // which will write it to the file we defined above
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader'] }),
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader']
+                }),
             },
             // Loader configurations for semantic-ui-less
             // {
@@ -117,7 +120,18 @@ module.exports = {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader?limit=10000&mimetype=application/fontwoff'
             },
+            // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+            {
+                test: /\.tsx?$/,
+                loader: "awesome-typescript-loader"
+            },
 
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {
+                enforce: "pre",
+                test: /\.js$/,
+                loader: "source-map-loader"
+            }
             // loader for static assets
             // {
             //     test: /\.(png|jpg|jpeg|gif|svg)$/,
@@ -151,10 +165,18 @@ module.exports = {
     // Instead of:
     // import MyComponent from './my-component.jsx';
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
 
         // alias: {
         //     '../../theme.config$': path.join(__dirname, 'semantic-theme/theme.config')
         // }
+    },
+    // When importing a module whose path matches one of the following, just
+    // assume a corresponding global variable exists and use that instead.
+    // This is important because it allows us to avoid bundling all of our
+    // dependencies, which allows browsers to cache those libraries between builds.
+    externals: {
+        //"react": "React",
+        //"react-dom": "ReactDOM"
     },
 };

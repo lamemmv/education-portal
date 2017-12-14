@@ -1,20 +1,20 @@
 import axios from 'axios';
 import PageSetting from '../settings/page';
 
-const baseUri = 'http://localhost:52860/api/';
+const baseUri = 'http://localhost:52861/api/';
 
 const API = {
     getBaseUri() {
         return baseUri;
     },
 
-    queryParams(params) {
+    queryParams(params: any) {
         return Object.keys(params)
             .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
             .join('&');
     },
 
-    getNews(page) {
+    getNews(page: number) {
         let params = { page: page ? page : 1, size: PageSetting.getPageSize() };
         let url = `${baseUri}admin/newsManager`;
         url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
@@ -29,7 +29,7 @@ const API = {
         });
     },
 
-    getFiles(page) {
+    getFiles(page: number) {
         let params = { page: page ? page : 1, size: PageSetting.getPageSize() };
         let url = `${baseUri}admin/blobManager`;
         url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
