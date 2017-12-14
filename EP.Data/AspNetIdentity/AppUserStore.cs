@@ -128,9 +128,11 @@ namespace EP.Data.AspNetIdentity
 
         public async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken)
         {
-            var claims = user.Claims.Select(e => new Claim(e.ClaimType, e.ClaimValue));
-
-            return await Task.FromResult(claims.ToList());
+            IList<Claim> claims = user.Claims == null ?
+                new List<Claim>() :
+                user.Claims.Select(e => new Claim(e.ClaimType, e.ClaimValue)).ToList();
+            
+            return await Task.FromResult(claims);
         }
 
         public Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
@@ -225,11 +227,9 @@ namespace EP.Data.AspNetIdentity
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken)
         {
-            var userLogins = user.Logins;
-
-            var logins = userLogins == null ?
+            var logins = user.Logins == null ?
                 new List<UserLoginInfo>() :
-                userLogins.Select(e => new UserLoginInfo(e.LoginProvider, e.ProviderKey, e.ProviderDisplayName)).ToList();
+                user.Logins.Select(e => new UserLoginInfo(e.LoginProvider, e.ProviderKey, e.ProviderDisplayName)).ToList();
 
             return await Task.FromResult(logins);
         }
