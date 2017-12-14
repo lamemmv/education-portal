@@ -2,17 +2,20 @@
 using EP.API.Infrastructure.Logger;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using Newtonsoft.Json;
 using Serilog.Events;
+using Serilog;
+using System.Collections.Generic;
 using System;
+using IdentityServer4;
 
 namespace EP.API
 {
@@ -89,6 +92,15 @@ namespace EP.API
                 opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
             });
 
+            // Configure identity server with in-memory stores, keys, clients and scopes.
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+                .AddInMemoryPersistedGrants()
+                .AddInMemoryIdentityResources(GetIdentityResources())
+                .AddInMemoryApiResources(GetApiResources())
+                .AddInMemoryClients(GetClients())
+                .AddAspNetIdentity<AppUser>();
+
             services
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger);
@@ -106,9 +118,48 @@ namespace EP.API
 
             app
                 .UseCors("AllowAllOrigins")
-                //.UseAuthentication()
+                // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
+                .UseIdentityServer()
                 .UseMvcWithDefaultRoute()
                 .InitDefaultData();
+        }
+
+        private static IEnumerable<IdentityResource> GetIdentityResources()
+        {
+            yield return new IdentityResources.OpenId();
+            yield return new IdentityResources.Profile();
+        }
+
+        private static IEnumerable<ApiResource> GetApiResources()
+        {
+            yield return new ApiResource("ep.api", "EP API");
+        }
+
+        private static IEnumerable<Client> GetClients()
+        {
+            yield return new Client
+            {
+                ClientId = "ep.web",
+                ClientName = "EP Web",
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
+
+                RequireConsent = false,
+
+                ClientSecrets =
+                {
+                    new Secret("ep.web@password".Sha256())
+                },
+
+                //RedirectUris = { "http://localhost:5002/signin-oidc" },
+                //PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "ep.api"
+                },
+            };
         }
     }
 }
