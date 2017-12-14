@@ -159,6 +159,7 @@ namespace EP.API
                     IdentityServerConstants.StandardScopes.Profile,
                     "ep.api"
                 },
+                AllowOfflineAccess = true
             };
         }
     }
