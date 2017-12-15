@@ -13,8 +13,8 @@ namespace EP.API
         {
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddInMemoryPersistedGrants()
-                .AddInMemoryIdentityResources(GetIdentityResources())
+                //.AddInMemoryPersistedGrants()
+                //.AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
                 .AddAspNetIdentity<AppUser>();
@@ -34,11 +34,37 @@ namespace EP.API
         {
             yield return new IdentityResources.OpenId();
             yield return new IdentityResources.Profile();
+            yield return new IdentityResources.Email();
+            yield return new IdentityResource
+            {
+                Name = "role",
+                UserClaims = new List<string>
+                {
+                    "role"
+                }
+            };
         }
 
         private static IEnumerable<ApiResource> GetApiResources()
         {
-            yield return new ApiResource("ep.api", "EP API");
+            yield return new ApiResource
+            {
+                Name = "ep.api",
+                DisplayName = "EP API"
+                // UserClaims = new List<string>
+                // {
+                //     "role"
+                // },
+                // ApiSecrets = new List<Secret>
+                // {
+                //     new Secret("scopeSecret".Sha256())
+                // },
+                // Scopes = new List<Scope>
+                // {
+                //     new Scope("customAPI.read"),
+                //     new Scope("customAPI.write")
+                // }
+            };
         }
 
         private static IEnumerable<Client> GetClients()
@@ -47,18 +73,14 @@ namespace EP.API
             {
                 ClientId = "ep.web",
                 ClientName = "EP Web",
-                AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
-
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 RequireConsent = false,
-
                 ClientSecrets =
                 {
                     new Secret("ep.web@P@SSW0RD".Sha256())
                 },
-
                 //RedirectUris = { "http://localhost:5002/signin-oidc" },
                 //PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
-
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
