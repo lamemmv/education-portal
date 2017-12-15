@@ -19,7 +19,7 @@ export interface NewsModel {
     items: NewsItem[];
     page: number;
     loading: boolean,
-    error: string;
+    error: any;
 }
 
 export interface NewsItem {

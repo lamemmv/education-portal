@@ -1,7 +1,7 @@
 import axios from 'axios';
 import PageSetting from '../settings/page';
 
-const baseUri = 'http://localhost:52861/api/';
+const baseUri = 'http://localhost:52860/api/';
 
 const API = {
     getBaseUri() {

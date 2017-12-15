@@ -18,9 +18,9 @@ import { NewsModel, NewsFetchSuccess, NewsFetchFail, NewsFilter } from './models
 
 import NewsList from './list';
 
-const mapStateToProps = (state: NewsModel) => {
+const mapStateToProps = (state: any) => {
     return {
-        news: state
+        news: state.news
     };
 }
 
