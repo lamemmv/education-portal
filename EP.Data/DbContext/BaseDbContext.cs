@@ -8,8 +8,6 @@ namespace EP.Data.DbContext
 {
     public abstract class BaseDbContext
     {
-        public IMongoClient MongoClient { get; set; }
-
         public IMongoDatabase MongoDatabase { get; set; }
 
         public abstract void SetupCollections();

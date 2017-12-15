@@ -1,14 +1,18 @@
 using EP.Data.Extensions;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace EP.Data.AspNetIdentity
 {
-    public sealed class AppRoleStore<TRole> : IQueryableRoleStore<TRole>
-        where TRole : AppRole
+    public sealed class AppRoleStore<TRole> :
+        IRoleClaimStore<TRole>,
+        IQueryableRoleStore<TRole> where TRole : AppRole
     {
         private readonly IMongoCollection<TRole> _roles;
 
@@ -17,6 +21,45 @@ namespace EP.Data.AspNetIdentity
             _roles = roles;
             EnsureUniqueIndexOnNormalizedEmail(roles).GetAwaiter().GetResult();
         }
+
+        #region IRoleClaimStore
+
+        public async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var claims = role.Claims == null ?
+                new List<Claim>() :
+                role.Claims.Select(e => e.ToClaim()).ToList();
+
+            return await Task.FromResult(claims);
+        }
+
+        public Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var roleClaims = role.Claims;
+            roleClaims = roleClaims ?? new List<AppRoleClaim>();
+
+            roleClaims.Add(new AppRoleClaim(claim.Type, claim.Value));
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var claimCount = role.Claims?.Count;
+
+            if (claimCount > 0)
+            {
+                role.Claims.RemoveAll(c =>
+                    c.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
+                    c.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region IQueryableRoleStore
 
         public IQueryable<TRole> Roles => _roles.AsQueryable();
 
@@ -108,12 +151,14 @@ namespace EP.Data.AspNetIdentity
             return result.IsSuccess() ? IdentityResult.Success : IdentityResult.Failed();
         }
 
-        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TRole> roles)
-		{
-            var roleName = Builders<TRole>.IndexKeys.Ascending(t => t.NormalizedName);
-			var unique = new CreateIndexOptions { Unique = true };
+        #endregion
 
-			await roles.Indexes.CreateOneAsync(roleName, unique);
-		}
+        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TRole> roles)
+        {
+            var roleName = Builders<TRole>.IndexKeys.Ascending(t => t.NormalizedName);
+            var unique = new CreateIndexOptions { Unique = true };
+
+            await roles.Indexes.CreateOneAsync(roleName, unique);
+        }
     }
 }

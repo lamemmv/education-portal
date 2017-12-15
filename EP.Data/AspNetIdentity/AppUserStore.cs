@@ -130,7 +130,7 @@ namespace EP.Data.AspNetIdentity
         {
             IList<Claim> claims = user.Claims == null ?
                 new List<Claim>() :
-                user.Claims.Select(e => new Claim(e.ClaimType, e.ClaimValue)).ToList();
+                user.Claims.Select(e => e.ToClaim()).ToList();
             
             return await Task.FromResult(claims);
         }

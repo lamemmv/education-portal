@@ -1,3 +1,4 @@
+using EP.Data.DbContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -9,13 +10,34 @@ namespace EP.Data.AspNetIdentity
     {
 		private const string AspNetUsersCollectionName = "aspnetusers";
 		private const string AspNetRolesCollectionName = "aspnetroles";
-        
-        public static IdentityBuilder AddIdentityWithMongoStores<TUser, TRole>(
+
+        public static IdentityBuilder AddIdentityMongoStores(
+            this IServiceCollection services,
+            string connectionString)
+        {
+            return services.AddIdentityMongoStores<AppUser, AppRole>(connectionString);
+        }
+
+        public static IdentityBuilder AddIdentityMongoStores<TUser, TRole>(
             this IServiceCollection services,
             string connectionString) where TUser : AppUser where TRole : AppRole
 		{
-			IMongoDatabase database = GetDatabase(connectionString);
-			IdentityBuilder builder = services.AddIdentity<TUser, TRole>(opts => 
+            IdentityBuilder builder = GetIdentityBuilder<TUser, TRole>(services);
+            IMongoDatabase database = MongoDbHelper.GetMongoDatabase(connectionString);
+
+            IMongoCollection<TUser> usersCollection = database.GetCollection<TUser>(AspNetUsersCollectionName);
+			builder.Services.AddSingleton<IUserStore<TUser>>(p => new AppUserStore<TUser>(usersCollection));
+			
+			IMongoCollection<TRole> rolesCollection = database.GetCollection<TRole>(AspNetRolesCollectionName);
+			builder.Services.AddSingleton<IRoleStore<TRole>>(p => new AppRoleStore<TRole>(rolesCollection));
+			
+			return builder;
+		}
+
+        private static IdentityBuilder GetIdentityBuilder<TUser, TRole>(IServiceCollection services)
+            where TUser : AppUser where TRole : AppRole
+        {
+            return services.AddIdentity<TUser, TRole>(opts =>
             {
                 // Password settings.
                 PasswordOptions passwordOpts = opts.Password;
@@ -52,22 +74,6 @@ namespace EP.Data.AspNetIdentity
                 signinOpts.RequireConfirmedEmail = true;
                 signinOpts.RequireConfirmedPhoneNumber = false;
             });
-
-			IMongoCollection<TUser> usersCollection = database.GetCollection<TUser>(AspNetUsersCollectionName);
-			builder.Services.AddSingleton<IUserStore<TUser>>(p => new AppUserStore<TUser>(usersCollection));
-			
-			IMongoCollection<TRole> rolesCollection = database.GetCollection<TRole>(AspNetRolesCollectionName);
-			builder.Services.AddSingleton<IRoleStore<TRole>>(p => new AppRoleStore<TRole>(rolesCollection));
-			
-			return builder;
-		}
-
-		private static IMongoDatabase GetDatabase(string connectionString)
-		{
-			MongoUrl url = new MongoUrl(connectionString);
-			IMongoClient client = new MongoClient(url);
-			
-			return client.GetDatabase(url.DatabaseName);
-		}
+        }
     }
 }
