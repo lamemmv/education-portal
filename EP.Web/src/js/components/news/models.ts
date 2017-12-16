@@ -18,7 +18,7 @@ export interface NewsStoreState {
 export interface NewsModel {
     items: NewsItem[];
     page: number;
-    loading: boolean,
+    loading: boolean;
     error: any;
 }
 

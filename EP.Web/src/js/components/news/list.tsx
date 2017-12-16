@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import * as FetchNewsActions from './newsActions';
 import { NewsModel, NewsItem, NewsListState, NewsFilter } from './models';
@@ -43,12 +43,14 @@ class NewsList extends React.Component<Props, {}> {
 
     render() {
         const { items } = this.props.news;
+        const { gotoCreateNews } = this.props.actions;
         return (
             <Container >
-                <Table color={'red'} key={'red'}>
+                <Button style={{ marginTop: '5em' }} onClick={gotoCreateNews}><Link to='/news/create'>Create</Link></Button>
+                <Table color={'red'} key={'red'}  >
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell>File name</Table.HeaderCell>
+                            <Table.HeaderCell>News</Table.HeaderCell>
                             <Table.HeaderCell>Preview</Table.HeaderCell>
                             <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>

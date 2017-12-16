@@ -1,10 +1,15 @@
+
+import { combineEpics } from 'redux-observable';
+
 import {
-    GET_NEWS_LIST
+    GET_NEWS_LIST,
+    GOTO_CREATE_NEWS
 } from './types';
 
 import {
     getNewsSuccess,
-    getNewsFailure
+    getNewsFailure,
+    initCreateNews
 } from './newsActions';
 
 import API from '../api';
@@ -20,4 +25,15 @@ const fetchNewsEpic: Epic<any, any> = (action$, store) =>
                 .catch(error => Observable.of(getNewsFailure(error)))
         )
 
-export default fetchNewsEpic;
+const gotoCreateNewsEpic: Epic<any, any> = (action$, store) =>
+    action$.ofType(GOTO_CREATE_NEWS)
+        .map(() => initCreateNews())
+
+const epics = [
+    fetchNewsEpic,
+    gotoCreateNewsEpic
+];
+
+const newsEpic = combineEpics(...(<any>Object).values(epics));
+
+export default newsEpic;

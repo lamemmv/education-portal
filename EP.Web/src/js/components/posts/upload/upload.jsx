@@ -27,7 +27,7 @@ class Upload extends Component {
         return (<Container >
             <Form>
                 <Form.Group>
-                    <label htmlFor={uid} style={styles} className="ui icon button">
+                    <label htmlFor={uid} className="ui icon button">
                         <i className="upload icon"></i>
                         Select a file
                     </label>

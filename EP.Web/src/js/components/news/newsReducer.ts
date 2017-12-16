@@ -2,7 +2,8 @@ import { handleActions, Action } from 'redux-actions';
 import {
     GET_NEWS_LIST,
     GET_NEWS_LIST_FAILURE,
-    GET_NEWS_LIST_SUCCESS
+    GET_NEWS_LIST_SUCCESS,
+    GOTO_CREATE_NEWS
 } from './types';
 
 import { NewsItem, NewsModel, NewsFetchSuccess, NewsFetchFail, NewsFilter } from './models';
@@ -28,7 +29,7 @@ export default handleActions<NewsModel, any>({
             items: action.payload.items,
             page: action.payload.page,
             error: null,
-            loading: true
+            loading: false
         });
     },
     [GET_NEWS_LIST_FAILURE]: (state: NewsModel, action: Action<NewsFetchFail>) => {
@@ -39,7 +40,14 @@ export default handleActions<NewsModel, any>({
             items: [],
             page: action.payload.page,
             error: error,
-            loading: true
+            loading: false
+        });
+    },
+    [GOTO_CREATE_NEWS]: (state: NewsModel, action: Action<any>) => {
+        return (<any>Object).assign({}, state, {
+            items: [],
+            error: null,
+            loading: false
         });
     },
 
