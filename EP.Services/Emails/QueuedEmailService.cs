@@ -34,13 +34,13 @@ namespace EP.Services.Emails
             if (createdFromUtc.HasValue)
             {
                 var startDate = createdFromUtc.Value.StartOfDay();
-                filter &= Builders<QueuedEmail>.Filter.Gte(e => e.CreatedOnUtc, startDate);
+                filter &= Builders<QueuedEmail>.Filter.Gte(e => e.CreatedOn, startDate);
             }
 
             if (createdToUtc.HasValue)
             {
                 var endDate = createdToUtc.Value.EndOfDay();
-                filter &= Builders<QueuedEmail>.Filter.Lte(e => e.CreatedOnUtc, endDate);
+                filter &= Builders<QueuedEmail>.Filter.Lte(e => e.CreatedOn, endDate);
             }
 
             if (loadNotSentItemsOnly)
@@ -52,12 +52,12 @@ namespace EP.Services.Emails
             {
                 DateTime nowUtc = DateTime.UtcNow;
                 filter &= Builders<QueuedEmail>.Filter.Eq("dontsendbeforedateutc", BsonNull.Value) |
-                    Builders<QueuedEmail>.Filter.Lte(e => e.DontSendBeforeDateUtc, nowUtc);
+                    Builders<QueuedEmail>.Filter.Lte(e => e.DontSendBeforeDate, nowUtc);
             }
 
             var sort = loadNewest ?
-                Builders<QueuedEmail>.Sort.Descending(e => e.CreatedOnUtc) :
-                Builders<QueuedEmail>.Sort.Descending(e => e.Priority).Ascending(e => e.CreatedOnUtc);
+                Builders<QueuedEmail>.Sort.Descending(e => e.CreatedOn) :
+                Builders<QueuedEmail>.Sort.Descending(e => e.Priority).Ascending(e => e.CreatedOn);
 
             return await _queuedEmails.FindAsync(filter, sort, skip: page, take: size);
         }
@@ -71,9 +71,10 @@ namespace EP.Services.Emails
         {
             var update = Builders<QueuedEmail>.Update
                 .Set(e => e.SentTries, sentTries)
-                .Set(e => e.SentOnUtc, sentOnUtc)
+                .Set(e => e.SentOn, sentOnUtc)
                 .Set(e => e.FailedReason, failedReason)
-                .CurrentDate(s => s.UpdatedOnUtc);
+                .Unset(e => e.EmailAccount)
+                .CurrentDate(s => s.UpdatedOn);
 
             return await _queuedEmails.UpdatePartiallyAsync(id, update);
         }

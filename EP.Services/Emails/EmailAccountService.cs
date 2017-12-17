@@ -2,6 +2,7 @@
 using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
+using EP.Services.Caching;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -9,9 +10,14 @@ namespace EP.Services.Emails
 {
     public sealed class EmailAccountService : IEmailAccountService
     {
-        private readonly IRepository<EmailAccount> _emailAccounts;
+        private const string DefaultEmailAccountKey = "Cache.DefaultEmailAccount";
 
-        public EmailAccountService(MongoDbContext dbContext)
+        private readonly IRepository<EmailAccount> _emailAccounts;
+        private readonly IMemoryCacheService _memoryCacheService;
+
+        public EmailAccountService(
+            MongoDbContext dbContext,
+            IMemoryCacheService memoryCacheService)
         {
             _emailAccounts = dbContext.EmailAccounts;
         }
@@ -26,26 +32,29 @@ namespace EP.Services.Emails
             return await _emailAccounts.FindAsync(id);
         }
 
+        public async Task<EmailAccount> FindDefaultAsync()
+        {
+            return await _memoryCacheService.GetSlidingExpiration(
+                DefaultEmailAccountKey,
+                () =>
+                {
+                    var filter = Builders<EmailAccount>.Filter.Eq(e => e.IsDefault, true);
+                    var project = Builders<EmailAccount>.Projection.Exclude(e => e.IsDefault);
+
+                    return _emailAccounts.FindAsync(filter, project);
+                });
+        }
+
         public async Task<EmailAccount> CreateAsync(EmailAccount entity)
         {
             return await _emailAccounts.CreateAsync(entity);
         }
 
-        public async Task<bool> UpdateAsync(string id, EmailAccount entity)
+        public async Task<bool> UpdateAsync(EmailAccount entity)
         {
-            var update = Builders<EmailAccount>.Update
-                .Set(e => e.Email, entity.Email)
-                .Set(e => e.DisplayName, entity.DisplayName)
-                .Set(e => e.Host, entity.Host)
-                .Set(e => e.Port, entity.Port)
-                .Set(e => e.UserName, entity.UserName)
-                .Set(e => e.Password, entity.Password)
-                .Set(e => e.EnableSsl, entity.EnableSsl)
-                .Set(e => e.UseDefaultCredentials, entity.UseDefaultCredentials)
-                .Set(e => e.IsDefault, entity.IsDefault)
-                .CurrentDate(s => s.UpdatedOnUtc);
+            entity = await _emailAccounts.UpdateAsync(entity);
 
-            return await _emailAccounts.UpdatePartiallyAsync(id, update);
+            return entity != null;
         }
 
         public async Task<bool> DeleteAsync(string id)

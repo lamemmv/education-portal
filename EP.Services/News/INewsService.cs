@@ -12,7 +12,7 @@ namespace EP.Services.News
 
         Task<NewsItem> CreateAsync(NewsItem entity);
 
-        Task<bool> UpdateAsync(string id, NewsItem entity);
+        Task<bool> UpdateAsync(NewsItem entity);
 
         Task<bool> DeleteAsync(string id);
     }

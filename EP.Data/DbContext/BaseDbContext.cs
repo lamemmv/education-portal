@@ -21,8 +21,6 @@ namespace EP.Data.DbContext
 
         public abstract IRepository<ActivityLog> ActivityLogs { get; }
 
-        public abstract IRepository<Log> Logs { get; }
-
         public abstract IRepository<Blob> Blobs { get; }
 
         public abstract IRepository<NewsItem> News { get; }

@@ -33,37 +33,29 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                var entity = viewModel.Map<NewsViewModel, NewsItem>();
-                entity.CreatedOnUtc = DateTime.UtcNow;
+            var entity = viewModel.Map<NewsViewModel, NewsItem>();
+            entity.CreatedOn = DateTime.UtcNow;
 
-                await _newsService.CreateAsync(entity);
+            await _newsService.CreateAsync(entity);
 
-                return Created(nameof(Post), entity);
-            }
-
-            return BadRequest(ModelState);
+            return Created(nameof(Post), entity.Id);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            var entity = viewModel.Map<NewsViewModel, NewsItem>();
+            entity.Id = id;
+            entity.UpdatedOn = DateTime.UtcNow;
+
+            var result = await _newsService.UpdateAsync(entity);
+
+            if (!result)
             {
-                var entity = viewModel.Map<NewsViewModel, NewsItem>();
-
-                var result = await _newsService.UpdateAsync(id, entity);
-
-                if (!result)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
+                return NotFound();
             }
 
-            return BadRequest(ModelState);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

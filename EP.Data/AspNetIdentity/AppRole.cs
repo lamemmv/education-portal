@@ -18,18 +18,16 @@ namespace EP.Data.AspNetIdentity
             Name = roleName;
         }
 
-        [BsonElement("name")]
         public virtual string Name { get; set; }
 
-        [BsonElement("normalizedname")]
         public virtual string NormalizedName { get; set; }
 
         /// <summary>
         /// A random value that should change whenever a role is persisted to the store.
         /// </summary>
-        [BsonElement("concurrencystamp")]
         public virtual string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
+        [BsonIgnoreIfNull]
         public virtual List<AppRoleClaim> Claims { get; set; }
 
         public override string ToString()

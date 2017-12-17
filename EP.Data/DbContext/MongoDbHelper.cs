@@ -24,7 +24,7 @@ namespace EP.Data.DbContext
             IMongoDatabase database,
             string collectionName = null) where TEntity : IEntity
         {
-            collectionName = collectionName ?? typeof(TEntity).Name.ToLowerInvariant() + "s";
+            collectionName = collectionName ?? typeof(TEntity).Name + "s";
             var collection = database.GetCollection<TEntity>(collectionName);
 
             return new MongoRepository<TEntity>(collection);

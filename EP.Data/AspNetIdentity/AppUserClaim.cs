@@ -11,25 +11,23 @@ namespace EP.Data.AspNetIdentity
 
         public AppUserClaim(string claimType, string claimValue)
         {
-            ClaimType = claimType;
-            ClaimValue = claimValue;
+            Type = claimType;
+            Value = claimValue;
         }
 
-        [BsonElement("type")]
-        public string ClaimType { get; set; }
+        public string Type { get; set; }
 
-        [BsonElement("value")]
-        public string ClaimValue { get; set; }
+        public string Value { get; set; }
 
         public virtual Claim ToClaim()
         {
-            return new Claim(ClaimType, ClaimValue);
+            return new Claim(Type, Value);
         }
 
         public virtual void InitializeFromClaim(Claim claim)
         {
-            ClaimType = claim.Type;
-            ClaimValue = claim.Value;
+            Type = claim.Type;
+            Value = claim.Value;
         }
     }
 }

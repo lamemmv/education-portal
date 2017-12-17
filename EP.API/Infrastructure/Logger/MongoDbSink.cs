@@ -10,7 +10,7 @@ namespace EP.API.Infrastructure.Logger
 {
     public sealed class MongoDbSink : ILogEventSink
     {
-        public const string DefaultCollectionName = "logs";
+        public const string DefaultCollectionName = "Logs";
 
         private readonly IMongoCollection<BsonDocument> _collection;
         private readonly ITextFormatter _formatter;

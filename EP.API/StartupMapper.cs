@@ -2,6 +2,7 @@
 using EP.API.Areas.Admin.ViewModels.News;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.News;
+using EP.Services.Emails;
 using ExpressMapper;
 
 namespace EP.API
@@ -18,6 +19,7 @@ namespace EP.API
 
         private static void EmailsMapping()
         {
+            Mapper.Register<EmailAccount, EmailSetting>();
             Mapper.Register<EmailAccountViewModel, EmailAccount>()
                 .Member(dest => dest.Email, src => src.Email.Trim())
                 .Member(dest => dest.DisplayName, src => src.DisplayName.TrimNull())

@@ -22,12 +22,15 @@ namespace EP.Data.Repositories
 
         Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null);
 
+        Task<TEntity> FindAsync(
+            FilterDefinition<TEntity> filter,
+            ProjectionDefinition<TEntity, TEntity> project = null);
+
         Task<TEntity> CreateAsync(TEntity entity);
 
         Task<bool> UpdateAsync(string id, TEntity entity);
 
         Task<TEntity> UpdateAsync(
-            string id,
             TEntity entity,
             FindOneAndReplaceOptions<TEntity, TEntity> options = null);
 

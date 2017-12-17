@@ -31,17 +31,11 @@ namespace EP.Services.News
             return await _news.CreateAsync(entity);
         }
 
-        public async Task<bool> UpdateAsync(string id, NewsItem entity)
+        public async Task<bool> UpdateAsync(NewsItem entity)
         {
-            var update = Builders<NewsItem>.Update
-                .Set(e => e.Title, entity.Title)
-                .Set(e => e.Ingress, entity.Ingress)
-                .Set(e => e.Content, entity.Content)
-                .Set(e => e.Published, entity.Published)
-                .Set(e => e.PublishedDate, entity.PublishedDate)
-                .CurrentDate(s => s.UpdatedOnUtc);
+            entity = await _news.UpdateAsync(entity);
 
-            return await _news.UpdatePartiallyAsync(id, update);
+            return entity != null;
         }
 
         public async Task<bool> DeleteAsync(string id)

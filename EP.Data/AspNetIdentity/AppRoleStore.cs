@@ -50,8 +50,8 @@ namespace EP.Data.AspNetIdentity
             if (claimCount > 0)
             {
                 role.Claims.RemoveAll(c =>
-                    c.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
-                    c.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
+                    c.Type.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
+                    c.Value.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
             }
 
             return Task.CompletedTask;

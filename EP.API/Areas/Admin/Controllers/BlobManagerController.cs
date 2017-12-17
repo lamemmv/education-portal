@@ -113,7 +113,7 @@ namespace EP.API.Areas.Admin.Controllers
                 FileExtension = extension.ToLowerInvariant(),
                 ContentType = contentType,
                 PhysicalPath = Path.Combine(physicalPath, newFileName),
-                CreatedOnUtc = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow
             };
 
             return entity;

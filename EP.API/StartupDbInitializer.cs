@@ -3,6 +3,7 @@ using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,6 +47,7 @@ namespace EP.API
             RoleManager<AppRole> roleManager,
             UserManager<AppUser> userManager)
         {
+            var currentTime = DateTime.UtcNow;
             var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
 
             foreach (var roleName in roles)
@@ -54,7 +56,7 @@ namespace EP.API
 
                 if (identityRole == null)
                 {
-                    await roleManager.CreateAsync(new AppRole(roleName));
+                    await roleManager.CreateAsync(new AppRole(roleName) { CreatedOn = currentTime });
                 }
             }
 
@@ -77,7 +79,8 @@ namespace EP.API
                         new AppUserClaim("name", email),
                         new AppUserClaim("email", email),
                         new AppUserClaim("website", "http://localhost:52860/api/admin/dashboard")
-                    }
+                    },
+                    CreatedOn = currentTime
                 };
 
                 var result = await userManager.CreateAsync(user, password);

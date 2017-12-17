@@ -89,6 +89,14 @@ namespace EP.Data.Repositories
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+
+            return await FindAsync(filter, project);
+        }
+
+        public async Task<TEntity> FindAsync(
+            FilterDefinition<TEntity> filter,
+            ProjectionDefinition<TEntity, TEntity> project = null)
+        {
             var options = project == null ?
                 null :
                 new FindOptions<TEntity, TEntity>
@@ -125,16 +133,15 @@ namespace EP.Data.Repositories
         }
 
         public async Task<TEntity> UpdateAsync(
-            string id,
             TEntity entity,
             FindOneAndReplaceOptions<TEntity, TEntity> options = null)
         {
-            if (id.IsInvalidObjectId())
+            if (entity.Id.IsInvalidObjectId())
             {
                 return default(TEntity);
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
 
             return await _collection.FindOneAndReplaceAsync(filter, entity, options);
         }

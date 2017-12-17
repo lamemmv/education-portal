@@ -8,8 +8,8 @@ namespace EP.Data.AspNetIdentity
 {
     public static class IdentityServiceCollectionExtensions
     {
-		private const string AspNetUsersCollectionName = "aspnetusers";
-		private const string AspNetRolesCollectionName = "aspnetroles";
+		private const string AspNetUsersCollectionName = "AspNetUsers";
+		private const string AspNetRolesCollectionName = "AspNetRoles";
 
         public static IdentityBuilder AddIdentityMongoStores(
             this IServiceCollection services,

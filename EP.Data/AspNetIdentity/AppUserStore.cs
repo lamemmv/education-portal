@@ -152,8 +152,8 @@ namespace EP.Data.AspNetIdentity
             if (claimCount > 0)
             {
                 user.Claims.RemoveAll(c =>
-                    c.ClaimType.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
-                    c.ClaimValue.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
+                    c.Type.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
+                    c.Value.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
 
                 user.Claims.Add(new AppUserClaim(newClaim.Type, newClaim.Value));
             }
@@ -170,8 +170,8 @@ namespace EP.Data.AspNetIdentity
                 foreach (var clm in claims)
                 {
                     user.Claims.RemoveAll(c =>
-                        c.ClaimType.Equals(clm.Type, StringComparison.OrdinalIgnoreCase) &&
-                        c.ClaimValue.Equals(clm.Value, StringComparison.OrdinalIgnoreCase));
+                        c.Type.Equals(clm.Type, StringComparison.OrdinalIgnoreCase) &&
+                        c.Value.Equals(clm.Value, StringComparison.OrdinalIgnoreCase));
                 }
             }
 
@@ -182,8 +182,8 @@ namespace EP.Data.AspNetIdentity
         {
             var filter = Builders<TUser>.Filter.ElemMatch(e => e.Claims,
                 Builders<AppUserClaim>.Filter.And(
-                    Builders<AppUserClaim>.Filter.Eq(clm => clm.ClaimType, claim.Type),
-                    Builders<AppUserClaim>.Filter.Eq(clm => clm.ClaimValue, claim.Value)
+                    Builders<AppUserClaim>.Filter.Eq(clm => clm.Type, claim.Type),
+                    Builders<AppUserClaim>.Filter.Eq(clm => clm.Value, claim.Value)
                 )
             );
 
