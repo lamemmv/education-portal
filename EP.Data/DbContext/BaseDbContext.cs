@@ -1,4 +1,5 @@
 ﻿using EP.Data.Entities.Blobs;
+using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Repositories;
@@ -11,6 +12,10 @@ namespace EP.Data.DbContext
         public IMongoDatabase MongoDatabase { get; set; }
 
         public abstract void SetupCollections();
+
+        public abstract IRepository<EmailAccount> EmailAccounts { get; }
+
+        public abstract IRepository<QueuedEmail> QueuedEmails { get; }
 
         public abstract IRepository<ActivityLogType> ActivityLogTypes { get; }
 

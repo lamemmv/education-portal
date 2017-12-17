@@ -1,4 +1,5 @@
 ﻿using EP.Data.Entities.Blobs;
+using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Repositories;
@@ -12,6 +13,33 @@ namespace EP.Data.DbContext
         public override void SetupCollections()
         {
         }
+
+        #region Emails
+
+        private IRepository<EmailAccount> _emailAccounts;
+        private IRepository<QueuedEmail> _queuedEmails;
+
+        public override IRepository<EmailAccount> EmailAccounts
+        {
+            get
+            {
+                _emailAccounts = _emailAccounts ?? MongoDbHelper.CreateRepository<EmailAccount>(MongoDatabase);
+
+                return _emailAccounts;
+            }
+        }
+
+        public override IRepository<QueuedEmail> QueuedEmails
+        {
+            get
+            {
+                _queuedEmails = _queuedEmails ?? MongoDbHelper.CreateRepository<QueuedEmail>(MongoDatabase);
+
+                return _queuedEmails;
+            }
+        }
+
+        #endregion
 
         #region Logs
 

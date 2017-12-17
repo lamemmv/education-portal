@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EP.Services.Emails
 {
-    public sealed class DefaultEmailSender : IEmailSender
+    public sealed class NetEmailSender : IEmailSender
     {
         private static readonly char[] Seperators = new char[] { ',', ';' };
 
@@ -35,22 +35,22 @@ namespace EP.Services.Emails
         {
             if (emailSetting == null)
             {
-                throw new ArgumentException($"{nameof(DefaultEmailSender)}: No Email Setting provided.");
+                throw new ArgumentException($"{nameof(NetEmailSender)}: No Email Setting provided.");
             }
 
             if (string.IsNullOrEmpty(from))
             {
-                throw new ArgumentException($"{nameof(DefaultEmailSender)}: No From address provided.");
+                throw new ArgumentException($"{nameof(NetEmailSender)}: No From address provided.");
             }
 
             if (string.IsNullOrEmpty(to))
             {
-                throw new ArgumentException($"{nameof(DefaultEmailSender)} No To address provided.");
+                throw new ArgumentException($"{nameof(NetEmailSender)} No To address provided.");
             }
 
             if (string.IsNullOrEmpty(subject))
             {
-                throw new ArgumentException($"{nameof(DefaultEmailSender)} No Subject provided.");
+                throw new ArgumentException($"{nameof(NetEmailSender)} No Subject provided.");
             }
         }
 

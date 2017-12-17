@@ -1,8 +1,10 @@
-﻿using EP.Services.Blobs;
+﻿using EP.Services;
+using EP.Services.Blobs;
+using EP.Services.Caching;
+using EP.Services.Emails;
 using EP.Services.News;
-using EP.Services;
-using LightInject.Microsoft.DependencyInjection;
 using LightInject;
+using LightInject.Microsoft.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -32,7 +34,9 @@ namespace EP.API
             container
                 .SetDefaultLifetime<PerScopeLifetime>()
                 // Infrastructure.
-                //.Register<IMemoryCacheService, MemoryCacheService>()
+                .Register<IMemoryCacheService, MemoryCacheService>()
+                // Emails.
+                .Register<IEmailAccountService, EmailAccountService>()
                 // Logs.
                 //.Register<IActivityLogTypeService, ActivityLogTypeService>()
                 //.Register<IActivityLogService, ActivityLogService>()
