@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using Newtonsoft.Json;
 using Serilog.Events;
+using Serilog;
 using System;
 
 namespace EP.API
@@ -90,6 +90,7 @@ namespace EP.API
             });
 
             services
+                .AddCustomSwaggerGen()
                 .AddCustomIdentity()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger);
@@ -109,6 +110,7 @@ namespace EP.API
                 .UseCors("AllowAllOrigins")
                 .UseIdentityServer()
                 .UseMvcWithDefaultRoute()
+                .UseCustomSwagger()
                 .InitDefaultData();
         }
     }
