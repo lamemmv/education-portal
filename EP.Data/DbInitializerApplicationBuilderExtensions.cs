@@ -1,14 +1,16 @@
 using EP.Data.AspNetIdentity;
+using EP.Data.Constants;
 using EP.Data.DbContext;
 using EP.Data.Entities.Emails;
+using EP.Data.Entities.Logs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Data
 {
@@ -124,66 +126,66 @@ namespace EP.Data
            }
         }
 
-        //private static async Task SeedActivityLogTypeAsync(ObjectDbContext dbContext)
-        //{
-        //    var activityLogTypeDbSet = dbContext.Set<ActivityLogType>();
+        private static async Task SeedActivityLogTypeAsync(MongoDbContext dbContext)
+        {
+            var count = await dbContext.ActivityLogTypes.CountAsync();
 
-        //    if (!await activityLogTypeDbSet.AnyAsync())
-        //    {
-        //        await activityLogTypeDbSet.AddRangeAsync(new ActivityLogType[]
-        //        {
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.UpdateActivityLogTypes,
-        //                Name = "Update an Activity Log Type",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.CreateEmailAccounts,
-        //                Name = "Add a new Email Account",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.UpdateEmailAccounts,
-        //                Name = "Update an Email Account",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.DeleteEmailAccounts,
-        //                Name = "Delete an Email Account",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.CreateUsers,
-        //                Name = "Add a new User",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.UpdateUsers,
-        //                Name = "Update an User",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.DeleteUsers,
-        //                Name = "Delete an User",
-        //                Enabled = true
-        //            },
-        //            new ActivityLogType
-        //            {
-        //                SystemKeyword = Apex.Services.Constants.SystemKeyword.ResetPasswordUsers,
-        //                Name = "Reset password of an User",
-        //                Enabled = true
-        //            }
-        //        });
+            if (count > 0)
+            {
+                var activityLogTypes = new ActivityLogType[]
+                {
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.UpdateActivityLogType,
+                        Name = "Update an Activity Log Type",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.CreateEmailAccount,
+                        Name = "Add a new Email Account",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.UpdateEmailAccount,
+                        Name = "Update an Email Account",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.DeleteEmailAccount,
+                        Name = "Delete an Email Account",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.CreateUser,
+                        Name = "Add a new User",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.UpdateUser,
+                        Name = "Update an User",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.DeleteUser,
+                        Name = "Delete an User",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.ResetUserPassword,
+                        Name = "Reset password of an User",
+                        Enabled = true
+                    }
+                };
 
-        //        await dbContext.SaveChangesAsync();
-        //    }
-        //}
+                await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
+            }
+        }
     }
 }

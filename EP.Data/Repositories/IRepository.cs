@@ -26,7 +26,11 @@ namespace EP.Data.Repositories
             FilterDefinition<TEntity> filter,
             FindOptions<TEntity, TEntity> options = null);
 
+        Task<long> CountAsync(FilterDefinition<TEntity> filter = null);
+
         Task<TEntity> CreateAsync(TEntity entity);
+
+        Task CreateAsync(IEnumerable<TEntity> entities);
 
         Task<bool> UpdateAsync(TEntity entity);
 
@@ -45,7 +49,7 @@ namespace EP.Data.Repositories
 
         Task<TEntity> DeleteAsync(string id, FindOneAndDeleteOptions<TEntity, TEntity> options);
 
-        Task<bool> DeleteAsync();
+        Task<bool> DeleteAsync(FilterDefinition<TEntity> filter = null);
 
         Task DropCollectionAsync();
     }

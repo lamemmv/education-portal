@@ -8,7 +8,7 @@ namespace EP.Services.Emails
     public interface IQueuedEmailService
     {
         Task<IPagedList<QueuedEmail>> FindAsync(
-           DateTime? createdFromUtc,
+            DateTime? createdFromUtc,
             DateTime? createdToUtc,
             bool loadNotSentItemsOnly,
             bool loadOnlyItemsToBeSent,

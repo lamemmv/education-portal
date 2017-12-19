@@ -1,7 +1,6 @@
 ﻿using EP.Data.Entities;
 using EP.Data.Extensions;
 using EP.Data.Paginations;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -102,6 +101,11 @@ namespace EP.Data.Repositories
             return await cursor.FirstOrDefaultAsync();
         }
 
+        public async Task<long> CountAsync(FilterDefinition<TEntity> filter = null)
+        {
+            return await _collection.CountAsync(filter);
+        }
+
         #endregion
 
         #region Command
@@ -111,6 +115,11 @@ namespace EP.Data.Repositories
             await _collection.InsertOneAsync(entity);
 
             return entity;
+        }
+
+        public async Task CreateAsync(IEnumerable<TEntity> entities)
+        {
+            await _collection.InsertManyAsync(entities);
         }
 
         public async Task<bool> UpdateAsync(TEntity entity)
@@ -195,9 +204,9 @@ namespace EP.Data.Repositories
             return await _collection.FindOneAndDeleteAsync(filter, options);
         }
 
-        public async Task<bool> DeleteAsync()
+        public async Task<bool> DeleteAsync(FilterDefinition<TEntity> filter = null)
         {
-            var filter = Builders<TEntity>.Filter.Empty;
+            filter = filter ?? Builders<TEntity>.Filter.Empty;
             var result = await _collection.DeleteManyAsync(filter);
 
             return result.IsSuccess();

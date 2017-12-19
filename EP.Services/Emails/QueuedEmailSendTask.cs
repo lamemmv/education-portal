@@ -1,9 +1,9 @@
 ﻿using EP.Data.Entities.Emails;
 using EP.Services.SystemTasks;
 using Serilog;
-using System.Threading.Tasks;
-using System.Threading;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EP.Services.Emails
 {
