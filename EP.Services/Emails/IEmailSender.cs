@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using EP.Data.Entities.Emails;
+using System.Threading.Tasks;
 
 namespace EP.Services.Emails
 {
     public interface IEmailSender
     {
         Task SendEmailAsync(
-            EmailSetting emailSetting,
+            EmailAccount emailAccount,
             string from,
             string toCsv,
             string subject,

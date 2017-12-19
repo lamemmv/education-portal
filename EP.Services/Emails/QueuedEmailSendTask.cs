@@ -1,37 +1,31 @@
 ﻿using EP.Data.Entities.Emails;
 using EP.Services.SystemTasks;
-using ExpressMapper.Extensions;
 using Serilog;
-using System;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
 
 namespace EP.Services.Emails
 {
-    public class QueuedEmailSendTask : BaseBackgroundTask, IBackgroundTask
+    public sealed class QueuedEmailSendTask : BackgroundHostedService
     {
         private readonly ILogger _logger;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailSender _emailSender;
 
-        public QueuedEmailSendTask(int taskId, int loopInSeconds)
-            : base(taskId, loopInSeconds)
-        {
-        }
-
         public QueuedEmailSendTask(
-            int taskId,
-            int loopInSeconds,
             ILogger logger,
             IQueuedEmailService queuedEmailService,
             IEmailSender emailSender)
-            : base(taskId, loopInSeconds)
         {
             _logger = logger;
             _queuedEmailService = queuedEmailService;
             _emailSender = emailSender;
         }
 
-        public override async Task Execute()
+        protected override float LoopInSeconds => 1;
+
+        protected async override Task ExecuteOnceAsync(CancellationToken cancellationToken)
         {
             var pagedQueuedEmail = await _queuedEmailService.FindAsync(
                 createdFromUtc: null,
@@ -54,10 +48,8 @@ namespace EP.Services.Emails
         {
             try
             {
-                var emailSetting = queuedEmail.EmailAccount.Map<EmailAccount, EmailSetting>();
-
                 await _emailSender.SendEmailAsync(
-                    emailSetting,
+                    queuedEmail.EmailAccount,
                     queuedEmail.From,
                     queuedEmail.To,
                     queuedEmail.Subject,
@@ -85,11 +77,9 @@ namespace EP.Services.Emails
         {
             try
             {
-                queuedEmail.SentTries = queuedEmail.SentTries + 1;
-
                 await _queuedEmailService.UpdateAsync(
                     queuedEmail.Id,
-                    queuedEmail.SentTries,
+                    ++queuedEmail.SentTries,
                     queuedEmail.SentOn,
                     queuedEmail.FailedReason);
             }
@@ -97,7 +87,7 @@ namespace EP.Services.Emails
             {
                 _logger.Error(
                    ex,
-                   "{Class} » {Method}: {Message}", nameof(UpdateSentTriesAsync), nameof(SendEmailAsync), ex.Message);
+                   "{Class} » {Method}: {Message}", nameof(UpdateSentTriesAsync), nameof(UpdateSentTriesAsync), ex.Message);
             }
         }
     }

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using EP.Data.Entities.Emails;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
+using System.Net;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Services.Emails
 {
@@ -11,7 +12,7 @@ namespace EP.Services.Emails
         private static readonly char[] Seperators = new char[] { ',', ';' };
 
         public async Task SendEmailAsync(
-            EmailSetting emailSetting,
+            EmailAccount emailAccount,
             string from,
             string toCsv,
             string subject,
@@ -24,16 +25,16 @@ namespace EP.Services.Emails
             string ccCsv = null,
             string bccCsv = null)
         {
-            ValidateEmail(emailSetting, from, toCsv, subject);
+            ValidateEmail(emailAccount, from, toCsv, subject);
 
             var emailMessage = BuildMimeMessage(from, fromAlias, toCsv, toAlias, subject, body, htmlBody, replyTo, replyToAlias, ccCsv, bccCsv);
 
-            await SendEmailAsync(emailMessage, emailSetting);
+            await SendEmailAsync(emailMessage, emailAccount);
         }
 
-        private void ValidateEmail(EmailSetting emailSetting, string from, string to, string subject)
+        private void ValidateEmail(EmailAccount emailAccount, string from, string to, string subject)
         {
-            if (emailSetting == null)
+            if (emailAccount == null)
             {
                 throw new ArgumentException($"{nameof(NetEmailSender)}: No Email Setting provided.");
             }
@@ -153,16 +154,17 @@ namespace EP.Services.Emails
             return emailMessage;
         }
 
-        private async Task SendEmailAsync(MailMessage emailMessage, EmailSetting emailSetting)
+        private async Task SendEmailAsync(MailMessage emailMessage, EmailAccount emailAccount)
         {
-            using (var client = new SmtpClient())
+            using (var client = new SmtpClient(emailAccount.Host, emailAccount.Port))
             {
-                if (emailSetting.UseDefaultCredentials)
-                {
-                    client.Credentials = new NetworkCredential(emailSetting.UserName, emailSetting.Password);
-                }
+                client.EnableSsl = emailAccount.EnableSsl;
 
-                client.EnableSsl = emailSetting.EnableSsl;
+                client.UseDefaultCredentials = emailAccount.UseDefaultCredentials;
+                client.Credentials = emailAccount.UseDefaultCredentials ?
+                    CredentialCache.DefaultNetworkCredentials :
+                    new NetworkCredential(emailAccount.UserName, emailAccount.Password);
+                
                 await client.SendMailAsync(emailMessage);
             }
         }

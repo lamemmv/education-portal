@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using EP.Data.DbContext;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog.Core;
 using Serilog.Events;
@@ -33,11 +34,9 @@ namespace EP.API.Infrastructure.Logger
             string connectionString,
             string collectionName)
         {
-            MongoUrl url = new MongoUrl(connectionString);
-            IMongoClient client = new MongoClient(url);
-            IMongoDatabase database = client.GetDatabase(url.DatabaseName);
-
-            return database.GetCollection<BsonDocument>(collectionName);
+            return MongoDbHelper
+                .GetMongoDatabase(connectionString)
+                .GetCollection<BsonDocument>(collectionName);
         }
 
         private static ITextFormatter GetJsonFormatter()
@@ -47,10 +46,10 @@ namespace EP.API.Infrastructure.Logger
 
         private BsonDocument GenerateBsonDocument(LogEvent logEvent)
         {
-            BsonDocument bsonDocument;
             TextWriter writer = new StringWriter();
             _formatter.Format(logEvent, writer);
 
+            BsonDocument bsonDocument;
             BsonDocument.TryParse(writer.ToString(), out bsonDocument);
 
             return bsonDocument;

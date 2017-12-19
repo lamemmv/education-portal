@@ -81,7 +81,7 @@ namespace EP.Data.Repositories
             return PagedList<TEntity>.Create(totalItems, await cursor.ToListAsync(), totalPages, page, size);
         }
 
-        public async Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null)
+        public async Task<TEntity> FindAsync(string id, FindOptions<TEntity, TEntity> options = null)
         {
             if (id.IsInvalidObjectId())
             {
@@ -90,19 +90,13 @@ namespace EP.Data.Repositories
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
 
-            return await FindAsync(filter, project);
+            return await FindAsync(filter, options);
         }
 
         public async Task<TEntity> FindAsync(
             FilterDefinition<TEntity> filter,
-            ProjectionDefinition<TEntity, TEntity> project = null)
+            FindOptions<TEntity, TEntity> options = null)
         {
-            var options = project == null ?
-                null :
-                new FindOptions<TEntity, TEntity>
-                {
-                    Projection = project
-                };
             var cursor = await _collection.FindAsync(filter, options);
 
             return await cursor.FirstOrDefaultAsync();
@@ -119,14 +113,14 @@ namespace EP.Data.Repositories
             return entity;
         }
 
-        public async Task<bool> UpdateAsync(string id, TEntity entity)
+        public async Task<bool> UpdateAsync(TEntity entity)
         {
-            if (id.IsInvalidObjectId())
+            if (entity.Id.IsInvalidObjectId())
             {
                 return false;
             }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
             var result = await _collection.ReplaceOneAsync(filter, entity);
 
             return result.IsSuccess();
@@ -134,7 +128,7 @@ namespace EP.Data.Repositories
 
         public async Task<TEntity> UpdateAsync(
             TEntity entity,
-            FindOneAndReplaceOptions<TEntity, TEntity> options = null)
+            FindOneAndReplaceOptions<TEntity, TEntity> options)
         {
             if (entity.Id.IsInvalidObjectId())
             {
@@ -162,7 +156,7 @@ namespace EP.Data.Repositories
         public async Task<TEntity> UpdatePartiallyAsync(
             string id,
             UpdateDefinition<TEntity> definition,
-            FindOneAndUpdateOptions<TEntity, TEntity> options = null)
+            FindOneAndUpdateOptions<TEntity, TEntity> options)
         {
             if (id.IsInvalidObjectId())
             {
@@ -189,7 +183,7 @@ namespace EP.Data.Repositories
 
         public async Task<TEntity> DeleteAsync(
             string id,
-            FindOneAndDeleteOptions<TEntity, TEntity> options = null)
+            FindOneAndDeleteOptions<TEntity, TEntity> options)
         {
             if (id.IsInvalidObjectId())
             {
@@ -203,8 +197,8 @@ namespace EP.Data.Repositories
 
         public async Task<bool> DeleteAsync()
         {
-            var document = new BsonDocument();
-            var result = await _collection.DeleteManyAsync(document);
+            var filter = Builders<TEntity>.Filter.Empty;
+            var result = await _collection.DeleteManyAsync(filter);
 
             return result.IsSuccess();
         }

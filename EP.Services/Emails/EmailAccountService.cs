@@ -20,6 +20,7 @@ namespace EP.Services.Emails
             IMemoryCacheService memoryCacheService)
         {
             _emailAccounts = dbContext.EmailAccounts;
+            _memoryCacheService = memoryCacheService;
         }
 
         public async Task<IPagedList<EmailAccount>> FindAsync(int? page, int? size)
@@ -39,9 +40,12 @@ namespace EP.Services.Emails
                 () =>
                 {
                     var filter = Builders<EmailAccount>.Filter.Eq(e => e.IsDefault, true);
-                    var project = Builders<EmailAccount>.Projection.Exclude(e => e.IsDefault);
+                    var options = new FindOptions<EmailAccount, EmailAccount>
+                    {
+                        Projection = Builders<EmailAccount>.Projection.Exclude(e => e.IsDefault)
+                    };
 
-                    return _emailAccounts.FindAsync(filter, project);
+                    return _emailAccounts.FindAsync(filter, options);
                 });
         }
 
@@ -52,9 +56,7 @@ namespace EP.Services.Emails
 
         public async Task<bool> UpdateAsync(EmailAccount entity)
         {
-            entity = await _emailAccounts.UpdateAsync(entity);
-
-            return entity != null;
+            return await _emailAccounts.UpdateAsync(entity);
         }
 
         public async Task<bool> DeleteAsync(string id)

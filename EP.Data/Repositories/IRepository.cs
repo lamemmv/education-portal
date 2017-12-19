@@ -20,30 +20,30 @@ namespace EP.Data.Repositories
             int? skip = null,
             int? take = null);
 
-        Task<TEntity> FindAsync(string id, ProjectionDefinition<TEntity, TEntity> project = null);
+        Task<TEntity> FindAsync(string id, FindOptions<TEntity, TEntity> options = null);
 
         Task<TEntity> FindAsync(
             FilterDefinition<TEntity> filter,
-            ProjectionDefinition<TEntity, TEntity> project = null);
+            FindOptions<TEntity, TEntity> options = null);
 
         Task<TEntity> CreateAsync(TEntity entity);
 
-        Task<bool> UpdateAsync(string id, TEntity entity);
+        Task<bool> UpdateAsync(TEntity entity);
 
         Task<TEntity> UpdateAsync(
             TEntity entity,
-            FindOneAndReplaceOptions<TEntity, TEntity> options = null);
+            FindOneAndReplaceOptions<TEntity, TEntity> options);
 
         Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition);
 
         Task<TEntity> UpdatePartiallyAsync(
             string id,
             UpdateDefinition<TEntity> definition,
-            FindOneAndUpdateOptions<TEntity, TEntity> options = null);
+            FindOneAndUpdateOptions<TEntity, TEntity> options);
 
         Task<bool> DeleteAsync(string id);
 
-        Task<TEntity> DeleteAsync(string id, FindOneAndDeleteOptions<TEntity, TEntity> options = null);
+        Task<TEntity> DeleteAsync(string id, FindOneAndDeleteOptions<TEntity, TEntity> options);
 
         Task<bool> DeleteAsync();
 

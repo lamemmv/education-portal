@@ -1,16 +1,18 @@
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
+using EP.Data.Entities.Emails;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
-namespace EP.API
+namespace EP.Data
 {
-    public static class StartupDbInitializer
+    public static class DbInitializerApplicationBuilderExtensions
     {
         public static IApplicationBuilder InitDefaultData(this IApplicationBuilder app)
         {
@@ -34,11 +36,9 @@ namespace EP.API
             RoleManager<AppRole> roleManager,
             UserManager<AppUser> userManager)
         {
-            //await dbContext.Database.EnsureCreatedAsync();
-
             await SeedIdentityAsync(roleManager, userManager);
 
-            //await SeedEmailAccountAsync(dbContext);
+            await SeedEmailAccountAsync(dbContext);
 
             //await SeedActivityLogTypeAsync(dbContext);
         }
@@ -92,31 +92,37 @@ namespace EP.API
             }
         }
 
-        //private static async Task SeedEmailAccountAsync(ObjectDbContext dbContext)
-        //{
-        //    string email = "eschoolapi@gmail.com";
-        //    string password = "1qaw3(OLP_";
+        private static async Task SeedEmailAccountAsync(MongoDbContext dbContext)
+        {
+           string email = "eschoolapi@gmail.com";
+           string password = "1qaw3(OLP_";
 
-        //    var emailAccountDbSet = dbContext.Set<EmailAccount>();
+           var filter = Builders<EmailAccount>.Filter.Eq(e => e.Email, email);
+           var options = new FindOptions<EmailAccount, EmailAccount>
+           {
+               Projection = Builders<EmailAccount>.Projection.Include(e => e.Id)
+           };
 
-        //    if (!await emailAccountDbSet.AnyAsync(e => e.Email == email))
-        //    {
-        //        await emailAccountDbSet.AddAsync(new EmailAccount
-        //        {
-        //            Email = email,
-        //            DisplayName = "No Reply",
-        //            Host = "smtp.gmail.com",
-        //            Port = 587,
-        //            UserName = email,
-        //            Password = password,
-        //            EnableSsl = false,
-        //            UseDefaultCredentials = true,
-        //            IsDefaultEmailAccount = true
-        //        });
+           var emailAcc = await dbContext.EmailAccounts.FindAsync(filter, options);
 
-        //        await dbContext.SaveChangesAsync();
-        //    }
-        //}
+           if (emailAcc == null)
+           {
+               emailAcc = new EmailAccount
+               {
+                   Email = email,
+                   DisplayName = "No Reply",
+                   Host = "smtp.gmail.com",
+                   Port = 587,
+                   UserName = email,
+                   Password = password,
+                   EnableSsl = false,
+                   UseDefaultCredentials = true,
+                   IsDefault = true
+               };
+
+               await dbContext.EmailAccounts.CreateAsync(emailAcc);
+           }
+        }
 
         //private static async Task SeedActivityLogTypeAsync(ObjectDbContext dbContext)
         //{

@@ -45,13 +45,13 @@ namespace EP.Services.Emails
 
             if (loadNotSentItemsOnly)
             {
-                filter &= Builders<QueuedEmail>.Filter.Eq("sentonutc", BsonNull.Value);
+                filter &= Builders<QueuedEmail>.Filter.Eq("SentOn", BsonNull.Value);
             }
 
             if (loadOnlyItemsToBeSent)
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                filter &= Builders<QueuedEmail>.Filter.Eq("dontsendbeforedateutc", BsonNull.Value) |
+                filter &= Builders<QueuedEmail>.Filter.Eq("DontSendBeforeDate", BsonNull.Value) |
                     Builders<QueuedEmail>.Filter.Lte(e => e.DontSendBeforeDate, nowUtc);
             }
 
@@ -73,8 +73,7 @@ namespace EP.Services.Emails
                 .Set(e => e.SentTries, sentTries)
                 .Set(e => e.SentOn, sentOnUtc)
                 .Set(e => e.FailedReason, failedReason)
-                .Unset(e => e.EmailAccount)
-                .CurrentDate(s => s.UpdatedOn);
+                .Unset(e => e.EmailAccount);
 
             return await _queuedEmails.UpdatePartiallyAsync(id, update);
         }

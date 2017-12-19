@@ -2,6 +2,7 @@
 using EP.API.Infrastructure.Logger;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
+using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -37,22 +38,7 @@ namespace EP.API
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMongoDbContext(opts =>
-            {
-                opts.ConnectionString = _connectionString;
-                // Further configuration can be used as such:
-                //opts.ClientSettings = new MongoClientSettings
-                //{
-                //    UseSsl = true,
-                //    WriteConcern = WriteConcern.WMajority,
-                //    ConnectionMode = ConnectionMode.Standalone
-                //};
-                //opts.DatabaseSettings = new MongoDatabaseSettings
-                //{
-                //    ReadPreference = ReadPreference.PrimaryPreferred,
-                //    WriteConcern = new WriteConcern(1)
-                //};
-            });
+            services.AddMongoDbContext(_connectionString);
 
             services
                 .AddIdentityMongoStores(_connectionString)

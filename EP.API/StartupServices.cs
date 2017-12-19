@@ -8,6 +8,7 @@ using LightInject.Microsoft.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.Extensions.Hosting;
 
 namespace EP.API
 {
@@ -36,15 +37,20 @@ namespace EP.API
                 // Infrastructure.
                 .Register<IMemoryCacheService, MemoryCacheService>()
                 // Emails.
+                .Register<IEmailSender, NetEmailSender>()
                 .Register<IEmailAccountService, EmailAccountService>()
+                .Register<IQueuedEmailService, QueuedEmailService>()
                 // Logs.
                 //.Register<IActivityLogTypeService, ActivityLogTypeService>()
                 //.Register<IActivityLogService, ActivityLogService>()
                 //.Register<ILogService, LogService>()
-                //Blobs
+                //Blobs.
                 .Register<IBlobService, BlobService>()
-                // News
+                // News.
                 .Register<INewsService, NewsService>();
+
+            // Background tasks.
+            container.Register<IHostedService, QueuedEmailSendTask>(new PerContainerLifetime());
 
             return container.CreateServiceProvider(services);
         }

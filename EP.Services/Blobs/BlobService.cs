@@ -1,12 +1,12 @@
-﻿using EP.Data.Entities.Blobs;
+﻿using EP.Data.DbContext;
+using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using MongoDB.Driver;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EP.Data.DbContext;
+using System;
 
 namespace EP.Services.Blobs
 {
@@ -25,10 +25,9 @@ namespace EP.Services.Blobs
                 Builders<Blob>.Filter.Empty :
                 Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions.Select(ext => ext.ToLowerInvariant()));
 
-            var project = Builders<Blob>.Projection
-                .Exclude(e => e.PhysicalPath);
+            var project = Builders<Blob>.Projection.Exclude(e => e.PhysicalPath);
 
-            return await _blobs.FindAsync(filter: filter, project: project, skip: page, take: size);
+            return await _blobs.FindAsync(filter, project: project, skip: page, take: size);
         }
 
         public async Task<Blob> FindAsync(string id)
@@ -43,7 +42,12 @@ namespace EP.Services.Blobs
 
         public async Task<Blob> DeleteAsync(string id)
         {
-            return await _blobs.DeleteAsync(id, options: null);
+            var options = new FindOneAndDeleteOptions<Blob, Blob>
+            {
+                Projection = Builders<Blob>.Projection.Include(e => e.PhysicalPath)
+            };
+
+            return await _blobs.DeleteAsync(id, options);
         }
 
         public string GetServerUploadPathDirectory(string physicalPath, string contentType)

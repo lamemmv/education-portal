@@ -33,9 +33,7 @@ namespace EP.Services.News
 
         public async Task<bool> UpdateAsync(NewsItem entity)
         {
-            entity = await _news.UpdateAsync(entity);
-
-            return entity != null;
+            return await _news.UpdateAsync(entity);
         }
 
         public async Task<bool> DeleteAsync(string id)
