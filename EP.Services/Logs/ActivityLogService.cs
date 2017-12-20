@@ -20,26 +20,24 @@ namespace EP.Services.Logs
         }
 
         public async Task<IPagedList<ActivityLog>> FindAsync(
-            DateTime createdFrom,
-            DateTime createdTo,
+            DateTime createdFromUtc,
+            DateTime createdToUtc,
             string userName,
             string ip,
             int? page,
             int? size)
         {
-            var startDate = createdFrom.StartOfDay();
-            var endDate = createdTo.EndOfDay();
-            var filter = Builders<ActivityLog>.Filter.Gte(e => e.CreatedOn, startDate) &
-                Builders<ActivityLog>.Filter.Lte(e => e.CreatedOn, endDate);
+            var filter = Builders<ActivityLog>.Filter.Gte(e => e.CreatedOn, createdFromUtc) &
+                Builders<ActivityLog>.Filter.Lte(e => e.CreatedOn, createdToUtc);
 
             if (!string.IsNullOrEmpty(userName))
             {
-                //filter &= Builders<ActivityLog>.Filter.Eq(e => e.sho, startDate);
+                //filter &= Builders<ActivityLog>.Filter.Eq(e => e.UserName, userName.Trim());
             }
 
             if (!string.IsNullOrEmpty(ip))
             {
-                filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip);
+                filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip.Trim());
             }
 
             return await _activityLogs.FindAsync(filter, skip: page, take: size);

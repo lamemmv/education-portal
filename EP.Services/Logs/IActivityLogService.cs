@@ -9,8 +9,8 @@ namespace EP.Services.Logs
     public interface IActivityLogService
     {
         Task<IPagedList<ActivityLog>> FindAsync(
-            DateTime createdFrom,
-            DateTime createdTo,
+            DateTime createdFromUtc,
+            DateTime createdToUtc,
             string userName,
             string ip,
             int? page,

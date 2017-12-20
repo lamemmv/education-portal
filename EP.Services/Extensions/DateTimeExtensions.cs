@@ -8,21 +8,21 @@ namespace EP.Services.Extensions
         //private const string DateTimePattern = "MM/dd/yyyy HH:mm:ss";
         private const string DateTimePattern = "MM/dd/yyyy hh:mm:ss tt";
 
-        public static DateTime StartOfDay(this DateTime datetime)
+        public static DateTime StartOfDayUtc(this DateTime localDatetime)
         {
-            return datetime.Date;
+            return localDatetime.Date.ToUniversalTime();
         }
 
-        public static DateTime EndOfDay(this DateTime datetime)
+        public static DateTime EndOfDayUtc(this DateTime localDatetime)
         {
-            return datetime.Date.AddDays(1).AddTicks(-1);
+            return localDatetime.Date.AddDays(1).AddTicks(-1).ToUniversalTime();
         }
 
-        public static bool Between(this DateTime datetime, DateTime start, DateTime end)
-        {
-            long ticks = datetime.Ticks;
-            return start.Ticks <= ticks && ticks <= end.Ticks;
-        }
+        // public static bool Between(this DateTime datetime, DateTime start, DateTime end)
+        // {
+        //     long ticks = datetime.Ticks;
+        //     return start.Ticks <= ticks && ticks <= end.Ticks;
+        // }
 
         public static string ToDateString(this DateTime datetime)
         {

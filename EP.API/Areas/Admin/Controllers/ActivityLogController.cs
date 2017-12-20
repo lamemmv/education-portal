@@ -1,10 +1,12 @@
-﻿using EP.Data.Entities.Logs;
+﻿using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
+using EP.Services.Extensions;
 using EP.Services.Logs;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -18,15 +20,18 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<ActivityLog>> Get(
-            DateTime createdFrom,
-            DateTime createdTo,
-            string userName,
-            string ip,
-            int? page,
-            int? size)
+        public async Task<IPagedList<ActivityLog>> Get(ActivityLogTypeSearchViewModel viewModel)
         {
-            return await _activityLogService.FindAsync(createdFrom, createdTo, userName, ip, page, size);
+            var from = viewModel.From ?? DateTime.Now.AddDays(-1);
+            var to = viewModel.To ?? DateTime.Now;
+
+            return await _activityLogService.FindAsync(
+                from.StartOfDayUtc(),
+                to.EndOfDayUtc(),
+                viewModel.UserName.TrimNull(),
+                viewModel.IP.TrimNull(),
+                viewModel.Page,
+                viewModel.Size);
         }
 
         [HttpGet("{id}")]

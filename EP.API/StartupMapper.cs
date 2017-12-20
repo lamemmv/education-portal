@@ -2,6 +2,7 @@
 using EP.API.Areas.Admin.ViewModels.News;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.News;
+using EP.Services.Extensions;
 using ExpressMapper;
 
 namespace EP.API
@@ -32,11 +33,6 @@ namespace EP.API
                 .Member(dest => dest.Title, src => src.Title.Trim())
                 .Member(dest => dest.Ingress, src => src.Ingress.TrimNull())
                 .Member(dest => dest.Content, src => src.Content.Trim());
-        }
-
-        private static string TrimNull(this string value)
-        {
-            return string.IsNullOrEmpty(value) ? value : value.Trim();
         }
     }
 }

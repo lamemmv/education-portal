@@ -33,14 +33,12 @@ namespace EP.Services.Emails
 
             if (createdFromUtc.HasValue)
             {
-                var startDate = createdFromUtc.Value.StartOfDay();
-                filter &= Builders<QueuedEmail>.Filter.Gte(e => e.CreatedOn, startDate);
+                filter &= Builders<QueuedEmail>.Filter.Gte(e => e.CreatedOn, createdFromUtc);
             }
 
             if (createdToUtc.HasValue)
             {
-                var endDate = createdToUtc.Value.EndOfDay();
-                filter &= Builders<QueuedEmail>.Filter.Lte(e => e.CreatedOn, endDate);
+                filter &= Builders<QueuedEmail>.Filter.Lte(e => e.CreatedOn, createdToUtc);
             }
 
             if (loadNotSentItemsOnly)
