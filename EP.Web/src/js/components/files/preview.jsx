@@ -1,6 +1,5 @@
-import React, { Component } from "react";
-import { render } from 'react-dom';
-import { Container, Image } from 'semantic-ui-react';
+import { h, Component } from "preact";
+// import { Container, Image } from 'semantic-ui-react';
 import API from '../api';
 
 class Preview extends Component {
@@ -12,9 +11,12 @@ class Preview extends Component {
     }
 
     render() {
-        return (<Container >
-            <Image src={this.state.url} fluid />
-        </Container>);
+        return (
+        // <Container >
+        //     <Image src={this.state.url} fluid />
+        // </Container>
+        <div>pewview file</div>
+        );
     };
 }
 

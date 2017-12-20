@@ -1,8 +1,26 @@
 import {
+    combineEpics
+} from 'redux-observable';
+
+import {
     GET_FILES,
     getFilesSuccess,
     getFilesFailure
 } from './fileActions';
+
+import {
+    UPLOAD_FILE,
+    uploadFileSuccess,
+    uploadFileFailure
+} from './upload/uploadActions';
+
+import {
+    ASK_FOR_DELETING_FILE,
+    DELETE_FILE,
+    showModal,
+    deleteFileSuccess,
+    deleteFileFailure
+} from './delete/deleteActions';
 
 import API from '../api';
 
@@ -19,4 +37,34 @@ const fetchFilesEpic = action$ =>
         .catch(error => Observable.of(getFilesFailure(error)))
     )
 
-export default fetchFilesEpic;
+const uploadFilesEpic = action$ =>
+    action$.ofType(UPLOAD_FILE)
+    .mergeMap(action =>
+        Observable.fromPromise(API.uploadFiles(action.payload))
+        .map(response => uploadFileSuccess(response.data))
+        .catch(error => Observable.of(uploadFileFailure(error)))
+    )
+
+const askForDeleteFileEpic = action$ =>
+    action$.ofType(ASK_FOR_DELETING_FILE)
+    .map(action => showModal(action.payload));
+
+const confirmDeleteFilePic = action$ =>
+    action$.ofType(DELETE_FILE)
+    .mergeMap(action =>
+        Observable.fromPromise(API.deleteFile(action.payload))
+        .map(response => deleteFileSuccess(response.data))
+        .catch(error => Observable.of(deleteFileFailure(error)))
+    )
+
+
+const epics = [
+    fetchFilesEpic,
+    uploadFilesEpic,
+    askForDeleteFileEpic,
+    confirmDeleteFilePic
+];
+
+const fileEpics = combineEpics(...Object.values(epics));
+
+export default fileEpics;

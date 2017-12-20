@@ -16,27 +16,10 @@ export function selectFile(file) {
     };
 }
 
-export function uploadFile(files) {
-    let body = new FormData();
-    files.map(file => {
-        body.append("files", file);
-    });
-
-    let headers = new Headers({
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'multipart/form-data'
-    });
-
-    const request = axios({
-        method: 'post',
-        data: body,
-        url: `${ROOT_URL}admin/blobManager`,
-        headers: headers
-    });
-
+export function uploadFiles(files) {
     return {
         type: UPLOAD_FILE,
-        payload: request
+        payload: files
     };
 }
 

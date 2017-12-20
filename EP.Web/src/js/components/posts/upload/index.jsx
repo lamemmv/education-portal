@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { h, Component } from 'preact';
 import UploadContainer from './uploadContainer';
 
 class UploadIndex extends Component {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { h, Component } from 'preact';
 import DeleteModal from './deleteContainer';
 
 class DeleteIndex extends Component {

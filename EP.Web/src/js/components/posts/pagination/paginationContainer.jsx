@@ -1,4 +1,4 @@
-import { connect } from 'react-redux'
+import { connect } from 'preact-redux'
 import { getFiles, getFilesSuccess, getFilesFailure } from '../fileActions';
 import Pagination from './pagination';
 

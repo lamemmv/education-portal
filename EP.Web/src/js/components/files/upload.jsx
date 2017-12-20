@@ -1,6 +1,5 @@
-import React, { Component } from "react";
-import { render } from 'react-dom';
-import { Container, Button, Image, Form, List } from 'semantic-ui-react';
+import { h, Component } from "preact";
+// import { Container, Button, Image, Form, List } from 'semantic-ui-react';
 import API from '../api';
 
 const styles = {
@@ -72,44 +71,47 @@ class Upload extends Component {
         let fileInput = null;
         const uid = 'testinput';
         const color = 'red';
-        return (<Container >
-            <Form>
-                <Form.Group>
-                    <label htmlFor={uid} style={styles} className="ui icon button">
-                        <i className="upload icon"></i>
-                        Select a file
-                    </label>
-                    <input type="file" id={uid}
-                        style={{ display: "none" }}
-                        onChange={() => {
-                            this.onUpload(fileInput.files[0]);
-                        }}
-                        ref={input => {
-                            fileInput = input;
-                        }}
-                    />
-                    <Form.Button
-                        onClick={() => this.submit()}
-                        style={styles}
-                        disabled={this.state.files.length == 0}>Upload all</Form.Button>
-                </Form.Group>
-            </Form>
-            <List divided verticalAlign='middle'>
-                {this.state.files.map(file => (
-                    <List.Item key={file.name}>
-                        <List.Content floated='right'>
-                            <Button onClick={() => this.removeItem(file)}>Remove</Button>
-                        </List.Content>
-                        {this.supportedImages.indexOf(file.name.substring(file.name.lastIndexOf(".") + 1)) >= 0 ?
-                            <Image avatar src={file.url} /> : null}
-                        <List.Content>
-                            {file.name}
-                        </List.Content>
+        return (
+        // <Container >
+        //     <Form>
+        //         <Form.Group>
+        //             <label htmlFor={uid} style={styles} className="ui icon button">
+        //                 <i className="upload icon"></i>
+        //                 Select a file
+        //             </label>
+        //             <input type="file" id={uid}
+        //                 style={{ display: "none" }}
+        //                 onChange={() => {
+        //                     this.onUpload(fileInput.files[0]);
+        //                 }}
+        //                 ref={input => {
+        //                     fileInput = input;
+        //                 }}
+        //             />
+        //             <Form.Button
+        //                 onClick={() => this.submit()}
+        //                 style={styles}
+        //                 disabled={this.state.files.length == 0}>Upload all</Form.Button>
+        //         </Form.Group>
+        //     </Form>
+        //     <List divided verticalAlign='middle'>
+        //         {this.state.files.map(file => (
+        //             <List.Item key={file.name}>
+        //                 <List.Content floated='right'>
+        //                     <Button onClick={() => this.removeItem(file)}>Remove</Button>
+        //                 </List.Content>
+        //                 {this.supportedImages.indexOf(file.name.substring(file.name.lastIndexOf(".") + 1)) >= 0 ?
+        //                     <Image avatar src={file.url} /> : null}
+        //                 <List.Content>
+        //                     {file.name}
+        //                 </List.Content>
 
-                    </List.Item>
-                ))}
-            </List>
-        </Container>);
+        //             </List.Item>
+        //         ))}
+        //     </List>
+        // </Container>
+        <div>uploader</div>
+        );
     };
 }
 

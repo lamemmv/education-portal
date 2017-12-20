@@ -4,9 +4,9 @@ import { combineEpics } from 'redux-observable';
 
 const epics = [
     NewsEpic,
-    //FileEpic
+    FileEpic
 ];
 
-const rootEpics = combineEpics(...Object.values(epics));;
+const rootEpics = combineEpics(...Object.values(epics));
 
 export default rootEpics;

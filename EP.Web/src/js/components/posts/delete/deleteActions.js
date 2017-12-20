@@ -5,12 +5,13 @@ export const DELETE_FILE = 'DELETE_FILE';
 export const DELETE_FILE_SUCCESS = 'DELETE_FILE_SUCCESS';
 export const DELETE_FILE_FAILURE = 'DELETE_FILE_FAILURE';
 export const ASK_FOR_DELETING_FILE = 'ASK_FOR_DELETING_FILE';
+export const SHOW_CONFOIRMATION_DIALOG = 'SHOW_CONFOIRMATION_DIALOG';
 export const CLOSE_MODAL_CONFIRMATION = 'CLOSE_MODAL_CONFIRMATION';
 
 const ROOT_URL = API.getBaseUri();
 
 export function deleteFile(id) {
-    let url = `${ROOT_URL}admin/blobManager?id=`+ id;
+    let url = `${ROOT_URL}admin/blobManager?id=` + id;
     const request = axios({
         method: 'delete',
         url: url,
@@ -47,7 +48,14 @@ export function askForDeleting(id) {
     };
 }
 
-export function closeModal(){
+export function showModal(id) {
+    return {
+        type: SHOW_CONFOIRMATION_DIALOG,
+        payload: id
+    };
+}
+
+export function closeModal() {
     return {
         type: CLOSE_MODAL_CONFIRMATION,
         payload: false

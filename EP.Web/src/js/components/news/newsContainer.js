@@ -1,6 +1,6 @@
 import {
     connect
-} from 'react-redux';
+} from 'preact-redux';
 
 import {
     Dispatch, bindActionCreators
@@ -14,19 +14,17 @@ import {
     getNewsFailure
 } from './newsActions';
 
-import { NewsModel, NewsFetchSuccess, NewsFetchFail, NewsFilter } from './models';
-
 import NewsList from './list';
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state) => {
     return {
         news: state.news
     };
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators(FetchNewsActions as any, dispatch)
+        actions: bindActionCreators(FetchNewsActions, dispatch)
     }
 }
 

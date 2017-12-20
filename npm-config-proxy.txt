@@ -1,0 +1,15 @@
+# set a proxy
+set HTTP_PROXY=
+set HTTPS_PROXY=%HTTP_PROXY%
+npm config set proxy %HTTP_PROXY%
+npm config set https.proxy %HTTPS_PROXY%
+npm config set https-proxy %HTTPS_PROXY%
+git config --global http.proxy %HTTP_PROXY%
+git config --global https.proxy %HTTPS_PROXY%
+
+# unset proxy
+npm config delete proxy
+npm config delete https.proxy
+npm config delete https-proxy
+git config --global --unset http.proxy
+git config --global --unset https.proxy

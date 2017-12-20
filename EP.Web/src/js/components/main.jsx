@@ -1,23 +1,30 @@
-import React, { Component } from 'react';
+import { h, Component } from 'preact';
 import { Route, HashRouter, Switch } from 'react-router-dom';
+
 import Home from './home/home';
-import FileList from './files/list';
+import FileIndex from './posts/index';
 import FilePreview from './files/preview';
-import Schedule from './schedule/schedule';
+import NewsIndex from './news/index';
+import CreateNews from './news/create/news.create';
 
 class Main extends Component {
-    render(){
+    render() {
         return (
-            <HashRouter>
-                <Switch>
-                    <Route exact path='/' component={Home} />
-                    <Route exact path='/files' component={FileList} />
-                    <Route path='/files/:id' component={FilePreview} />
-                    <Route path='/schedule' component={Schedule} />
-                </Switch>
-            </HashRouter>
+            <main>
+                <div class="mdc-toolbar-fixed-adjust">
+                    <HashRouter>
+                        <Switch>
+                            <Route exact path='/' component={Home} />
+                            <Route exact path='/files' component={FileIndex} />
+                            <Route path='/files/:id' component={FilePreview} />
+                            <Route exact path='/news' component={NewsIndex} />
+                            <Route exact path='/news/create' component={CreateNews} />
+                        </Switch>
+                    </HashRouter>
+                </div>
+            </main>
         );
     };
-} 
+}
 
 export default Main;

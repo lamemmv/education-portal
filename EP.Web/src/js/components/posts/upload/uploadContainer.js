@@ -1,9 +1,9 @@
 import {
     connect
-} from 'react-redux'
+} from 'preact-redux'
 import {
     selectFile,
-    uploadFile,
+    uploadFiles,
     uploadFileSuccess,
     uploadFileFailure,
     removeFile
@@ -29,17 +29,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(selectFile(file));
         },
         uploadFile: (files) => {
-            dispatch(uploadFile(files)).then((response) => {
-                !response.error ?
-                    dispatch(uploadFileSuccess(response.payload.data)) :
-                    dispatch(uploadFileFailure(response.payload.data));
-            }).then(() => {
-                dispatch(getFiles(1)).then((response) => {
-                    !response.error ?
-                        dispatch(getFilesSuccess(response.payload.data)) :
-                        dispatch(getFilesFailure(response.payload.data));
-                })
-            });
+            dispatch(uploadFiles(files));
         },
         removeFile: (file) => {
             dispatch(removeFile(file))

@@ -21,6 +21,7 @@ export default function (state = INITIAL_STATE, action) {
                 ...state, fileState: {
                     files: [],
                     pages: [],
+                    currentPage: action.payload,
                     error: null,
                     loading: true
                 }

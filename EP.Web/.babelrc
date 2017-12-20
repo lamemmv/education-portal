@@ -27,11 +27,13 @@
     // ]
 
     "presets": [
-        ["es2015", { "modules": false }],
-        "react",
-        "stage-1"
+        // ["es2015", { "modules": false }],
+        ["es2015", { "loose": false }],
+        "stage-0"
     ],
     "plugins": [
-        ["lodash", { "id": ["lodash", "semantic-ui-react"] }]
+        // ["lodash", { "id": ["lodash", "semantic-ui-react"] }]
+        ["transform-decorators-legacy"],
+        ["transform-react-jsx", { "pragma": "h" }]
     ]
 }
