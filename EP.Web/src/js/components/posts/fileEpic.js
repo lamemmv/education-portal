@@ -4,6 +4,7 @@ import {
 
 import {
     GET_FILES,
+    getFiles,
     getFilesSuccess,
     getFilesFailure
 } from './fileActions';
@@ -41,7 +42,10 @@ const uploadFilesEpic = action$ =>
     action$.ofType(UPLOAD_FILE)
     .mergeMap(action =>
         Observable.fromPromise(API.uploadFiles(action.payload))
-        .map(response => uploadFileSuccess(response.data))
+        .map((response) => {
+            uploadFileSuccess(response.data);
+            return getFiles(1);
+        })
         .catch(error => Observable.of(uploadFileFailure(error)))
     )
 
