@@ -18,6 +18,8 @@ namespace EP.Services.Logs
 
         Task<ActivityLog> FindAsync(string id);
 
+        Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity);
+
         Task<bool> DeleteAsync(IEnumerable<string> ids);
     }
 }

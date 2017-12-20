@@ -3,8 +3,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 using Serilog.Formatting;
+using Serilog.Formatting.Compact;
 using System.IO;
 
 namespace EP.API.Infrastructure.Logger

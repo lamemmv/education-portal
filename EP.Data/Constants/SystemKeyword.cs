@@ -13,26 +13,7 @@
         public const string DeleteUser = "DeleteUser";
         public const string ResetUserPassword = "ResetUserPassword";
 
-        public static string GetSystemKeyword(string controller, string action)
-        {
-            string systemKeyword;
-
-            switch (action)
-            {
-                case "Post":
-                    systemKeyword = "Create";
-                    break;
-
-                case "Put":
-                    systemKeyword = "Update";
-                    break;
-
-                default:
-                    systemKeyword = action;
-                    break;
-            }
-
-            return systemKeyword + controller;
-        }
+        public const string CreateBlob = "CreateBlob";
+        public const string DeleteBlob = "DeleteBlob";
     }
 }

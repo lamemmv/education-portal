@@ -1,34 +1,40 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
 using EP.API.Extensions;
 using EP.API.Filters;
+using EP.API.ViewModels.Errors;
+using EP.Data.Constants;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
-using EP.Services.Blobs;
-using EP.Services.Utilities;
 using EP.Services;
+using EP.Services.Blobs;
+using EP.Services.Logs;
+using EP.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
     public class BlobManagerController : AdminController
     {
-        private readonly IBlobService _blobService;
         private readonly string _serverUploadPath;
+        private readonly IBlobService _blobService;
+        private readonly IActivityLogService _activityLogService;
 
         public BlobManagerController(
             IBlobService blobService,
+            IActivityLogService activityLogService,
             IOptionsSnapshot<AppSettings> options,
             IHostingEnvironment hostingEnvironment)
         {
             _blobService = blobService;
+            _activityLogService = activityLogService;
             _serverUploadPath = Path.Combine(hostingEnvironment.WebRootPath, options.Value.ServerUploadFolder);
         }
 
@@ -58,9 +64,9 @@ namespace EP.API.Areas.Admin.Controllers
         {
             if (files == null || files.Length == 0)
             {
-                ModelState.AddModelError(string.Empty, "Files should not be empty.");
+                ModelState.AddModelError(nameof(files), "Files should not be empty.");
 
-                return BadRequest(ModelState);
+                return BadRequest(new ApiError(ModelState));
             }
 
             Blob entity;
@@ -69,10 +75,12 @@ namespace EP.API.Areas.Admin.Controllers
             foreach (var file in files)
             {
                 entity = BuildBlob(file);
+                var activityLog = GetActivityLog(entity.GetType(), newValue: entity);
 
                 await Task.WhenAll(
                     _blobService.CreateAsync(entity),
-                    file.SaveAsAsync(entity.PhysicalPath));
+                    file.SaveAsAsync(entity.PhysicalPath),
+                    _activityLogService.CreateAsync(SystemKeyword.CreateBlob, activityLog));
 
                 ids.Add(entity.Id);
             }
@@ -94,6 +102,9 @@ namespace EP.API.Areas.Admin.Controllers
             {
                 System.IO.File.Delete(entity.PhysicalPath);
             }
+
+            var activityLog = GetActivityLog(entity.GetType(), oldValue: entity);
+            await _activityLogService.CreateAsync(SystemKeyword.DeleteBlob, activityLog);
 
             return NoContent();
         }

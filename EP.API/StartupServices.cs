@@ -2,13 +2,14 @@
 using EP.Services.Blobs;
 using EP.Services.Caching;
 using EP.Services.Emails;
+using EP.Services.Logs;
 using EP.Services.News;
 using LightInject;
 using LightInject.Microsoft.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace EP.API
 {
@@ -41,8 +42,8 @@ namespace EP.API
                 .Register<IEmailAccountService, EmailAccountService>()
                 .Register<IQueuedEmailService, QueuedEmailService>()
                 // Logs.
-                //.Register<IActivityLogTypeService, ActivityLogTypeService>()
-                //.Register<IActivityLogService, ActivityLogService>()
+                .Register<IActivityLogTypeService, ActivityLogTypeService>()
+                .Register<IActivityLogService, ActivityLogService>()
                 //.Register<ILogService, LogService>()
                 //Blobs.
                 .Register<IBlobService, BlobService>()

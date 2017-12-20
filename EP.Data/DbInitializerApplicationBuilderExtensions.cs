@@ -42,7 +42,7 @@ namespace EP.Data
 
             await SeedEmailAccountAsync(dbContext);
 
-            //await SeedActivityLogTypeAsync(dbContext);
+            await SeedActivityLogTypeAsync(dbContext);
         }
 
         private static async Task SeedIdentityAsync(
@@ -130,7 +130,7 @@ namespace EP.Data
         {
             var count = await dbContext.ActivityLogTypes.CountAsync();
 
-            if (count > 0)
+            if (count == 0)
             {
                 var activityLogTypes = new ActivityLogType[]
                 {
@@ -143,7 +143,7 @@ namespace EP.Data
                     new ActivityLogType
                     {
                         SystemKeyword = SystemKeyword.CreateEmailAccount,
-                        Name = "Add a new Email Account",
+                        Name = "Create a new Email Account",
                         Enabled = true
                     },
                     new ActivityLogType
@@ -161,7 +161,7 @@ namespace EP.Data
                     new ActivityLogType
                     {
                         SystemKeyword = SystemKeyword.CreateUser,
-                        Name = "Add a new User",
+                        Name = "Create a new User",
                         Enabled = true
                     },
                     new ActivityLogType
@@ -180,6 +180,18 @@ namespace EP.Data
                     {
                         SystemKeyword = SystemKeyword.ResetUserPassword,
                         Name = "Reset password of an User",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.CreateBlob,
+                        Name = "Create a new Blob",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.DeleteBlob,
+                        Name = "Delete a Blob",
                         Enabled = true
                     }
                 };

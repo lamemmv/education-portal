@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EP.API.ViewModels.Errors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EP.API.Filters
@@ -11,7 +12,7 @@ namespace EP.API.Filters
 
             if (!modelState.IsValid)
             {
-                context.Result = new BadRequestObjectResult(modelState);
+                context.Result = new BadRequestObjectResult(new ApiError(context.ModelState));
             }
         }
 

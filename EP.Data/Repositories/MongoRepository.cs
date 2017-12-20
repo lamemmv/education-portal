@@ -103,6 +103,8 @@ namespace EP.Data.Repositories
 
         public async Task<long> CountAsync(FilterDefinition<TEntity> filter = null)
         {
+            filter = filter ?? Builders<TEntity>.Filter.Empty;
+
             return await _collection.CountAsync(filter);
         }
 

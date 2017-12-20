@@ -2,7 +2,6 @@
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
-using EP.Services.Extensions;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -13,10 +12,14 @@ namespace EP.Services.Logs
     public sealed class ActivityLogService : IActivityLogService
     {
         private readonly IRepository<ActivityLog> _activityLogs;
+        private readonly IActivityLogTypeService _activityLogTypeService;
 
-        public ActivityLogService(MongoDbContext dbContext)
+        public ActivityLogService(
+            MongoDbContext dbContext,
+            IActivityLogTypeService activityLogTypeService)
         {
             _activityLogs = dbContext.ActivityLogs;
+            _activityLogTypeService = activityLogTypeService;
         }
 
         public async Task<IPagedList<ActivityLog>> FindAsync(
@@ -46,6 +49,20 @@ namespace EP.Services.Logs
         public async Task<ActivityLog> FindAsync(string id)
         {
             return await _activityLogs.FindAsync(id);
+        }
+
+        public async Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity)
+        {
+            var shortActivityLogType = await _activityLogTypeService.GetEnabledShortActivityLogTypes(systemKeyword);
+
+            if (shortActivityLogType == null)
+            {
+                return null;
+            }
+
+            entity.ActivityLogType = shortActivityLogType;
+
+            return await _activityLogs.CreateAsync(entity);
         }
 
         public async Task<bool> DeleteAsync(IEnumerable<string> ids)

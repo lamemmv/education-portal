@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using EP.API.ViewModels.Errors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
-using System.Net;
 using System;
+using System.Net;
 
 namespace EP.API.Filters
 {
@@ -49,7 +50,7 @@ namespace EP.API.Filters
             response.ContentType = "application/json";
 
             context.ExceptionHandled = true;
-            context.Result = new JsonResult(new { httpStatusCode, errorMessage });
+            context.Result = new JsonResult(new ApiError(httpStatusCode, errorMessage));
         }
 
         private void WriteLog(HttpContext httpContext, Exception exception)
