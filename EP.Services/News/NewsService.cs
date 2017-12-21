@@ -31,14 +31,19 @@ namespace EP.Services.News
             return await _news.CreateAsync(entity);
         }
 
-        public async Task<bool> UpdateAsync(NewsItem entity)
+        public async Task<NewsItem> UpdateAsync(NewsItem entity)
         {
-            return await _news.UpdateAsync(entity);
+            var options = new FindOneAndReplaceOptions<NewsItem, NewsItem>
+            {
+                ReturnDocument = ReturnDocument.Before
+            };
+
+            return await _news.UpdateAsync(entity, options);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<NewsItem> DeleteAsync(string id)
         {
-            return await _news.DeleteAsync(id);
+            return await _news.DeleteAsync(id, options: null);
         }
     }
 }

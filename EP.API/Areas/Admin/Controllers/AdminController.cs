@@ -8,7 +8,17 @@ namespace EP.API.Areas.Admin.Controllers
     [Route("api/admin/[controller]")]
     public abstract class AdminController : Controller
     {
-        protected ActivityLog GetActivityLog(Type objectType, object oldValue = null, object newValue = null)
+        protected ActivityLog GetCreatedActivityLog(Type objectType, object newValue)
+        {
+            return GetUpdatedActivityLog(objectType, null, newValue);
+        }
+
+        protected ActivityLog GetDeletedActivityLog(Type objectType, object oldValue)
+        {
+            return GetUpdatedActivityLog(objectType, oldValue, null);
+        }
+
+        protected ActivityLog GetUpdatedActivityLog(Type objectType, object oldValue, object newValue)
         {
             var activityLog = new ActivityLog
             {
@@ -31,7 +41,7 @@ namespace EP.API.Areas.Admin.Controllers
             return activityLog;
         }
 
-        protected string ObjectToJson(object value)
+        private static string ObjectToJson(object value)
         {
             return JsonConvert.SerializeObject(
                 value,

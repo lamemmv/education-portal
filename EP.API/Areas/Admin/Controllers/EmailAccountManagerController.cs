@@ -1,21 +1,27 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Emails;
+using EP.Data.Constants;
 using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
 using EP.Services.Emails;
+using EP.Services.Logs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
     public class EmailAccountManagerController : AdminController
     {
         private readonly IEmailAccountService _emailAccountService;
+        private readonly IActivityLogService _activityLogService;
 
-        public EmailAccountManagerController(IEmailAccountService emailAccountService)
+        public EmailAccountManagerController(
+            IEmailAccountService emailAccountService,
+            IActivityLogService activityLogService)
         {
             _emailAccountService = emailAccountService;
+            _activityLogService = activityLogService;
         }
 
         [HttpGet]
@@ -48,12 +54,15 @@ namespace EP.API.Areas.Admin.Controllers
             entity.Id = id;
             entity.UpdatedOn = DateTime.UtcNow;
 
-            var result = await _emailAccountService.UpdateAsync(entity);
+            var oldEntity = await _emailAccountService.UpdateAsync(entity);
 
-            if (!result)
+            if (oldEntity == null)
             {
                 return NotFound();
             }
+
+            var activityLog = GetUpdatedActivityLog(oldEntity.GetType(), oldEntity, entity);
+            await _activityLogService.CreateAsync(SystemKeyword.UpdateEmailAccount, activityLog);
 
             return NoContent();
         }
@@ -61,12 +70,15 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await _emailAccountService.DeleteAsync(id);
+            var entity = await _emailAccountService.DeleteAsync(id);
 
-            if (!result)
+            if (entity == null)
             {
                 return NotFound();
             }
+
+            var activityLog = GetDeletedActivityLog(entity.GetType(), entity);
+            await _activityLogService.CreateAsync(SystemKeyword.DeleteEmailAccount, activityLog);
 
             return NoContent();
         }

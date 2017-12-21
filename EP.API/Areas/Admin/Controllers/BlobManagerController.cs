@@ -5,19 +5,19 @@ using EP.API.ViewModels.Errors;
 using EP.Data.Constants;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
-using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Logs;
 using EP.Services.Utilities;
+using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -75,7 +75,7 @@ namespace EP.API.Areas.Admin.Controllers
             foreach (var file in files)
             {
                 entity = BuildBlob(file);
-                var activityLog = GetActivityLog(entity.GetType(), newValue: entity);
+                var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
 
                 await Task.WhenAll(
                     _blobService.CreateAsync(entity),
@@ -103,7 +103,7 @@ namespace EP.API.Areas.Admin.Controllers
                 System.IO.File.Delete(entity.PhysicalPath);
             }
 
-            var activityLog = GetActivityLog(entity.GetType(), oldValue: entity);
+            var activityLog = GetDeletedActivityLog(entity.GetType(), entity);
             await _activityLogService.CreateAsync(SystemKeyword.DeleteBlob, activityLog);
 
             return NoContent();

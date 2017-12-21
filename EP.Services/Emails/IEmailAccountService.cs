@@ -12,8 +12,8 @@ namespace EP.Services.Emails
 
         Task<EmailAccount> CreateAsync(EmailAccount entity);
 
-        Task<bool> UpdateAsync(EmailAccount entity);
+        Task<EmailAccount> UpdateAsync(EmailAccount entity);
 
-        Task<bool> DeleteAsync(string id);
+        Task<EmailAccount> DeleteAsync(string id);
     }
 }

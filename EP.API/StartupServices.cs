@@ -42,7 +42,6 @@ namespace EP.API
                 .Register<IEmailAccountService, EmailAccountService>()
                 .Register<IQueuedEmailService, QueuedEmailService>()
                 // Logs.
-                .Register<IActivityLogTypeService, ActivityLogTypeService>()
                 .Register<IActivityLogService, ActivityLogService>()
                 //.Register<ILogService, LogService>()
                 //Blobs.

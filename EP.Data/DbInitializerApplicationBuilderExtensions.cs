@@ -80,7 +80,7 @@ namespace EP.Data
                     {
                         new AppUserClaim("name", email),
                         new AppUserClaim("email", email),
-                        new AppUserClaim("website", "http://localhost:52860/api/admin/dashboard")
+                        new AppUserClaim("website", "http://localhost:5000/api/admin/dashboard")
                     },
                     CreatedOn = currentTime
                 };
@@ -192,6 +192,24 @@ namespace EP.Data
                     {
                         SystemKeyword = SystemKeyword.DeleteBlob,
                         Name = "Delete a Blob",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.CreateNews,
+                        Name = "Create a new News",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.UpdateNews,
+                        Name = "Update a News",
+                        Enabled = true
+                    },
+                    new ActivityLogType
+                    {
+                        SystemKeyword = SystemKeyword.DeleteNews,
+                        Name = "Delete a News",
                         Enabled = true
                     }
                 };

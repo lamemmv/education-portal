@@ -42,12 +42,7 @@ namespace EP.Services.Blobs
 
         public async Task<Blob> DeleteAsync(string id)
         {
-            var options = new FindOneAndDeleteOptions<Blob, Blob>
-            {
-                Projection = Builders<Blob>.Projection.Include(e => e.PhysicalPath)
-            };
-
-            return await _blobs.DeleteAsync(id, options);
+            return await _blobs.DeleteAsync(id, options: null);
         }
 
         public string GetServerUploadPathDirectory(string physicalPath, string contentType)

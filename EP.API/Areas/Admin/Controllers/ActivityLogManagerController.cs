@@ -10,11 +10,11 @@ using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
-    public class ActivityLogController : AdminController
+    public class ActivityLogManagerController : AdminController
     {
         private readonly IActivityLogService _activityLogService;
 
-        public ActivityLogController(IActivityLogService activityLogService)
+        public ActivityLogManagerController(IActivityLogService activityLogService)
         {
             _activityLogService = activityLogService;
         }
