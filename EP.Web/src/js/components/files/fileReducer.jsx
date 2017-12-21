@@ -1,6 +1,6 @@
 import {
     GET_FILES, GET_FILES_SUCCESS, GET_FILES_FAILURE
-} from './fileActions';
+} from './types';
 
 const INITIAL_STATE = {
     fileState: {

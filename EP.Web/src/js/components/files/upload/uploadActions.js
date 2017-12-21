@@ -1,13 +1,10 @@
-import axios from 'axios';
-import API from '../../api';
-
-export const SELECTED_FILE = 'SELECTED_FILE';
-export const UPLOAD_FILE = 'UPLOAD_FILE';
-export const UPLOAD_FILE_SUCCESS = 'UPLOAD_FILE_SUCCESS';
-export const UPLOAD_FILE_FAILURE = 'UPLOAD_FILE_FAILURE';
-export const REMOVE_FILE = 'REMOVE_FILE';
-
-const ROOT_URL = API.getBaseUri();
+import {
+    SELECTED_FILE,
+    UPLOAD_FILE,
+    UPLOAD_FILE_SUCCESS,
+    UPLOAD_FILE_FAILURE,
+    REMOVE_FILE
+} from '../types';
 
 export function selectFile(file) {
     return {

@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import { Route, HashRouter, Switch } from 'react-router-dom';
 
 import Home from './home/home';
-import FileIndex from './posts/index';
+import FileIndex from './files/index';
 import FilePreview from './files/preview';
 import NewsIndex from './news/index';
 import CreateNews from './news/create/news.create';

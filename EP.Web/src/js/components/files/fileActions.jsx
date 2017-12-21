@@ -1,9 +1,8 @@
-import axios from 'axios';
-
-//Post list
-export const GET_FILES = 'GET_FILES';
-export const GET_FILES_SUCCESS = 'GET_FILES_SUCCESS';
-export const GET_FILES_FAILURE = 'GET_FILES_FAILURE';
+import {
+    GET_FILES,
+    GET_FILES_SUCCESS,
+    GET_FILES_FAILURE
+} from './types';
 
 export function getFiles(page) {
     return {

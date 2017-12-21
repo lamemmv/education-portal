@@ -5,7 +5,7 @@ import {
     ASK_FOR_DELETING_FILE,
     SHOW_CONFOIRMATION_DIALOG,
     CLOSE_MODAL_CONFIRMATION
-} from './deleteActions';
+} from '../types';
 
 const INITIAL_STATE = {
     deleteState: {

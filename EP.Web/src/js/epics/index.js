@@ -1,5 +1,5 @@
 import NewsEpic from '../components/news/newsEpic';
-import FileEpic from '../components/posts/fileEpic';
+import FileEpic from '../components/files/fileEpic';
 import { combineEpics } from 'redux-observable';
 
 const epics = [

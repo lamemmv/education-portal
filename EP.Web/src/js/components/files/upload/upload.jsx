@@ -33,7 +33,7 @@ class Upload extends Component {
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
             <div class="ep-wrapper">
-                <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 19px;">
+                {/* <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 19px;">
                     <a class="btn-floating btn-large red">
                         <i class="mdi-social-notifications-none"></i>
                     </a>
@@ -47,7 +47,7 @@ class Upload extends Component {
                         <li><a class="btn-floating blue"><i class="large mdi-editor-attach-file"></i></a>
                         </li>
                     </ul>
-                </div>
+                </div> */}
                 <div style={file_input_div}>
                     <div style={{ float: 'left', marginTop: '10px' }}>
                         <label class="mdc-button mdc-button--raised" style={epButton} >

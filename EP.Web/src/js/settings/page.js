@@ -1,6 +1,6 @@
 const PageSetting = {
     getPageSize() {
-        return 5;
+        return 10;
     }
 }
 

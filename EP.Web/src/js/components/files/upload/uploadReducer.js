@@ -4,7 +4,7 @@ import {
     UPLOAD_FILE_SUCCESS,
     SELECTED_FILE,
     REMOVE_FILE
-} from './uploadActions';
+} from '../types';
 
 const INITIAL_STATE = {
     uploadState: {

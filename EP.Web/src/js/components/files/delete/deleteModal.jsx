@@ -33,19 +33,19 @@ class DeleteModal extends Component {
                     <div class="mdc-dialog__surface">
                         <header class="mdc-dialog__header">
                             <h2 id="my-mdc-dialog-label" class="mdc-dialog__header__title">
-                                Use Google's location service?
+                                Delete file confirmation
                             </h2>
                         </header>
                         <section id="my-mdc-dialog-description" class="mdc-dialog__body">
-                            Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.
+                            Are you sure you want to delete file?
                         </section>
                         <footer class="mdc-dialog__footer">
                             <button type="button"
                                 class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel"
-                                onClick={closeModal}>Decline</button>
+                                onClick={closeModal}>No</button>
                             <button type="button"
                                 class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept"
-                                onClick={() => confirmDeleteFile(fileTobeDeleted)}>Accept</button>
+                                onClick={() => confirmDeleteFile(fileTobeDeleted)}>Yes</button>
                         </footer>
                     </div>
                     <div class="mdc-dialog__backdrop"></div>
