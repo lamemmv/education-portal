@@ -22,31 +22,27 @@ namespace EP.Data.Repositories
 
         #region Query
 
-        public async Task<IEnumerable<TEntity>> FindAsync(
+        public async Task<IEnumerable<TEntity>> GetAllAsync(
             FilterDefinition<TEntity> filter = null,
             SortDefinition<TEntity> sort = null,
-            ProjectionDefinition<TEntity, TEntity> project = null)
+            ProjectionDefinition<TEntity, TEntity> projection = null)
         {
             filter = filter ?? Builders<TEntity>.Filter.Empty;
             var options = new FindOptions<TEntity, TEntity>
-            { 
-                Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id)
-            };
-
-            if (project != null)
             {
-                options.Projection = project;
-            }
+                Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id),
+                Projection = projection
+            };
 
             var cursor = await _collection.FindAsync(filter, options);
 
             return await cursor.ToListAsync();
         }
 
-        public async Task<IPagedList<TEntity>> FindAsync(
+        public async Task<IPagedList<TEntity>> GetPagedListAsync(
             FilterDefinition<TEntity> filter = null,
             SortDefinition<TEntity> sort = null,
-            ProjectionDefinition<TEntity, TEntity> project = null,
+            ProjectionDefinition<TEntity, TEntity> projection = null,
             int? skip = null,
             int? take = null)
         {
@@ -64,23 +60,21 @@ namespace EP.Data.Repositories
             var totalPages = (int)Math.Ceiling(totalItems / (double)size);
 
             var options = new FindOptions<TEntity, TEntity>
-            { 
+            {
                 Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id),
+                Projection = projection,
                 Skip = page <= 1 ? new int?() : (page - 1) * size,
                 Limit = size
             };
-
-            if (project != null)
-            {
-                options.Projection = project;
-            }
 
             var cursor = await _collection.FindAsync(filter, options);
 
             return PagedList<TEntity>.Create(totalItems, await cursor.ToListAsync(), totalPages, page, size);
         }
 
-        public async Task<TEntity> FindAsync(string id, FindOptions<TEntity, TEntity> options = null)
+        public async Task<TEntity> GetByIdAsync(
+            string id,
+            ProjectionDefinition<TEntity, TEntity> projection = null)
         {
             if (id.IsInvalidObjectId())
             {
@@ -89,23 +83,21 @@ namespace EP.Data.Repositories
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
 
-            return await FindAsync(filter, options);
+            return await GetSingleAsync(filter, projection);
         }
 
-        public async Task<TEntity> FindAsync(
+        public async Task<TEntity> GetSingleAsync(
             FilterDefinition<TEntity> filter,
-            FindOptions<TEntity, TEntity> options = null)
+            ProjectionDefinition<TEntity, TEntity> projection = null)
         {
+            var options = new FindOptions<TEntity, TEntity>
+            {
+                Projection = projection
+            };
+
             var cursor = await _collection.FindAsync(filter, options);
 
             return await cursor.FirstOrDefaultAsync();
-        }
-
-        public async Task<long> CountAsync(FilterDefinition<TEntity> filter = null)
-        {
-            filter = filter ?? Builders<TEntity>.Filter.Empty;
-
-            return await _collection.CountAsync(filter);
         }
 
         #endregion
@@ -124,22 +116,23 @@ namespace EP.Data.Repositories
             await _collection.InsertManyAsync(entities);
         }
 
-        public async Task<bool> UpdateAsync(TEntity entity)
-        {
-            if (entity.Id.IsInvalidObjectId())
-            {
-                return false;
-            }
+        //public async Task<bool> UpdateAsync(TEntity entity)
+        //{
+        //    if (entity.Id.IsInvalidObjectId())
+        //    {
+        //        return false;
+        //    }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
-            var result = await _collection.ReplaceOneAsync(filter, entity);
+        //    var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
+        //    var result = await _collection.ReplaceOneAsync(filter, entity);
 
-            return result.IsSuccess();
-        }
+        //    return result.IsSuccess();
+        //}
 
         public async Task<TEntity> UpdateAsync(
             TEntity entity,
-            FindOneAndReplaceOptions<TEntity, TEntity> options)
+            ProjectionDefinition<TEntity, TEntity> projection = null,
+            ReturnDocument returnDocument = ReturnDocument.Before)
         {
             if (entity.Id.IsInvalidObjectId())
             {
@@ -147,6 +140,11 @@ namespace EP.Data.Repositories
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
+            var options = new FindOneAndReplaceOptions<TEntity, TEntity>
+            {
+                Projection = projection,
+                ReturnDocument = returnDocument
+            };
 
             return await _collection.FindOneAndReplaceAsync(filter, entity, options);
         }
@@ -167,7 +165,8 @@ namespace EP.Data.Repositories
         public async Task<TEntity> UpdatePartiallyAsync(
             string id,
             UpdateDefinition<TEntity> definition,
-            FindOneAndUpdateOptions<TEntity, TEntity> options)
+            ProjectionDefinition<TEntity, TEntity> projection = null,
+            ReturnDocument returnDocument = ReturnDocument.Before)
         {
             if (id.IsInvalidObjectId())
             {
@@ -175,26 +174,31 @@ namespace EP.Data.Repositories
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+            var options = new FindOneAndUpdateOptions<TEntity, TEntity>
+            {
+                Projection = projection,
+                ReturnDocument = returnDocument
+            };
 
             return await _collection.FindOneAndUpdateAsync(filter, definition, options);
         }
 
-        public async Task<bool> DeleteAsync(string id)
-        {
-            if (id.IsInvalidObjectId())
-            {
-                return false;
-            }
+        //public async Task<bool> DeleteAsync(string id)
+        //{
+        //    if (id.IsInvalidObjectId())
+        //    {
+        //        return false;
+        //    }
 
-            var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
-            var result = await _collection.DeleteOneAsync(filter);
+        //    var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+        //    var result = await _collection.DeleteOneAsync(filter);
 
-            return result.IsSuccess();
-        }
+        //    return result.IsSuccess();
+        //}
 
         public async Task<TEntity> DeleteAsync(
             string id,
-            FindOneAndDeleteOptions<TEntity, TEntity> options)
+            ProjectionDefinition<TEntity, TEntity> projection = null)
         {
             if (id.IsInvalidObjectId())
             {
@@ -202,6 +206,10 @@ namespace EP.Data.Repositories
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+            var options = new FindOneAndDeleteOptions<TEntity, TEntity>
+            {
+                Projection = projection
+            };
 
             return await _collection.FindOneAndDeleteAsync(filter, options);
         }

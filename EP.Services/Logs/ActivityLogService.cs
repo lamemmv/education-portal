@@ -4,10 +4,10 @@ using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Caching;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Services.Logs
 {
@@ -30,14 +30,14 @@ namespace EP.Services.Logs
 
         #region Activity Log Type
 
-        public async Task<IPagedList<ActivityLogType>> FindLogTypeAsync(int? page, int? size)
+        public async Task<IPagedList<ActivityLogType>> GetLogTypePagedListAsync(int? page, int? size)
         {
-            return await _activityLogTypes.FindAsync(skip: page, take: size);
+            return await _activityLogTypes.GetPagedListAsync(skip: page, take: size);
         }
 
-        public async Task<ActivityLogType> FindLogTypeAsync(string id)
+        public async Task<ActivityLogType> GetLogTypeByIdAsync(string id)
         {
-            return await _activityLogTypes.FindAsync(id);
+            return await _activityLogTypes.GetByIdAsync(id);
         }
 
         public async Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled)
@@ -46,12 +46,7 @@ namespace EP.Services.Logs
                 .Set(e => e.Enabled, enabled)
                 .CurrentDate(e => e.UpdatedOn);
 
-            var options = new FindOneAndUpdateOptions<ActivityLogType, ActivityLogType>
-            {
-                ReturnDocument = ReturnDocument.Before
-            };
-
-            var oldEntity = await _activityLogTypes.UpdatePartiallyAsync(id, update, options);
+            var oldEntity = await _activityLogTypes.UpdatePartiallyAsync(id, update, projection: null);
 
             if (oldEntity != null)
             {
@@ -63,7 +58,7 @@ namespace EP.Services.Logs
 
         #endregion
 
-        public async Task<IPagedList<ActivityLog>> FindAsync(
+        public async Task<IPagedList<ActivityLog>> GetPagedListAsync(
             DateTime createdFromUtc,
             DateTime createdToUtc,
             string userName,
@@ -84,12 +79,12 @@ namespace EP.Services.Logs
                 filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip.Trim());
             }
 
-            return await _activityLogs.FindAsync(filter, skip: page, take: size);
+            return await _activityLogs.GetPagedListAsync(filter, skip: page, take: size);
         }
 
-        public async Task<ActivityLog> FindAsync(string id)
+        public async Task<ActivityLog> GetByIdAsync(string id)
         {
-            return await _activityLogs.FindAsync(id);
+            return await _activityLogs.GetByIdAsync(id);
         }
 
         public async Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity)
@@ -132,12 +127,15 @@ namespace EP.Services.Logs
         private async Task<IDictionary<string, ShortActivityLogType>> GetEnabledShortActivityLogTypes()
         {
             var filter = Builders<ActivityLogType>.Filter.Eq(e => e.Enabled, true);
-            var project = Builders<ActivityLogType>.Projection.Exclude(e => e.Enabled);
-            var logTypes = await _activityLogTypes.FindAsync(filter, sort: null, project: project);
+            var projection = Builders<ActivityLogType>.Projection
+                .Include(e => e.SystemKeyword)
+                .Include(e => e.Name);
+
+            var logTypes = await _activityLogTypes.GetAllAsync(filter, sort: null, projection: projection);
 
             return logTypes.ToDictionary(
                 kvp => kvp.SystemKeyword,
-                kvp => new ShortActivityLogType { Id = kvp.Id, SystemKeyword = kvp.SystemKeyword, Name = kvp.Name });
+                kvp => new ShortActivityLogType { SystemKeyword = kvp.SystemKeyword, Name = kvp.Name });
         }
     }
 }

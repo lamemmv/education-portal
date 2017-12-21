@@ -27,13 +27,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IPagedList<EmailAccount>> Get(int? page, int? size)
         {
-            return await _emailAccountService.FindAsync(page, size);
+            return await _emailAccountService.GetPagedListAsync(page, size);
         }
 
         [HttpGet("{id}")]
         public async Task<EmailAccount> Get(string id)
         {
-            return await _emailAccountService.FindAsync(id);
+            return await _emailAccountService.GetByIdAsync(id);
         }
 
         [HttpPost]
@@ -43,6 +43,11 @@ namespace EP.API.Areas.Admin.Controllers
             entity.CreatedOn = DateTime.UtcNow;
 
             await _emailAccountService.CreateAsync(entity);
+
+            // Remove password when writing log.
+            entity.Password = null;
+            var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
+            await _activityLogService.CreateAsync(SystemKeyword.CreateEmailAccount, activityLog);
 
             return Created(nameof(Post), entity);
         }

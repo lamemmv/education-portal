@@ -41,13 +41,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IPagedList<Blob>> Get(BlobSearchViewModel viewModel)
         {
-            return await _blobService.FindAsync(viewModel.Ext, viewModel.Page, viewModel.Size);
+            return await _blobService.GetPagedListAsync(viewModel.Ext, viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            var entity = await _blobService.FindAsync(id);
+            var entity = await _blobService.GetByIdAsync(id);
 
             if (entity == null || !System.IO.File.Exists(entity.PhysicalPath))
             {

@@ -8,13 +8,13 @@ namespace EP.Services.Logs
 {
     public interface IActivityLogService
     {
-        Task<IPagedList<ActivityLogType>> FindLogTypeAsync(int? page, int? size);
+        Task<IPagedList<ActivityLogType>> GetLogTypePagedListAsync(int? page, int? size);
 
-        Task<ActivityLogType> FindLogTypeAsync(string id);
+        Task<ActivityLogType> GetLogTypeByIdAsync(string id);
 
         Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled);
         
-        Task<IPagedList<ActivityLog>> FindAsync(
+        Task<IPagedList<ActivityLog>> GetPagedListAsync(
             DateTime createdFromUtc,
             DateTime createdToUtc,
             string userName,
@@ -22,7 +22,7 @@ namespace EP.Services.Logs
             int? page,
             int? size);
 
-        Task<ActivityLog> FindAsync(string id);
+        Task<ActivityLog> GetByIdAsync(string id);
 
         Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity);
 

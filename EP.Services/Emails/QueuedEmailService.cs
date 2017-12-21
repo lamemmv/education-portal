@@ -19,7 +19,7 @@ namespace EP.Services.Emails
             _queuedEmails = dbContext.QueuedEmails;
         }
 
-        public async Task<IPagedList<QueuedEmail>> FindAsync(
+        public async Task<IPagedList<QueuedEmail>> GetPagedListAsync(
             DateTime? createdFromUtc,
             DateTime? createdToUtc,
             bool loadNotSentItemsOnly,
@@ -57,7 +57,7 @@ namespace EP.Services.Emails
                 Builders<QueuedEmail>.Sort.Descending(e => e.CreatedOn) :
                 Builders<QueuedEmail>.Sort.Descending(e => e.Priority).Ascending(e => e.CreatedOn);
 
-            return await _queuedEmails.FindAsync(filter, sort, skip: page, take: size);
+            return await _queuedEmails.GetPagedListAsync(filter, sort, skip: page, take: size);
         }
 
         public async Task<QueuedEmail> CreateAsync(QueuedEmail entity)

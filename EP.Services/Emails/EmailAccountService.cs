@@ -23,14 +23,18 @@ namespace EP.Services.Emails
             _memoryCacheService = memoryCacheService;
         }
 
-        public async Task<IPagedList<EmailAccount>> FindAsync(int? page, int? size)
+        public async Task<IPagedList<EmailAccount>> GetPagedListAsync(int? page, int? size)
         {
-            return await _emailAccounts.FindAsync(skip: page, take: size);
+            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
+
+            return await _emailAccounts.GetPagedListAsync(projection: projection, skip: page, take: size);
         }
 
-        public async Task<EmailAccount> FindAsync(string id)
+        public async Task<EmailAccount> GetByIdAsync(string id)
         {
-            return await _emailAccounts.FindAsync(id);
+            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
+
+            return await _emailAccounts.GetByIdAsync(id, projection);
         }
 
         public async Task<EmailAccount> FindDefaultAsync()
@@ -40,12 +44,9 @@ namespace EP.Services.Emails
                 () =>
                 {
                     var filter = Builders<EmailAccount>.Filter.Eq(e => e.IsDefault, true);
-                    var options = new FindOptions<EmailAccount, EmailAccount>
-                    {
-                        Projection = Builders<EmailAccount>.Projection.Exclude(e => e.IsDefault)
-                    };
+                    var projection = Builders<EmailAccount>.Projection.Exclude(e => e.IsDefault);
 
-                    return _emailAccounts.FindAsync(filter, options);
+                    return _emailAccounts.GetSingleAsync(filter, projection);
                 });
         }
 
@@ -63,12 +64,8 @@ namespace EP.Services.Emails
 
         public async Task<EmailAccount> UpdateAsync(EmailAccount entity)
         {
-            var options = new FindOneAndReplaceOptions<EmailAccount, EmailAccount>
-            {
-                ReturnDocument = ReturnDocument.Before
-            };
-
-            var oldEntity = await _emailAccounts.UpdateAsync(entity, options);
+            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
+            var oldEntity = await _emailAccounts.UpdateAsync(entity, projection);
 
             if (oldEntity != null && entity.IsDefault)
             {
@@ -80,7 +77,8 @@ namespace EP.Services.Emails
 
         public async Task<EmailAccount> DeleteAsync(string id)
         {
-            var entity = await _emailAccounts.DeleteAsync(id, options: null);
+            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
+            var entity = await _emailAccounts.DeleteAsync(id, projection);
 
             if (entity != null && entity.IsDefault)
             {

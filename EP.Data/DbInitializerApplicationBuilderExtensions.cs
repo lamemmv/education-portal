@@ -96,126 +96,119 @@ namespace EP.Data
 
         private static async Task SeedEmailAccountAsync(MongoDbContext dbContext)
         {
-           string email = "eschoolapi@gmail.com";
-           string password = "1qaw3(OLP_";
+            string email = "eschoolapi@gmail.com";
+            string password = "1qaw3(OLP_";
 
-           var filter = Builders<EmailAccount>.Filter.Eq(e => e.Email, email);
-           var options = new FindOptions<EmailAccount, EmailAccount>
-           {
-               Projection = Builders<EmailAccount>.Projection.Include(e => e.Id)
-           };
+            var filter = Builders<EmailAccount>.Filter.Eq(e => e.Email, email);
+            var projection = Builders<EmailAccount>.Projection.Include(e => e.Id);
+            var emailAcc = await dbContext.EmailAccounts.GetSingleAsync(filter, projection);
 
-           var emailAcc = await dbContext.EmailAccounts.FindAsync(filter, options);
+            if (emailAcc == null)
+            {
+                emailAcc = new EmailAccount
+                {
+                    Email = email,
+                    DisplayName = "No Reply",
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    UserName = email,
+                    Password = password,
+                    EnableSsl = false,
+                    UseDefaultCredentials = true,
+                    IsDefault = true
+                };
 
-           if (emailAcc == null)
-           {
-               emailAcc = new EmailAccount
-               {
-                   Email = email,
-                   DisplayName = "No Reply",
-                   Host = "smtp.gmail.com",
-                   Port = 587,
-                   UserName = email,
-                   Password = password,
-                   EnableSsl = false,
-                   UseDefaultCredentials = true,
-                   IsDefault = true
-               };
-
-               await dbContext.EmailAccounts.CreateAsync(emailAcc);
-           }
+                await dbContext.EmailAccounts.CreateAsync(emailAcc);
+            }
         }
 
         private static async Task SeedActivityLogTypeAsync(MongoDbContext dbContext)
         {
-            var count = await dbContext.ActivityLogTypes.CountAsync();
-
-            if (count == 0)
+            var activityLogTypes = new[]
             {
-                var activityLogTypes = new ActivityLogType[]
+                new ActivityLogType
                 {
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.UpdateActivityLogType,
-                        Name = "Update an Activity Log Type",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.CreateEmailAccount,
-                        Name = "Create a new Email Account",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.UpdateEmailAccount,
-                        Name = "Update an Email Account",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.DeleteEmailAccount,
-                        Name = "Delete an Email Account",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.CreateUser,
-                        Name = "Create a new User",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.UpdateUser,
-                        Name = "Update an User",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.DeleteUser,
-                        Name = "Delete an User",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.ResetUserPassword,
-                        Name = "Reset password of an User",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.CreateBlob,
-                        Name = "Create a new Blob",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.DeleteBlob,
-                        Name = "Delete a Blob",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.CreateNews,
-                        Name = "Create a new News",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.UpdateNews,
-                        Name = "Update a News",
-                        Enabled = true
-                    },
-                    new ActivityLogType
-                    {
-                        SystemKeyword = SystemKeyword.DeleteNews,
-                        Name = "Delete a News",
-                        Enabled = true
-                    }
-                };
+                    SystemKeyword = SystemKeyword.UpdateActivityLogType,
+                    Name = "Update an Activity Log Type",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.CreateEmailAccount,
+                    Name = "Create a new Email Account",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.UpdateEmailAccount,
+                    Name = "Update an Email Account",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.DeleteEmailAccount,
+                    Name = "Delete an Email Account",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.CreateUser,
+                    Name = "Create a new User",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.UpdateUser,
+                    Name = "Update an User",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.DeleteUser,
+                    Name = "Delete an User",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.ResetUserPassword,
+                    Name = "Reset password of an User",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.CreateBlob,
+                    Name = "Create a new Blob",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.DeleteBlob,
+                    Name = "Delete a Blob",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.CreateNews,
+                    Name = "Create a new News",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.UpdateNews,
+                    Name = "Update a News",
+                    Enabled = true
+                },
+                new ActivityLogType
+                {
+                    SystemKeyword = SystemKeyword.DeleteNews,
+                    Name = "Delete a News",
+                    Enabled = true
+                }
+            };
 
-                await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
-            }
+            await dbContext.ActivityLogTypes.DeleteAsync();
+
+            await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
         }
     }
 }

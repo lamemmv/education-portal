@@ -3,10 +3,10 @@ using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using MongoDB.Driver;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Services.Blobs
 {
@@ -19,20 +19,20 @@ namespace EP.Services.Blobs
             _blobs = dbContext.Blobs;
         }
 
-        public async Task<IPagedList<Blob>> FindAsync(string[] fileExtensions, int? page, int? size)
+        public async Task<IPagedList<Blob>> GetPagedListAsync(string[] fileExtensions, int? page, int? size)
         {
             var filter = fileExtensions == null || fileExtensions.Length == 0 ?
                 Builders<Blob>.Filter.Empty :
                 Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions.Select(ext => ext.ToLowerInvariant()));
 
-            var project = Builders<Blob>.Projection.Exclude(e => e.PhysicalPath);
+            var projection = Builders<Blob>.Projection.Exclude(e => e.PhysicalPath);
 
-            return await _blobs.FindAsync(filter, project: project, skip: page, take: size);
+            return await _blobs.GetPagedListAsync(filter, projection: projection, skip: page, take: size);
         }
 
-        public async Task<Blob> FindAsync(string id)
+        public async Task<Blob> GetByIdAsync(string id)
         {
-            return await _blobs.FindAsync(id);
+            return await _blobs.GetByIdAsync(id);
         }
 
         public async Task<Blob> CreateAsync(Blob entity)
@@ -42,7 +42,7 @@ namespace EP.Services.Blobs
 
         public async Task<Blob> DeleteAsync(string id)
         {
-            return await _blobs.DeleteAsync(id, options: null);
+            return await _blobs.DeleteAsync(id);
         }
 
         public string GetServerUploadPathDirectory(string physicalPath, string contentType)

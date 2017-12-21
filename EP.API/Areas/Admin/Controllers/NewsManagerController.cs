@@ -6,8 +6,8 @@ using EP.Services.Logs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -27,13 +27,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IPagedList<NewsItem>> Get(int? page, int? size)
         {
-            return await _newsService.FindAsync(page, size);
+            return await _newsService.GetPagedListAsync(page, size);
         }
 
         [HttpGet("{id}")]
         public async Task<NewsItem> Get(string id)
         {
-            return await _newsService.FindAsync(id);
+            return await _newsService.GetByIdAsync(id);
         }
 
         [HttpPost]
@@ -43,6 +43,9 @@ namespace EP.API.Areas.Admin.Controllers
             entity.CreatedOn = DateTime.UtcNow;
 
             await _newsService.CreateAsync(entity);
+
+            var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
+            await _activityLogService.CreateAsync(SystemKeyword.CreateNews, activityLog);
 
             return Created(nameof(Post), entity.Id);
         }

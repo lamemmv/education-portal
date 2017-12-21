@@ -25,7 +25,7 @@ namespace EP.API.Areas.Admin.Controllers
             var from = viewModel.From ?? DateTime.Now.AddDays(-1);
             var to = viewModel.To ?? DateTime.Now;
 
-            return await _activityLogService.FindAsync(
+            return await _activityLogService.GetPagedListAsync(
                 from.StartOfDayUtc(),
                 to.EndOfDayUtc(),
                 viewModel.UserName.TrimNull(),
@@ -37,7 +37,7 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet("{id}")]
         public async Task<ActivityLog> Get(string id)
         {
-            return await _activityLogService.FindAsync(id);
+            return await _activityLogService.GetByIdAsync(id);
         }
 
         [HttpDelete("{id}")]

@@ -27,7 +27,7 @@ namespace EP.Services.Emails
 
         protected async override Task ExecuteOnceAsync(CancellationToken cancellationToken)
         {
-            var pagedQueuedEmail = await _queuedEmailService.FindAsync(
+            var pagedQueuedEmail = await _queuedEmailService.GetPagedListAsync(
                 createdFromUtc: null,
                 createdToUtc: null,
                 loadNotSentItemsOnly: true,

@@ -20,13 +20,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IPagedList<ActivityLogType>> Get(int? page, int? size)
         {
-            return await _activityLogService.FindLogTypeAsync(page, size);
+            return await _activityLogService.GetLogTypePagedListAsync(page, size);
         }
 
         [HttpGet("{id}")]
         public async Task<ActivityLogType> Get(string id)
         {
-            return await _activityLogService.FindLogTypeAsync(id);
+            return await _activityLogService.GetLogTypeByIdAsync(id);
         }
 
         [HttpPut("{id}")]

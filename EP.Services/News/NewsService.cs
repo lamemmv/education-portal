@@ -2,7 +2,6 @@
 using EP.Data.Entities.News;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
-using MongoDB.Driver;
 using System.Threading.Tasks;
 
 namespace EP.Services.News
@@ -16,14 +15,14 @@ namespace EP.Services.News
             _news = dbContext.News;
         }
 
-        public async Task<IPagedList<NewsItem>> FindAsync(int? page, int? size)
+        public async Task<IPagedList<NewsItem>> GetPagedListAsync(int? page, int? size)
         {
-            return await _news.FindAsync(skip: page, take: size);
+            return await _news.GetPagedListAsync(skip: page, take: size);
         }
 
-        public async Task<NewsItem> FindAsync(string id)
+        public async Task<NewsItem> GetByIdAsync(string id)
         {
-            return await _news.FindAsync(id);
+            return await _news.GetByIdAsync(id);
         }
 
         public async Task<NewsItem> CreateAsync(NewsItem entity)
@@ -33,17 +32,12 @@ namespace EP.Services.News
 
         public async Task<NewsItem> UpdateAsync(NewsItem entity)
         {
-            var options = new FindOneAndReplaceOptions<NewsItem, NewsItem>
-            {
-                ReturnDocument = ReturnDocument.Before
-            };
-
-            return await _news.UpdateAsync(entity, options);
+            return await _news.UpdateAsync(entity);
         }
 
         public async Task<NewsItem> DeleteAsync(string id)
         {
-            return await _news.DeleteAsync(id, options: null);
+            return await _news.DeleteAsync(id);
         }
     }
 }

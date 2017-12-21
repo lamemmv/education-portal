@@ -6,9 +6,9 @@ namespace EP.Services.Blobs
 {
     public interface IBlobService
     {
-        Task<IPagedList<Blob>> FindAsync(string[] fileExtensions, int? page, int? size);
+        Task<IPagedList<Blob>> GetPagedListAsync(string[] fileExtensions, int? page, int? size);
         
-        Task<Blob> FindAsync(string id);
+        Task<Blob> GetByIdAsync(string id);
 
         Task<Blob> CreateAsync(Blob entity);
 

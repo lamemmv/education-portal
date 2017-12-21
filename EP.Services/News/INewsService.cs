@@ -6,9 +6,9 @@ namespace EP.Services.News
 {
     public interface INewsService
     {
-        Task<IPagedList<NewsItem>> FindAsync(int? page, int? size);
+        Task<IPagedList<NewsItem>> GetPagedListAsync(int? page, int? size);
 
-        Task<NewsItem> FindAsync(string id);
+        Task<NewsItem> GetByIdAsync(string id);
 
         Task<NewsItem> CreateAsync(NewsItem entity);
 

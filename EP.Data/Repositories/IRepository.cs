@@ -8,46 +8,50 @@ namespace EP.Data.Repositories
 {
     public interface IRepository<TEntity> where TEntity : IEntity
     {
-        Task<IEnumerable<TEntity>> FindAsync(
+        Task<IEnumerable<TEntity>> GetAllAsync(
             FilterDefinition<TEntity> filter = null,
             SortDefinition<TEntity> sort = null,
-            ProjectionDefinition<TEntity, TEntity> project = null);
+            ProjectionDefinition<TEntity, TEntity> projection = null);
 
-        Task<IPagedList<TEntity>> FindAsync(
+        Task<IPagedList<TEntity>> GetPagedListAsync(
             FilterDefinition<TEntity> filter = null,
             SortDefinition<TEntity> sort = null,
-            ProjectionDefinition<TEntity, TEntity> project = null,
+            ProjectionDefinition<TEntity, TEntity> projection = null,
             int? skip = null,
             int? take = null);
 
-        Task<TEntity> FindAsync(string id, FindOptions<TEntity, TEntity> options = null);
+        Task<TEntity> GetByIdAsync(
+            string id,
+            ProjectionDefinition<TEntity, TEntity> projection = null);
 
-        Task<TEntity> FindAsync(
+        Task<TEntity> GetSingleAsync(
             FilterDefinition<TEntity> filter,
-            FindOptions<TEntity, TEntity> options = null);
-
-        Task<long> CountAsync(FilterDefinition<TEntity> filter = null);
+            ProjectionDefinition<TEntity, TEntity> projection = null);
 
         Task<TEntity> CreateAsync(TEntity entity);
 
         Task CreateAsync(IEnumerable<TEntity> entities);
 
-        Task<bool> UpdateAsync(TEntity entity);
+        //Task<bool> UpdateAsync(TEntity entity);
 
         Task<TEntity> UpdateAsync(
             TEntity entity,
-            FindOneAndReplaceOptions<TEntity, TEntity> options);
+            ProjectionDefinition<TEntity, TEntity> projection = null,
+            ReturnDocument returnDocument = ReturnDocument.Before);
 
         Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition);
 
         Task<TEntity> UpdatePartiallyAsync(
             string id,
             UpdateDefinition<TEntity> definition,
-            FindOneAndUpdateOptions<TEntity, TEntity> options);
+            ProjectionDefinition<TEntity, TEntity> projection = null,
+            ReturnDocument returnDocument = ReturnDocument.Before);
 
-        Task<bool> DeleteAsync(string id);
+        //Task<bool> DeleteAsync(string id);
 
-        Task<TEntity> DeleteAsync(string id, FindOneAndDeleteOptions<TEntity, TEntity> options);
+        Task<TEntity> DeleteAsync(
+            string id,
+            ProjectionDefinition<TEntity, TEntity> projection = null);
 
         Task<bool> DeleteAsync(FilterDefinition<TEntity> filter = null);
 
