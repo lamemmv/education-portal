@@ -10,7 +10,7 @@ namespace EP.Services.Emails
 {
     public sealed class EmailAccountService : IEmailAccountService
     {
-        private const string DefaultEmailAccountKey = "Cache.DefaultEmailAccount";
+        private const string DefaultEmailAccount = "Cache." + nameof(DefaultEmailAccount);
 
         private readonly IRepository<EmailAccount> _emailAccounts;
         private readonly IMemoryCacheService _memoryCacheService;
@@ -36,7 +36,7 @@ namespace EP.Services.Emails
         public async Task<EmailAccount> FindDefaultAsync()
         {
             return await _memoryCacheService.GetSlidingExpiration(
-                DefaultEmailAccountKey,
+                DefaultEmailAccount,
                 () =>
                 {
                     var filter = Builders<EmailAccount>.Filter.Eq(e => e.IsDefault, true);
@@ -51,17 +51,43 @@ namespace EP.Services.Emails
 
         public async Task<EmailAccount> CreateAsync(EmailAccount entity)
         {
-            return await _emailAccounts.CreateAsync(entity);
+            entity = await _emailAccounts.CreateAsync(entity);
+
+            if (entity.IsDefault)
+            {
+                _memoryCacheService.Remove(DefaultEmailAccount);
+            }
+
+            return entity;
         }
 
-        public async Task<bool> UpdateAsync(EmailAccount entity)
+        public async Task<EmailAccount> UpdateAsync(EmailAccount entity)
         {
-            return await _emailAccounts.UpdateAsync(entity);
+            var options = new FindOneAndReplaceOptions<EmailAccount, EmailAccount>
+            {
+                ReturnDocument = ReturnDocument.Before
+            };
+
+            var oldEntity = await _emailAccounts.UpdateAsync(entity, options);
+
+            if (oldEntity != null && entity.IsDefault)
+            {
+                _memoryCacheService.Remove(DefaultEmailAccount);
+            }
+
+            return oldEntity;
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<EmailAccount> DeleteAsync(string id)
         {
-            return await _emailAccounts.DeleteAsync(id);
+            var entity = await _emailAccounts.DeleteAsync(id, options: null);
+
+            if (entity != null && entity.IsDefault)
+            {
+                _memoryCacheService.Remove(DefaultEmailAccount);
+            }
+
+            return entity;
         }
     }
 }

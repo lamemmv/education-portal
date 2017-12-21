@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Serilog.Events;
 using Serilog;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Linq;
 using System;
 
 namespace EP.API
@@ -70,12 +74,22 @@ namespace EP.API
                 .AllowAnyMethod()
                 .AllowAnyOrigin()
                 .AllowCredentials();
-            services.AddCors(opts =>
-            {
-                opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
-            });
 
             services
+                .AddResponseCompression(opts =>
+                {
+                    opts.EnableForHttps = true;
+                    opts.Providers.Add<GzipCompressionProvider>();
+                    opts.MimeTypes = MimeTypes;
+                })
+                .Configure<GzipCompressionProviderOptions>(opts =>
+                {
+                    opts.Level = CompressionLevel.Fastest;
+                })
+                .AddCors(opts =>
+                {
+                    opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
+                })
                 .AddCustomSwaggerGen()
                 .AddCustomIdentity()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
@@ -93,11 +107,29 @@ namespace EP.API
             }
 
             app
+                .UseResponseCompression()
                 .UseCors("AllowAllOrigins")
+                .UseCustomSwagger()
                 .UseIdentityServer()
                 .UseMvcWithDefaultRoute()
-                .UseCustomSwagger()
                 .InitDefaultData();
         }
+
+        private static readonly IEnumerable<string> MimeTypes = new[]
+        {
+            // General.
+            "text/plain",
+            // Static files.
+            //"text/css",
+            //"application/javascript",
+            // MVC.
+            //"text/html",
+            //"application/xml",
+            //"text/xml",
+            "application/json",
+            "text/json",
+            // Custom.
+            "image/svg+xml"
+        };
     }
 }

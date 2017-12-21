@@ -1,21 +1,27 @@
 ﻿using EP.API.Areas.Admin.ViewModels.News;
+using EP.Data.Constants;
 using EP.Data.Entities.News;
 using EP.Data.Paginations;
+using EP.Services.Logs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
     public class NewsManagerController : AdminController
     {
         private readonly INewsService _newsService;
+        private readonly IActivityLogService _activityLogService;
 
-        public NewsManagerController(INewsService newsService)
+        public NewsManagerController(
+            INewsService newsService,
+            IActivityLogService activityLogService)
         {
             _newsService = newsService;
+            _activityLogService = activityLogService;
         }
 
         [HttpGet]
@@ -48,12 +54,15 @@ namespace EP.API.Areas.Admin.Controllers
             entity.Id = id;
             entity.UpdatedOn = DateTime.UtcNow;
 
-            var result = await _newsService.UpdateAsync(entity);
+            var oldEntity = await _newsService.UpdateAsync(entity);
 
-            if (!result)
+            if (oldEntity == null)
             {
                 return NotFound();
             }
+
+            var activityLog = GetUpdatedActivityLog(oldEntity.GetType(), oldEntity, entity);
+            await _activityLogService.CreateAsync(SystemKeyword.UpdateNews, activityLog);
 
             return NoContent();
         }
@@ -61,12 +70,15 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await _newsService.DeleteAsync(id);
+            var entity = await _newsService.DeleteAsync(id);
 
-            if (!result)
+            if (entity == null)
             {
                 return NotFound();
             }
+
+            var activityLog = GetDeletedActivityLog(entity.GetType(), entity);
+            await _activityLogService.CreateAsync(SystemKeyword.DeleteNews, activityLog);
 
             return NoContent();
         }

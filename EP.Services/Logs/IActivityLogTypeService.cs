@@ -12,6 +12,6 @@ namespace EP.Services.Logs
 
         Task<ShortActivityLogType> GetEnabledShortActivityLogTypes(string systemKeyword);
 
-        Task<bool> UpdateAsync(string id, bool enabled);
+        Task<ActivityLogType> UpdateAsync(string id, bool enabled);
     }
 }

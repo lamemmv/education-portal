@@ -51,20 +51,25 @@ namespace EP.Services.Logs
             return shortActivityLogType;
         }
 
-        public async Task<bool> UpdateAsync(string id, bool enabled)
+        public async Task<ActivityLogType> UpdateAsync(string id, bool enabled)
         {
             var update = Builders<ActivityLogType>.Update
                 .Set(e => e.Enabled, enabled)
                 .CurrentDate(e => e.UpdatedOn);
 
-            var result = await _activityLogTypes.UpdatePartiallyAsync(id, update);
+            var options = new FindOneAndUpdateOptions<ActivityLogType, ActivityLogType>
+            {
+                ReturnDocument = ReturnDocument.Before
+            };
 
-            if (result)
+            var oldEntity = await _activityLogTypes.UpdatePartiallyAsync(id, update, options);
+
+            if (oldEntity != null)
             {
                 _memoryCacheService.Remove(EnabledActivityLogTypesKey);
             }
 
-            return result;
+            return oldEntity;
         }
 
         private async Task<IDictionary<string, ShortActivityLogType>> GetEnabledShortActivityLogTypes()

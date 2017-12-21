@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.Data.Constants;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Services.Logs;
@@ -10,10 +11,14 @@ namespace EP.API.Areas.Admin.Controllers
     public class ActivityLogTypeManagerController : AdminController
     {
         private readonly IActivityLogTypeService _activityLogTypeService;
+        private readonly IActivityLogService _activityLogService;
 
-        public ActivityLogTypeManagerController(IActivityLogTypeService activityLogTypeService)
+        public ActivityLogTypeManagerController(
+            IActivityLogTypeService activityLogTypeService,
+            IActivityLogService activityLogService)
         {
             _activityLogTypeService = activityLogTypeService;
+            _activityLogService = activityLogService;
         }
 
         [HttpGet]
@@ -31,12 +36,15 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody]ActivityLogTypeViewModel viewModel)
         {
-            var result = await _activityLogTypeService.UpdateAsync(id, viewModel.Enabled);
+            var oldEntity = await _activityLogTypeService.UpdateAsync(id, viewModel.Enabled);
 
-            if (!result)
+            if (oldEntity == null)
             {
                 return NotFound();
             }
+
+            var activityLog = GetUpdatedActivityLog(oldEntity.GetType(), oldEntity.Enabled, viewModel.Enabled);
+            await _activityLogService.CreateAsync(SystemKeyword.UpdateActivityLogType, activityLog);
 
             return NoContent();
         }
