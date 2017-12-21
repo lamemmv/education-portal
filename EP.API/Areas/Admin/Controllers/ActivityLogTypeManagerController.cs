@@ -10,33 +10,29 @@ namespace EP.API.Areas.Admin.Controllers
 {
     public class ActivityLogTypeManagerController : AdminController
     {
-        private readonly IActivityLogTypeService _activityLogTypeService;
         private readonly IActivityLogService _activityLogService;
 
-        public ActivityLogTypeManagerController(
-            IActivityLogTypeService activityLogTypeService,
-            IActivityLogService activityLogService)
+        public ActivityLogTypeManagerController(IActivityLogService activityLogService)
         {
-            _activityLogTypeService = activityLogTypeService;
             _activityLogService = activityLogService;
         }
 
         [HttpGet]
         public async Task<IPagedList<ActivityLogType>> Get(int? page, int? size)
         {
-            return await _activityLogTypeService.FindAsync(page, size);
+            return await _activityLogService.FindLogTypeAsync(page, size);
         }
 
         [HttpGet("{id}")]
         public async Task<ActivityLogType> Get(string id)
         {
-            return await _activityLogTypeService.FindAsync(id);
+            return await _activityLogService.FindLogTypeAsync(id);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody]ActivityLogTypeViewModel viewModel)
         {
-            var oldEntity = await _activityLogTypeService.UpdateAsync(id, viewModel.Enabled);
+            var oldEntity = await _activityLogService.UpdateLogTypeAsync(id, viewModel.Enabled);
 
             if (oldEntity == null)
             {

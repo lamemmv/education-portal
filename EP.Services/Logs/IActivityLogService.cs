@@ -8,6 +8,12 @@ namespace EP.Services.Logs
 {
     public interface IActivityLogService
     {
+        Task<IPagedList<ActivityLogType>> FindLogTypeAsync(int? page, int? size);
+
+        Task<ActivityLogType> FindLogTypeAsync(string id);
+
+        Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled);
+        
         Task<IPagedList<ActivityLog>> FindAsync(
             DateTime createdFromUtc,
             DateTime createdToUtc,
