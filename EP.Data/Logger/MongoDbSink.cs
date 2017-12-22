@@ -1,47 +1,38 @@
-﻿using EP.Data.DbContext;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting;
 using Serilog.Formatting.Compact;
+using Serilog.Formatting;
 using System.IO;
 
-namespace EP.API.Infrastructure.Logger
+namespace EP.Data.Logger
 {
     public sealed class MongoDbSink : ILogEventSink
     {
-        public const string DefaultCollectionName = "Logs";
-
         private readonly IMongoCollection<BsonDocument> _collection;
         private readonly ITextFormatter _formatter;
 
-        public MongoDbSink(
-            string connectionString,
-            string collectionName = DefaultCollectionName)
+        public MongoDbSink(IMongoCollection<BsonDocument> collection)
         {
-            _collection = GetMongoCollection(connectionString, collectionName);
+            _collection = collection;
             _formatter = GetJsonFormatter();
         }
 
         public void Emit(LogEvent logEvent)
         {
             BsonDocument bsonDocument = GenerateBsonDocument(logEvent);
-            _collection.InsertOne(bsonDocument);
-        }
 
-        private static IMongoCollection<BsonDocument> GetMongoCollection(
-            string connectionString,
-            string collectionName)
-        {
-            return MongoDbHelper
-                .GetMongoDatabase(connectionString)
-                .GetCollection<BsonDocument>(collectionName);
+            if (bsonDocument != null)
+            {
+                _collection.InsertOne(bsonDocument);
+            }
         }
 
         private static ITextFormatter GetJsonFormatter()
         {
-            return new RenderedCompactJsonFormatter();
+            // RenderedCompactJsonFormatter().
+            return new CompactJsonFormatter();
         }
 
         private BsonDocument GenerateBsonDocument(LogEvent logEvent)

@@ -43,7 +43,7 @@ namespace EP.API
                 .Register<IQueuedEmailService, QueuedEmailService>()
                 // Logs.
                 .Register<IActivityLogService, ActivityLogService>()
-                //.Register<ILogService, LogService>()
+                .Register<ILogService, LogService>()
                 //Blobs.
                 .Register<IBlobService, BlobService>()
                 // News.

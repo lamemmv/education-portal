@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.News;
+using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.News;
 using EP.Data.Paginations;
@@ -6,8 +7,8 @@ using EP.Services.Logs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -36,7 +37,7 @@ namespace EP.API.Areas.Admin.Controllers
             return await _newsService.GetByIdAsync(id);
         }
 
-        [HttpPost]
+        [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
@@ -50,7 +51,7 @@ namespace EP.API.Areas.Admin.Controllers
             return Created(nameof(Post), entity.Id);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
             var entity = viewModel.Map<NewsViewModel, NewsItem>();

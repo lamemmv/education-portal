@@ -45,6 +45,7 @@ namespace EP.Data.DbContext
 
         private IRepository<ActivityLogType> _activityLogTypes;
         private IRepository<ActivityLog> _activityLogs;
+        private IRepository<Log> _logs;
 
         public override IRepository<ActivityLogType> ActivityLogTypes
         {
@@ -65,6 +66,16 @@ namespace EP.Data.DbContext
                     MongoDbHelper.CreateRepository<ActivityLog>(MongoDatabase);
 
                 return _activityLogs;
+            }
+        }
+
+        public override IRepository<Log> Logs
+        {
+            get
+            {
+                _logs = _logs ?? MongoDbHelper.CreateRepository<Log>(MongoDatabase);
+
+                return _logs;
             }
         }
 

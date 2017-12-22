@@ -28,6 +28,8 @@ namespace EP.Data.Repositories
             FilterDefinition<TEntity> filter,
             ProjectionDefinition<TEntity, TEntity> projection = null);
 
+        Task<long> CountAsync(FilterDefinition<TEntity> filter = null);
+
         Task<TEntity> CreateAsync(TEntity entity);
 
         Task CreateAsync(IEnumerable<TEntity> entities);
@@ -47,7 +49,7 @@ namespace EP.Data.Repositories
             ProjectionDefinition<TEntity, TEntity> projection = null,
             ReturnDocument returnDocument = ReturnDocument.Before);
 
-        //Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(string id);
 
         Task<TEntity> DeleteAsync(
             string id,

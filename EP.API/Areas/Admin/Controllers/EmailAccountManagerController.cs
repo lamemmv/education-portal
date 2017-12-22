@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Emails;
+using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
@@ -36,7 +37,7 @@ namespace EP.API.Areas.Admin.Controllers
             return await _emailAccountService.GetByIdAsync(id);
         }
 
-        [HttpPost]
+        [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]EmailAccountViewModel viewModel)
         {
             var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
@@ -52,7 +53,7 @@ namespace EP.API.Areas.Admin.Controllers
             return Created(nameof(Post), entity);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]EmailAccountViewModel viewModel)
         {
             var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();

@@ -26,6 +26,8 @@ namespace EP.Services.Logs
 
         Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity);
 
+        Task<bool> DeleteAsync(string id);
+
         Task<bool> DeleteAsync(IEnumerable<string> ids);
     }
 }

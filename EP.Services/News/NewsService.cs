@@ -37,7 +37,7 @@ namespace EP.Services.News
 
         public async Task<NewsItem> DeleteAsync(string id)
         {
-            return await _news.DeleteAsync(id);
+            return await _news.DeleteAsync(id, projection: null);
         }
     }
 }

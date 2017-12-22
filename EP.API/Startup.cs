@@ -1,5 +1,4 @@
 ﻿using EP.API.Filters;
-using EP.API.Infrastructure.Logger;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using EP.Data;
@@ -16,8 +15,8 @@ using Serilog.Events;
 using Serilog;
 using System.Collections.Generic;
 using System.IO.Compression;
-using System.Linq;
 using System;
+using EP.Data.Logger;
 
 namespace EP.API
 {
@@ -53,10 +52,7 @@ namespace EP.API
                 .AddDistributedMemoryCache()
                 .AddMvc(opts =>
                 {
-                    var filters = opts.Filters;
-
-                    filters.Add(typeof(ValidateViewModelFilter));
-                    filters.Add(typeof(GlobalExceptionFilter));
+                    opts.Filters.Add(typeof(GlobalExceptionFilter));
                 })
                 .AddJsonOptions(opts =>
                 {

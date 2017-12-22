@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
@@ -29,7 +30,7 @@ namespace EP.API.Areas.Admin.Controllers
             return await _activityLogService.GetLogTypeByIdAsync(id);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]ActivityLogTypeViewModel viewModel)
         {
             var oldEntity = await _activityLogService.UpdateLogTypeAsync(id, viewModel.Enabled);

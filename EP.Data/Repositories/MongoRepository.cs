@@ -100,6 +100,13 @@ namespace EP.Data.Repositories
             return await cursor.FirstOrDefaultAsync();
         }
 
+        public async Task<long> CountAsync(FilterDefinition<TEntity> filter = null)
+        {
+            filter = filter ?? Builders<TEntity>.Filter.Empty;
+
+            return await _collection.CountAsync(filter);
+        }
+
         #endregion
 
         #region Command
@@ -183,18 +190,18 @@ namespace EP.Data.Repositories
             return await _collection.FindOneAndUpdateAsync(filter, definition, options);
         }
 
-        //public async Task<bool> DeleteAsync(string id)
-        //{
-        //    if (id.IsInvalidObjectId())
-        //    {
-        //        return false;
-        //    }
+        public async Task<bool> DeleteAsync(string id)
+        {
+           if (id.IsInvalidObjectId())
+           {
+               return false;
+           }
 
-        //    var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
-        //    var result = await _collection.DeleteOneAsync(filter);
+           var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
+           var result = await _collection.DeleteOneAsync(filter);
 
-        //    return result.IsSuccess();
-        //}
+           return result.IsSuccess();
+        }
 
         public async Task<TEntity> DeleteAsync(
             string id,

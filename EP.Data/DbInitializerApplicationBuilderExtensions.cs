@@ -206,9 +206,13 @@ namespace EP.Data
                 }
             };
 
-            await dbContext.ActivityLogTypes.DeleteAsync();
+            var dbCount = await dbContext.ActivityLogTypes.CountAsync();
 
-            await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
+            if (dbCount != activityLogTypes.LongLength)
+            {
+                await dbContext.ActivityLogTypes.DeleteAsync();
+                await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
+            }
         }
     }
 }

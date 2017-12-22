@@ -4,20 +4,19 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EP.API.Filters
 {
-    public sealed class ValidateViewModelFilter : IActionFilter
+    public sealed class ValidateViewModelAttribute : ActionFilterAttribute
     {
-        public void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
             var modelState = context.ModelState;
 
             if (!modelState.IsValid)
             {
                 context.Result = new BadRequestObjectResult(new ApiError(context.ModelState));
+                return;
             }
-        }
 
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
+            base.OnActionExecuting(context);
         }
     }
 }

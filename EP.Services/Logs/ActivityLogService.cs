@@ -71,12 +71,12 @@ namespace EP.Services.Logs
 
             if (!string.IsNullOrEmpty(userName))
             {
-                //filter &= Builders<ActivityLog>.Filter.Eq(e => e.UserName, userName.Trim());
+                //filter &= Builders<ActivityLog>.Filter.Eq(e => e.UserName, userName);
             }
 
             if (!string.IsNullOrEmpty(ip))
             {
-                filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip.Trim());
+                filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip);
             }
 
             return await _activityLogs.GetPagedListAsync(filter, skip: page, take: size);
@@ -99,6 +99,11 @@ namespace EP.Services.Logs
             entity.ActivityLogType = shortActivityLogType;
 
             return await _activityLogs.CreateAsync(entity);
+        }
+
+        public async Task<bool> DeleteAsync(string id)
+        {
+            return await _activityLogs.DeleteAsync(id);
         }
 
         public async Task<bool> DeleteAsync(IEnumerable<string> ids)
