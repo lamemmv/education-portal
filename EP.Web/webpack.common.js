@@ -171,6 +171,7 @@ module.exports = {
             'react': 'preact-compat',
             'react-dom': 'preact-compat',
             'create-react-class': 'preact-compat/lib/create-react-class'
+            
         }
     },
     // When importing a module whose path matches one of the following, just

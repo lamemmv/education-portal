@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
-// import { Table, Menu, Icon } from 'semantic-ui-react';
+import * as styles from './pagination.css';
+let classNames = require('classnames');
 
 class Pagination extends Component {
 
@@ -8,35 +9,33 @@ class Pagination extends Component {
             currentPage,
             pages
         } = this.props.fileState;
+
         const { getFiles } = this.props;
 
         return (
-            // <Table.Footer>
-            //     <Table.Row>
-            //         <Table.HeaderCell colSpan='3'>
-            //             <Menu floated='right' pagination>
-            //                 <Menu.Item as='a' icon
-            //                     onClick={() => getFiles(currentPage - 1)}
-            //                     disabled={currentPage <= 1}>
-            //                     <Icon name='left chevron' />
-            //                 </Menu.Item>
-            //                 {
-            //                     pages.map(page => (
-            //                         <Menu.Item as='a' key={page} onClick={() => getFiles(page)}
-            //                             active={page == currentPage}>{page}
-            //                         </Menu.Item>
-            //                     ))
-            //                 }
-            //                 <Menu.Item as='a' icon
-            //                     onClick={() => getFiles(currentPage + 1)}
-            //                     disabled={currentPage >= pages.length}>
-            //                     <Icon name='right chevron' />
-            //                 </Menu.Item>
-            //             </Menu>
-            //         </Table.HeaderCell>
-            //     </Table.Row>
-            // </Table.Footer>
-            <div>pagination</div>
+            <div class="mdc-grid-list ep-pg">
+                <ul class="mdc-grid-list__tiles">
+                    <li class="mdc-grid-tile"
+                        className={classNames({ 'disabled': currentPage <= 1 })}>
+                        <a role="button"
+                            onClick={() => getFiles(currentPage - 1)}>
+                            <i class="material-icons">chevron_left</i></a>
+                    </li>
+                    {
+                        pages.map(page => (
+                            <li class="mdc-grid-tile" className={classNames({ 'active': page == currentPage })}>
+                                <a role="button" onClick={() => getFiles(page)}>{page}</a>
+                            </li>
+                        ))
+                    }
+                    <li class="mdc-grid-tile"
+                        className={classNames({ 'disabled': currentPage >= pages.length })}>
+                        <a role="button"
+                            onClick={() => getFiles(currentPage + 1)}>
+                            <i class="material-icons">chevron_right</i></a>
+                    </li>
+                </ul>
+            </div>
         );
     }
 }

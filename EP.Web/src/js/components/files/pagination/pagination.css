@@ -1,0 +1,33 @@
+.ep-pg{
+    position: absolute;
+    right: 10px;
+}
+
+.ep-pg li {
+    display: inline-block;
+    border-radius: 2px;
+    text-align: center;
+    vertical-align: top;
+    height: 30px;
+    width: 30px;
+}
+
+.ep-pg li.active {
+    background-color: #ee6e73;
+}
+
+.ep-pg li a {
+    text-decoration: none;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.ep-pg li i {
+    font-size: 1.5rem;
+}
+
+.ep-pg li.disabled a {
+    pointer-events: none;
+    cursor: default;
+    color: #999;
+}

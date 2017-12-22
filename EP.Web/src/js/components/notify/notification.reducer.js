@@ -7,7 +7,8 @@ export default function notification(state = {}, action) {
         case ADD_NOTIFICATION:
             return Object.assign({}, state, {
                 message: action.message,
-                level: action.level
+                level: action.level,
+                title: action.title
             });
 
         default:

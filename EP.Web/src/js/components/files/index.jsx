@@ -4,9 +4,7 @@ import FileList from './fileContainer';
 class FileIndex extends Component {
   render() {
     return (
-      <div>
-        <FileList />
-      </div>
+      <FileList />
     );
   }
 }

@@ -29,6 +29,7 @@
         "babel-preset-stage-1": "^6.24.1",
         "babel-preset-stage-2": "^6.24.1",
         "bootstrap": "^4.0.0-alpha.6",
+        "classnames": "^2.2.5",
         "clean-webpack-plugin": "^0.1.17",
         "css-loader": "^0.28.7",
         "extract-text-webpack-plugin": "^3.0.2",

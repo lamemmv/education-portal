@@ -56,7 +56,7 @@ const uploadFileSuccessEpic = action$ =>
     .flatMap(action =>
         Observable.concat(
             Observable.of(getFiles(1)),
-            Observable.of(addNotification('Uploaded', 'success'))
+            Observable.of(addNotification('Uploaded', 'success', 'Upload files'))
         )
     );
     //.takeUntil(action$.ofType(LOGIN_ABORT));
@@ -79,7 +79,7 @@ const deleteFileSuccessEpic = action$ =>
     .flatMap(action =>
         Observable.of(
             getFiles(1),
-            addNotification('Deleted', 'success')
+            addNotification('Successful', 'success', 'Delete file')
           )
     );
 

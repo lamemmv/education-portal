@@ -2,7 +2,8 @@ import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { bindActionCreators } from 'redux';
 import { addNotification } from './notification.actions';
-import NotificationSystem from 'react-notification-system';
+//import NotificationSystem from 'react-notification-system';
+import { MDCSnackbar, MDCSnackbarFoundation } from '@material/snackbar';
 
 class NotificationContainer extends Component {
 
@@ -11,18 +12,48 @@ class NotificationContainer extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { message, level } = newProps.notification;
-        this.notificationSystem.addNotification({
-            message,
-            level
-        });
+        // const { message, level, title } = newProps.notification;
+        // this.notificationSystem.addNotification({
+        //     level,
+        //     title,
+        //     children: (
+        //         <div>
+        //             <h2>Hello World</h2>
+        //             <a>{message}</a>
+        //         </div>
+        //     )
+        // });
+        const { message, level, title } = newProps.notification;
+        const snackbar = new MDCSnackbar(this.notificationSystem);
+        let snackBarInfo = {
+            message: message,
+            actionText: 'Close',
+            actionHandler: function () {
+              console.log('my cool function');
+            }
+        };
+        snackbar.show(snackBarInfo);
     }
 
     render() {
+        const { message, level, title } = this.props.notification;
         return (
-            <NotificationSystem ref={input => {
-                this.notificationSystem = input;
-            }} />
+            // <NotificationSystem ref={input => {
+            //     this.notificationSystem = input;
+            // }} />
+            <div
+                ref={input => {
+                    this.notificationSystem = input;
+                }}
+                class="mdc-snackbar"
+                aria-live="assertive"
+                aria-atomic="true"
+                aria-hidden="true">
+                <div class="mdc-snackbar__text">{message}</div>
+                <div class="mdc-snackbar__action-wrapper">
+                    <button type="button" class="mdc-snackbar__action-button">Close</button>
+                </div>
+            </div>
         );
     }
 }

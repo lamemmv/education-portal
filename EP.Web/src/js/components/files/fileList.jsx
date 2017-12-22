@@ -28,7 +28,7 @@ class FileList extends Component {
         } = this.props.fileState;
         const { askForDeleting } = this.props;
         return (
-            <div>
+            <section>
                 <NotificationContainer />
                 <UploadIndex />
                 <div class="mdc-grid-list mdc-grid-list--with-icon-align-start">
@@ -52,7 +52,8 @@ class FileList extends Component {
                     </ul>
                 </div>
                 <DeleteFile />
-            </div>
+                {this.renderTableFooter(pages, currentPage, showPagination)}
+            </section>
         );
     };
 }

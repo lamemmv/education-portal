@@ -17,12 +17,14 @@ const epButton = {
 class Upload extends Component {
 
     selectFile(file) {
-        let reader = new FileReader();
-        reader.onloadend = () => {
-            file.url = reader.result;
-            this.props.selectFile(file);
+        if (file) {
+            let reader = new FileReader();
+            reader.onloadend = () => {
+                file.url = reader.result;
+                this.props.selectFile(file);
+            }
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
     }
 
     render() {
@@ -32,22 +34,7 @@ class Upload extends Component {
         const { files } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
-            <div class="ep-wrapper">
-                {/* <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 19px;">
-                    <a class="btn-floating btn-large red">
-                        <i class="mdi-social-notifications-none"></i>
-                    </a>
-                    <ul>
-                        <li><a class="btn-floating red"><i class="large mdi-editor-insert-chart"></i></a>
-                        </li>
-                        <li><a class="btn-floating yellow darken-1"><i class="large mdi-editor-format-quote"></i></a>
-                        </li>
-                        <li><a class="btn-floating green"><i class="large mdi-editor-publish"></i></a>
-                        </li>
-                        <li><a class="btn-floating blue"><i class="large mdi-editor-attach-file"></i></a>
-                        </li>
-                    </ul>
-                </div> */}
+            <div>
                 <div style={file_input_div}>
                     <div style={{ float: 'left', marginTop: '10px' }}>
                         <label class="mdc-button mdc-button--raised" style={epButton} >
