@@ -13,7 +13,8 @@
 }
 
 .ep-pg li.active {
-    background-color: #ee6e73;
+    background-color: #ec407a;
+    color: white;
 }
 
 .ep-pg li a {
