@@ -76,6 +76,19 @@ const API = {
                 'Content-Type': 'application/json',
             }
         });
+    },
+
+    createNews(request) {
+        let url = `${baseUri}admin/newsManager`;
+        return axios({
+            method: 'post',
+            url: url,
+            data: request,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
     }
 }
 

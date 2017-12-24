@@ -17,7 +17,7 @@ const paths = {
 module.exports = {
     entry: {
         app: path.join(paths.JS, 'index.jsx')
-        // app: path.join(paths.JS, 'app.jsx')
+            // app: path.join(paths.JS, 'app.jsx')
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -171,7 +171,7 @@ module.exports = {
             'react': 'preact-compat',
             'react-dom': 'preact-compat',
             'create-react-class': 'preact-compat/lib/create-react-class'
-            
+
         }
     },
     // When importing a module whose path matches one of the following, just

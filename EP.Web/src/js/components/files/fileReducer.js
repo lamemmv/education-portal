@@ -1,5 +1,7 @@
 import {
-    GET_FILES, GET_FILES_SUCCESS, GET_FILES_FAILURE
+    GET_FILES,
+    GET_FILES_SUCCESS,
+    GET_FILES_FAILURE
 } from './types';
 
 const INITIAL_STATE = {
@@ -13,12 +15,13 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
-        case GET_FILES:// start fetching files and set loading = true
+        case GET_FILES: // start fetching files and set loading = true
             return {
-                ...state, fileState: {
+                ...state,
+                fileState: {
                     files: [],
                     pages: [],
                     currentPage: action.payload,
@@ -26,8 +29,9 @@ export default function (state = INITIAL_STATE, action) {
                     loading: true
                 }
             };
-        case GET_FILES_SUCCESS:// return list of files and make loading = false
-            let pages = [], showPagination = false;
+        case GET_FILES_SUCCESS: // return list of files and make loading = false
+            let pages = [],
+                showPagination = false;
             if (action.payload.totalPages > 1) {
                 for (let i = 0; i < action.payload.totalPages; i++) {
                     pages.push(i + 1);
@@ -35,19 +39,21 @@ export default function (state = INITIAL_STATE, action) {
                 showPagination = true;
             }
             return {
-                ...state, fileState: {
+                ...state,
+                fileState: {
                     currentPage: action.payload.page,
-                    files: action.payload.items,
+                    files: action.payload.items ? action.payload.items : [],
                     pages: pages,
                     showPagination: showPagination,
                     error: null,
                     loading: false
                 }
             };
-        case GET_FILES_FAILURE:// return error and make loading = false
-            error = action.payload || { message: action.payload.message };//2nd one is network or server down errors
+        case GET_FILES_FAILURE: // return error and make loading = false
+            error = action.payload || { message: action.payload.message }; //2nd one is network or server down errors
             return {
-                ...state, fileState: {
+                ...state,
+                fileState: {
                     files: [],
                     pages: [],
                     error: error,

@@ -4,9 +4,7 @@ import NewsContainer from './newsContainer';
 class NewsIndex extends Component {
   render() {
     return (
-      <div>
-        <NewsContainer />
-      </div>
+      <NewsContainer />
     );
   }
 }

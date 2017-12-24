@@ -3,16 +3,10 @@ import {
 } from 'preact-redux';
 
 import {
-    Dispatch, bindActionCreators
+    bindActionCreators
 } from 'redux';
 
 import * as FetchNewsActions from './newsActions';
-
-import {
-    getNews,
-    getNewsSuccess,
-    getNewsFailure
-} from './newsActions';
 
 import NewsList from './list';
 

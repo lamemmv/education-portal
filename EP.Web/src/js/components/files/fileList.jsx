@@ -8,7 +8,14 @@ import NotificationContainer from '../notify/notification.container';
 class FileList extends Component {
 
     componentWillMount() {
+        if (!this.props.fileState.files){
+            this.props.fileState.files =[];
+        }
         this.props.getFiles(this.props.fileState.currentPage);
+    }
+
+    componentWillReceiveProps(nextProps){
+        console.log('nextProps');
     }
 
     renderTableFooter(pages, currentPage, showPagination) {

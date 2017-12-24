@@ -5,7 +5,7 @@ import Home from './home/home';
 import FileIndex from './files/index';
 import FilePreview from './files/preview';
 import NewsIndex from './news/index';
-import CreateNews from './news/create/news.create';
+import CreateNewsIndex from './news/create/index';
 
 class Main extends Component {
     render() {
@@ -18,7 +18,7 @@ class Main extends Component {
                             <Route exact path='/files' component={FileIndex} />
                             <Route path='/files/:id' component={FilePreview} />
                             <Route exact path='/news' component={NewsIndex} />
-                            <Route exact path='/news/create' component={CreateNews} />
+                            <Route exact path='/news/create' component={CreateNewsIndex} />
                         </Switch>
                     </HashRouter>
                 </div>
