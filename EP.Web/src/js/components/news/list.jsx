@@ -24,30 +24,27 @@ class NewsList extends Component {
                     <table class="table table-hover table-mc-light-blue">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
+                                <th>Title</th>
+                                <th>Ingress</th>
+                                <th>Content</th>
+                                <th>PublishedDate</th>
                                 <th>Link</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td data-title="ID">1</td>
-                                <td data-title="Name">Material Design Color Palette</td>
-                                <td data-title="Link">
-                                    <a href="https://github.com/zavoloklom/material-design-color-palette" target="_blank">GitHub</a>
-                                </td>
-                                <td data-title="Status">Completed</td>
-                            </tr>
-                            <tr>
-                                <td data-title="ID">2</td>
-                                <td data-title="Name">Material Design Iconic Font</td>
-                                <td data-title="Link">
-                                    <a href="https://codepen.io/zavoloklom/pen/uqCsB" target="_blank">Codepen</a>
-                                    <a href="https://github.com/zavoloklom/material-design-iconic-font" target="_blank">GitHub</a>
-                                </td>
-                                <td data-title="Status">Completed</td>
-                            </tr>
+                            {items.map((item) => {
+                                return (
+                                    <tr>
+                                        <td data-title="Title">{item.title}</td>                                        
+                                        <td data-title="Ingress">{item.ingress}</td>
+                                        <td data-title="Content">{item.content}</td>
+                                        <td data-title="PublishedDate">{item.createdOn}</td>
+                                        <td data-title="Link">
+                                            <a href="https://github.com/zavoloklom/material-design-color-palette">Link</a>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

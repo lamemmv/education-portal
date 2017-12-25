@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-//import promise from 'redux-promise';
 import reducer from '../reducers';
 import { createEpicMiddleware } from 'redux-observable';
 import epics from '../epics';

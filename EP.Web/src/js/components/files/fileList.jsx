@@ -14,10 +14,6 @@ class FileList extends Component {
         this.props.getFiles(this.props.fileState.currentPage);
     }
 
-    componentWillReceiveProps(nextProps){
-        console.log('nextProps');
-    }
-
     renderTableFooter(pages, currentPage, showPagination) {
         return (
             showPagination ? (
