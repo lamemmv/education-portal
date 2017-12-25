@@ -40,8 +40,7 @@ namespace EP.Data.Logger
             TextWriter writer = new StringWriter();
             _formatter.Format(logEvent, writer);
 
-            BsonDocument bsonDocument;
-            BsonDocument.TryParse(writer.ToString(), out bsonDocument);
+            BsonDocument.TryParse(writer.ToString(), out BsonDocument bsonDocument);
 
             return bsonDocument;
         }

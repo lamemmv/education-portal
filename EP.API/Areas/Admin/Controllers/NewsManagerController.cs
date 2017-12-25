@@ -2,7 +2,9 @@
 using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.News;
+using EP.Data.Extensions;
 using EP.Data.Paginations;
+using EP.Services.Blobs;
 using EP.Services.Logs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
@@ -15,13 +17,16 @@ namespace EP.API.Areas.Admin.Controllers
     public class NewsManagerController : AdminController
     {
         private readonly INewsService _newsService;
+        private readonly IBlobService _blobService;
         private readonly IActivityLogService _activityLogService;
 
         public NewsManagerController(
             INewsService newsService,
+            IBlobService blobService,
             IActivityLogService activityLogService)
         {
             _newsService = newsService;
+            _blobService = blobService;
             _activityLogService = activityLogService;
         }
 
@@ -40,7 +45,17 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
+            if (viewModel.BlobId.IsInvalidObjectId())
+            {
+                ModelState.TryAddModelError(nameof(viewModel.BlobId), "Blob Id is invalid.");
+
+                return BadRequest(ModelState);
+            }
+
+            var embeddedBlob = await _blobService.GetEmbeddedBlobByIdAsync(viewModel.BlobId);
+
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
+            entity.Blob = embeddedBlob;
             entity.CreatedOn = DateTime.UtcNow;
 
             await _newsService.CreateAsync(entity);
@@ -54,8 +69,18 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
+            if (viewModel.BlobId.IsInvalidObjectId())
+            {
+                ModelState.TryAddModelError(nameof(viewModel.BlobId), "Blob Id is invalid.");
+                
+                return BadRequest(ModelState);
+            }
+
+            var embeddedBlob = await _blobService.GetEmbeddedBlobByIdAsync(viewModel.BlobId);
+
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Id = id;
+            entity.Blob = embeddedBlob;
             entity.UpdatedOn = DateTime.UtcNow;
 
             var oldEntity = await _newsService.UpdateAsync(entity);

@@ -3,8 +3,6 @@ using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using MongoDB.Driver;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,7 +30,20 @@ namespace EP.Services.Blobs
 
         public async Task<Blob> GetByIdAsync(string id)
         {
-            return await _blobs.GetByIdAsync(id);
+            var projection = Builders<Blob>.Projection.Exclude(e => e.PhysicalPath);
+
+            return await _blobs.GetByIdAsync(id, projection);
+        }
+
+        public async Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id)
+        {
+            var projection = Builders<Blob>.Projection
+                .Include(e => e.Id)
+                .Include(e => e.VirtualPath);
+
+            var entity = await GetByIdAsync(id);
+
+            return new EmbeddedBlob { Id = entity.Id, VirtualPath = entity.VirtualPath };
         }
 
         public async Task<Blob> CreateAsync(Blob entity)
@@ -43,33 +54,6 @@ namespace EP.Services.Blobs
         public async Task<Blob> DeleteAsync(string id)
         {
             return await _blobs.DeleteAsync(id, projection: null);
-        }
-
-        public string GetServerUploadPathDirectory(string physicalPath, string contentType)
-        {
-            CheckAndCreateDirectory(physicalPath);
-
-            if (!string.IsNullOrWhiteSpace(contentType))
-            {
-                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
-                {
-                    physicalPath = Path.Combine(physicalPath, types[0]);
-
-                    CheckAndCreateDirectory(physicalPath);
-                }
-            }
-
-            return physicalPath;
-        }
-
-        private static void CheckAndCreateDirectory(string physicalPath)
-        {
-            if (!Directory.Exists(physicalPath))
-            {
-                Directory.CreateDirectory(physicalPath);
-            }
         }
     }
 }

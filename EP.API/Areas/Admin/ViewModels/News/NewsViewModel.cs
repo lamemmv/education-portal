@@ -8,13 +8,14 @@ namespace EP.API.Areas.Admin.ViewModels.News
         [Required]
         public string Title { get; set; }
 
+        [Required]
+        public string BlobId { get; set; }
+
         public string Ingress { get; set; }
 
         [Required]
         public string Content { get; set; }
 
         public bool Published { get; set; }
-
-        public DateTime? PublishedDate { get; set; }
     }
 }

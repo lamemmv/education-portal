@@ -12,6 +12,6 @@ namespace EP.Data.Entities.Logs
 
         public string IP { get; set; }
 
-        public ShortActivityLogType ActivityLogType { get; set; }
+        public EmbeddedActivityLogType ActivityLogType { get; set; }
     }
 }

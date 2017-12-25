@@ -113,23 +113,18 @@ namespace EP.Services.Logs
             return await _activityLogs.DeleteAsync(filter);
         }
 
-        private async Task<ShortActivityLogType> GetEnabledShortActivityLogTypes(string systemKeyword)
+        private async Task<EmbeddedActivityLogType> GetEnabledShortActivityLogTypes(string systemKeyword)
         {
-            ShortActivityLogType shortActivityLogType;
-
             var enabledDictionary = await _memoryCacheService.GetSlidingExpiration(
                 EnabledActivityLogTypes,
                 GetEnabledShortActivityLogTypes);
 
-            if (enabledDictionary == null || !enabledDictionary.TryGetValue(systemKeyword, out shortActivityLogType))
-            {
-                return null;
-            }
-
-            return shortActivityLogType;
+            return enabledDictionary == null || !enabledDictionary.TryGetValue(systemKeyword, out EmbeddedActivityLogType shortActivityLogType) ?
+                null :
+                shortActivityLogType;
         }
 
-        private async Task<IDictionary<string, ShortActivityLogType>> GetEnabledShortActivityLogTypes()
+        private async Task<IDictionary<string, EmbeddedActivityLogType>> GetEnabledShortActivityLogTypes()
         {
             var filter = Builders<ActivityLogType>.Filter.Eq(e => e.Enabled, true);
             var projection = Builders<ActivityLogType>.Projection
@@ -140,7 +135,7 @@ namespace EP.Services.Logs
 
             return logTypes.ToDictionary(
                 kvp => kvp.SystemKeyword,
-                kvp => new ShortActivityLogType { SystemKeyword = kvp.SystemKeyword, Name = kvp.Name });
+                kvp => new EmbeddedActivityLogType { SystemKeyword = kvp.SystemKeyword, Name = kvp.Name });
         }
     }
 }

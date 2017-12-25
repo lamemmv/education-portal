@@ -23,9 +23,10 @@ namespace EP.API.Areas.Admin.Controllers
 {
     public class BlobManagerController : AdminController
     {
-        private readonly string _serverUploadPath;
         private readonly IBlobService _blobService;
         private readonly IActivityLogService _activityLogService;
+        private readonly string _serverUploadFolder;
+        private readonly string _webRootPath;
 
         public BlobManagerController(
             IBlobService blobService,
@@ -35,7 +36,8 @@ namespace EP.API.Areas.Admin.Controllers
         {
             _blobService = blobService;
             _activityLogService = activityLogService;
-            _serverUploadPath = Path.Combine(hostingEnvironment.WebRootPath, options.Value.ServerUploadFolder);
+            _serverUploadFolder = options.Value.ServerUploadFolder;
+            _webRootPath = hostingEnvironment.WebRootPath;
         }
 
         [HttpGet]
@@ -112,23 +114,49 @@ namespace EP.API.Areas.Admin.Controllers
         private Blob BuildBlob(IFormFile file, int randomSize = 7)
         {
             string contentType = file.ContentType;
-            string physicalPath = _blobService.GetServerUploadPathDirectory(_serverUploadPath, contentType);
+            string physicalPath = GetServerUploadPathDirectory(contentType);
 
             string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
             string name = Path.GetFileNameWithoutExtension(fileName);
             string extension = Path.GetExtension(fileName);
             string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
 
-            var entity = new Blob
+            return new Blob
             {
                 FileName = newFileName,
                 FileExtension = extension.ToLowerInvariant(),
                 ContentType = contentType,
+                VirtualPath = $"{_serverUploadFolder}/{newFileName}",
                 PhysicalPath = Path.Combine(physicalPath, newFileName),
                 CreatedOn = DateTime.UtcNow
             };
+        }
 
-            return entity;
+        private string GetServerUploadPathDirectory(string contentType)
+        {
+            string physicalPath = Path.Combine(_webRootPath, _serverUploadFolder);
+
+            if (!string.IsNullOrWhiteSpace(contentType))
+            {
+                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
+                {
+                    physicalPath = Path.Combine(physicalPath, types[0]);
+
+                    CheckAndCreateDirectory(physicalPath);
+                }
+            }
+
+            return physicalPath;
+        }
+
+        private static void CheckAndCreateDirectory(string physicalPath)
+        {
+            if (!Directory.Exists(physicalPath))
+            {
+                Directory.CreateDirectory(physicalPath);
+            }
         }
     }
 }

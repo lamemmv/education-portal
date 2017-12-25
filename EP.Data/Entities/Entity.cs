@@ -11,13 +11,13 @@ namespace EP.Data.Entities
         public string Id { get; set; }
 
         [BsonIgnoreIfNull]
-        public ShortUser Creator { get; set; }
+        public EmbeddedUser Creator { get; set; }
 
         [BsonIgnoreIfNull]
         public DateTime? CreatedOn { get; set; }
 
         [BsonIgnoreIfNull]
-        public ShortUser Updater { get; set; }
+        public EmbeddedUser Updater { get; set; }
 
         [BsonIgnoreIfNull]
         public DateTime? UpdatedOn { get; set; }
