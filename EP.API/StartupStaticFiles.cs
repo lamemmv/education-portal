@@ -1,40 +1,35 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.FileProviders;
 using System.IO;
 
 namespace EP.API
 {
     public static class StartupStaticFiles
     {
-        private const string ImageDirectoryName = "image";
-
         public static IApplicationBuilder UseCustomStaticFiles(
             this IApplicationBuilder app,
             string webRootPath,
-            string serverUploadFolder)
+            string publicBlob,
+            string privateBlob)
         {
-            string directoryPath = EnsureAvailableDirectory(webRootPath, serverUploadFolder);
+            EnsureAvailableDirectories(webRootPath, publicBlob, privateBlob);
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(directoryPath),
-                RequestPath = new PathString($"/{serverUploadFolder}/{ImageDirectoryName}")
-            });
-
-            return app;
+            return app.UseStaticFiles();
         }
 
-        private static string EnsureAvailableDirectory(string webRootPath, string serverUploadFolder)
+        private static void EnsureAvailableDirectories(string webRootPath, string publicBlob, string privateBlob)
         {
-            string directoryPath = Path.Combine(webRootPath, serverUploadFolder, ImageDirectoryName);
+            string publicBlobPath = Path.Combine(webRootPath, publicBlob);
+            string privateBlobPath = Path.Combine(Directory.GetCurrentDirectory(), privateBlob);
 
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(publicBlobPath))
             {
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(publicBlobPath);
             }
 
-            return directoryPath;
+            if (!Directory.Exists(privateBlobPath))
+            {
+                Directory.CreateDirectory(privateBlobPath);
+            }
         }
     }
 }

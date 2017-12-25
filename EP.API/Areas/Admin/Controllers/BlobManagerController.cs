@@ -5,19 +5,19 @@ using EP.API.ViewModels.Errors;
 using EP.Data.Constants;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
+using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Logs;
 using EP.Services.Utilities;
-using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -25,19 +25,19 @@ namespace EP.API.Areas.Admin.Controllers
     {
         private readonly IBlobService _blobService;
         private readonly IActivityLogService _activityLogService;
-        private readonly string _serverUploadFolder;
         private readonly string _webRootPath;
+        private readonly string _publicBlob;
 
         public BlobManagerController(
             IBlobService blobService,
             IActivityLogService activityLogService,
-            IOptionsSnapshot<AppSettings> options,
-            IHostingEnvironment hostingEnvironment)
+            IHostingEnvironment hostingEnvironment,
+            IOptionsSnapshot<AppSettings> options)
         {
             _blobService = blobService;
             _activityLogService = activityLogService;
-            _serverUploadFolder = options.Value.ServerUploadFolder;
             _webRootPath = hostingEnvironment.WebRootPath;
+            _publicBlob = options.Value.PublicBlob;
         }
 
         [HttpGet]
@@ -114,7 +114,8 @@ namespace EP.API.Areas.Admin.Controllers
         private Blob BuildBlob(IFormFile file, int randomSize = 7)
         {
             string contentType = file.ContentType;
-            string physicalPath = GetServerUploadPathDirectory(contentType);
+            string firstMimeType = GetFirstMimeType(contentType);
+            string publicBlobPath = GetPublicBlobPath(_webRootPath ,_publicBlob, firstMimeType);
 
             string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
             string name = Path.GetFileNameWithoutExtension(fileName);
@@ -126,37 +127,43 @@ namespace EP.API.Areas.Admin.Controllers
                 FileName = newFileName,
                 FileExtension = extension.ToLowerInvariant(),
                 ContentType = contentType,
-                VirtualPath = $"{_serverUploadFolder}/{newFileName}",
-                PhysicalPath = Path.Combine(physicalPath, newFileName),
+                VirtualPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+                    $"{_publicBlob}/{newFileName}" :
+                    $"{_publicBlob}/{firstMimeType}/{newFileName}",
+                PhysicalPath = Path.Combine(publicBlobPath, newFileName),
                 CreatedOn = DateTime.UtcNow
             };
         }
 
-        private string GetServerUploadPathDirectory(string contentType)
+        private static string GetFirstMimeType(string contentType)
         {
-            string physicalPath = Path.Combine(_webRootPath, _serverUploadFolder);
-
-            if (!string.IsNullOrWhiteSpace(contentType))
+            if (string.IsNullOrWhiteSpace(contentType))
             {
-                var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-                if (types.Length > 0 && !string.IsNullOrWhiteSpace(types[0]))
-                {
-                    physicalPath = Path.Combine(physicalPath, types[0]);
-
-                    CheckAndCreateDirectory(physicalPath);
-                }
+                return null;
             }
 
-            return physicalPath;
+            var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            if (types.Length == 0 || string.IsNullOrWhiteSpace(types[0]))
+            {
+                return null;
+            }
+
+            return types[0];
         }
 
-        private static void CheckAndCreateDirectory(string physicalPath)
+        private static string GetPublicBlobPath(string webRootPath, string publicBlob, string firstMimeType)
         {
-            if (!Directory.Exists(physicalPath))
+            string publicBlobPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+                Path.Combine(webRootPath, publicBlob) :
+                Path.Combine(webRootPath, publicBlob, firstMimeType);
+
+            if (!Directory.Exists(publicBlobPath))
             {
-                Directory.CreateDirectory(physicalPath);
+                Directory.CreateDirectory(publicBlobPath);
             }
+
+            return publicBlobPath;
         }
     }
 }

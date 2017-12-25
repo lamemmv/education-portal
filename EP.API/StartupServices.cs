@@ -25,7 +25,8 @@ namespace EP.API
 
             services.Configure<AppSettings>(appSettings =>
             {
-                appSettings.ServerUploadFolder = configuration["AppSettings:ServerUploadFolder"];
+                appSettings.PublicBlob = configuration["AppSettings:PublicBlob"];
+                appSettings.PrivateBlob = configuration["AppSettings:PrivateBlob"];
             });
 
             var container = new ServiceContainer(new ContainerOptions
