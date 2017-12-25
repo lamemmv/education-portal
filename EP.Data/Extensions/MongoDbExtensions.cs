@@ -7,9 +7,7 @@ namespace EP.Data.Extensions
     {
         public static bool IsInvalidObjectId(this string id)
         {
-            ObjectId objectId;
-
-            return string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out objectId);
+            return string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out ObjectId objectId);
         }
 
         public static bool IsSuccess(this ReplaceOneResult result)

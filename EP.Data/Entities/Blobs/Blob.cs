@@ -8,6 +8,8 @@
 
         public string ContentType { get; set; }
 
+        public string VirtualPath { get; set; }
+
         public string PhysicalPath { get; set; }
     }
 }

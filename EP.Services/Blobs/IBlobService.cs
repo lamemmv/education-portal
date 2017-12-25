@@ -10,10 +10,10 @@ namespace EP.Services.Blobs
         
         Task<Blob> GetByIdAsync(string id);
 
+        Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id);
+
         Task<Blob> CreateAsync(Blob entity);
 
         Task<Blob> DeleteAsync(string id);
-
-        string GetServerUploadPathDirectory(string physicalPath, string contentType);
     }
 }

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using EP.Data.Entities.Blobs;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace EP.Data.Entities.News
@@ -7,18 +8,16 @@ namespace EP.Data.Entities.News
     {
         public string Title { get; set; }
 
+        public EmbeddedBlob Blob { get; set; }
+
         [BsonIgnoreIfNull]
         public string Ingress { get; set; }
 
-        public string Content { get; set; }
-
-        [BsonIgnoreIfNull]
-        public string Image { get; set; }
+        public string Content { get; set; }   
 
         public bool Published { get; set; }
 
         [BsonIgnoreIfNull]
-        [BsonDateTimeOptions(DateOnly = true, Kind = DateTimeKind.Local)]
         public DateTime? PublishedDate { get; set; }
     }
 }

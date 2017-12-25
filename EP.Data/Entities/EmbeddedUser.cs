@@ -1,6 +1,6 @@
 ﻿namespace EP.Data.Entities
 {
-    public class ShortUser
+    public class EmbeddedUser
     {
         public string Id { get; set; }
 

@@ -38,21 +38,19 @@ namespace EP.Services.Caching
 
         private T Get<T>(string key, Func<T> acquire, int expiration, int cacheInMinutes)
         {
-            T value;
-
-            if (_memoryCache.TryGetValue(key, out value))
+            if (_memoryCache.TryGetValue(key, out T value))
             {
                 return value;
             }
 
-            var result = acquire();
+            value = acquire();
 
-            if (result != null)
+            if (value != null)
             {
-                _memoryCache.Set(key, result, GetMemoryCacheEntryOptions(expiration, cacheInMinutes));
+                _memoryCache.Set(key, value, GetMemoryCacheEntryOptions(expiration, cacheInMinutes));
             }
 
-            return result;
+            return value;
         }
 
         private MemoryCacheEntryOptions GetMemoryCacheEntryOptions(int expiration, int cacheInMinutes)

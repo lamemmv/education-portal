@@ -1,6 +1,7 @@
 ﻿using EP.API.Filters;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
+using EP.Data.Logger;
 using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -16,7 +17,6 @@ using Serilog;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System;
-using EP.Data.Logger;
 
 namespace EP.API
 {
@@ -104,6 +104,7 @@ namespace EP.API
 
             app
                 .UseResponseCompression()
+                .UseCustomStaticFiles(env.WebRootPath, _configuration["AppSettings:ServerUploadFolder"])
                 .UseCors("AllowAllOrigins")
                 .UseCustomSwagger()
                 .UseIdentityServer()
@@ -111,21 +112,24 @@ namespace EP.API
                 .InitDefaultData();
         }
 
-        private static readonly IEnumerable<string> MimeTypes = new[]
+        private static IEnumerable<string> MimeTypes
         {
-            // General.
-            "text/plain",
-            // Static files.
-            //"text/css",
-            //"application/javascript",
-            // MVC.
-            //"text/html",
-            //"application/xml",
-            //"text/xml",
-            "application/json",
-            "text/json",
-            // Custom.
-            "image/svg+xml"
-        };
+            get
+            {
+                // General.
+                yield return "text/plain";
+                // Static files.
+                //yield return "text/css";
+                //yield return "application/javascript";
+                // MVC.
+                //yield return "text/html";
+                //yield return "application/xml";
+                //yield return "text/xml";
+                yield return "application/json";
+                yield return "text/json";
+                // Custom.
+                yield return "image/svg+xml";
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using EP.Data.Entities.Emails;
 using EP.Data.Entities.News;
 using EP.Services.Extensions;
 using ExpressMapper;
+using System;
 
 namespace EP.API
 {
@@ -32,7 +33,11 @@ namespace EP.API
             Mapper.Register<NewsViewModel, NewsItem>()
                 .Member(dest => dest.Title, src => src.Title.Trim())
                 .Member(dest => dest.Ingress, src => src.Ingress.TrimNull())
-                .Member(dest => dest.Content, src => src.Content.Trim());
+                .Member(dest => dest.Content, src => src.Content.Trim())
+                .Function(dest => dest.PublishedDate, src =>
+                {
+                    return src.Published ? DateTime.UtcNow : new DateTime?();
+                });
         }
     }
 }

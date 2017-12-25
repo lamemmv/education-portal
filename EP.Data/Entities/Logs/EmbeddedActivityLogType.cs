@@ -1,6 +1,6 @@
 ﻿namespace EP.Data.Entities.Logs
 {
-    public class ShortActivityLogType
+    public class EmbeddedActivityLogType
     {
         public string SystemKeyword { get; set; }
 
