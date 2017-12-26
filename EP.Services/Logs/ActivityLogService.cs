@@ -115,7 +115,7 @@ namespace EP.Services.Logs
 
         private async Task<EmbeddedActivityLogType> GetEnabledShortActivityLogTypes(string systemKeyword)
         {
-            var enabledDictionary = await _memoryCacheService.GetSlidingExpiration(
+            var enabledDictionary = await _memoryCacheService.GetOrAddSlidingExpiration(
                 EnabledActivityLogTypes,
                 GetEnabledShortActivityLogTypes);
 

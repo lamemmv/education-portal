@@ -16,19 +16,19 @@ namespace EP.Services.Caching
             _memoryCache = memoryCache;
         }
 
-        public T GetNeverExpiration<T>(string key, Func<T> acquire)
+        public T GetOrAddNeverExpiration<T>(string key, Func<T> acquire)
         {
-            return Get(key, acquire, Never, 0);
+            return GetOrAdd(key, acquire, Never, 0);
         }
 
-        public T GetSlidingExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
+        public T GetOrAddSlidingExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
         {
-            return Get(key, acquire, Sliding, cacheInMinutes);
+            return GetOrAdd(key, acquire, Sliding, cacheInMinutes);
         }
 
-        public T GetAbsoluteExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
+        public T GetOrAddAbsoluteExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
         {
-            return Get(key, acquire, Absolute, cacheInMinutes);
+            return GetOrAdd(key, acquire, Absolute, cacheInMinutes);
         }
 
         public void Remove(string key)
@@ -36,24 +36,33 @@ namespace EP.Services.Caching
             _memoryCache.Remove(key);
         }
 
-        private T Get<T>(string key, Func<T> acquire, int expiration, int cacheInMinutes)
+        private T GetOrAdd<T>(string key, Func<T> acquire, int expiration, int cacheInMinutes)
         {
             if (_memoryCache.TryGetValue(key, out T value))
             {
                 return value;
             }
 
-            value = acquire();
-
-            if (value != null)
+            // Locks get and set internally.
+            lock (TypeLock<T>.Lock)
             {
-                _memoryCache.Set(key, value, GetMemoryCacheEntryOptions(expiration, cacheInMinutes));
-            }
+                if (_memoryCache.TryGetValue(key, out value))
+                {
+                    return value;
+                }
 
-            return value;
+                value = acquire();
+
+                if (value != null)
+                {
+                    _memoryCache.Set(key, value, GetMemoryCacheEntryOptions(expiration, cacheInMinutes));
+                }
+
+                return value;
+            }
         }
 
-        private MemoryCacheEntryOptions GetMemoryCacheEntryOptions(int expiration, int cacheInMinutes)
+        private static MemoryCacheEntryOptions GetMemoryCacheEntryOptions(int expiration, int cacheInMinutes)
         {
             var memoryOptions = new MemoryCacheEntryOptions();
 
@@ -74,6 +83,11 @@ namespace EP.Services.Caching
             }
 
             return memoryOptions;
+        }
+
+        private static class TypeLock<T>
+        {
+            public static object Lock { get; } = new object();
         }
     }
 }

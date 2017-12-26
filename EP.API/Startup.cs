@@ -41,6 +41,17 @@ namespace EP.API
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            // Enable CORS.
+            var corsBuilder = new CorsPolicyBuilder()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin()
+                .AllowCredentials();
+            services.AddCors(opts =>
+            {
+                 opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
+            });
+
             services.AddMongoDbContext(_connectionString);
 
             services
@@ -64,13 +75,6 @@ namespace EP.API
                     serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            // Enable CORS.
-            var corsBuilder = new CorsPolicyBuilder()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .AllowCredentials();
-
             services
                 .AddResponseCompression(opts =>
                 {
@@ -81,10 +85,6 @@ namespace EP.API
                 .Configure<GzipCompressionProviderOptions>(opts =>
                 {
                     opts.Level = CompressionLevel.Fastest;
-                })
-                .AddCors(opts =>
-                {
-                    opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
                 })
                 .AddCustomSwaggerGen()
                 .AddCustomIdentity()

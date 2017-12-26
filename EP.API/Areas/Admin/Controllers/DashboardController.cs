@@ -4,8 +4,8 @@ using System.Linq;
 
 namespace EP.API.Areas.Admin.Controllers
 {
-    [Route("api/admin/[controller]")]
     [Authorize]
+    [Route("api/admin/[controller]")]
     public class DashboardController : Controller
     {
         [HttpGet]

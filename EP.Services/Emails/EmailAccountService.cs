@@ -39,7 +39,7 @@ namespace EP.Services.Emails
 
         public async Task<EmailAccount> FindDefaultAsync()
         {
-            return await _memoryCacheService.GetSlidingExpiration(
+            return await _memoryCacheService.GetOrAddSlidingExpiration(
                 DefaultEmailAccount,
                 () =>
                 {

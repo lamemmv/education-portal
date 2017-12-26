@@ -1,9 +1,13 @@
 ﻿using EP.Data.AspNetIdentity;
-using IdentityServer4;
+using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using IdentityServer4.Test;
+using System.Security.Claims;
+using IdentityModel;
+using System.Linq;
 
 namespace EP.API
 {
@@ -13,13 +17,11 @@ namespace EP.API
         {
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                //.AddInMemoryPersistedGrants()
-                //.AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
-                .AddAspNetIdentity<AppUser>();
+                .AddTestUsers(GetUsers().ToList());
 
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = "http://localhost:5000";
@@ -30,41 +32,9 @@ namespace EP.API
             return services;
         }
 
-        private static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            yield return new IdentityResources.OpenId();
-            yield return new IdentityResources.Profile();
-            yield return new IdentityResources.Email();
-            yield return new IdentityResource
-            {
-                Name = "role",
-                UserClaims = new List<string>
-                {
-                    "role"
-                }
-            };
-        }
-
         private static IEnumerable<ApiResource> GetApiResources()
         {
-            yield return new ApiResource
-            {
-                Name = "ep.api",
-                DisplayName = "EP API"
-                // UserClaims = new List<string>
-                // {
-                //     "role"
-                // },
-                // ApiSecrets = new List<Secret>
-                // {
-                //     new Secret("scopeSecret".Sha256())
-                // },
-                // Scopes = new List<Scope>
-                // {
-                //     new Scope("customAPI.read"),
-                //     new Scope("customAPI.write")
-                // }
-            };
+            yield return new ApiResource("ep.api", "EP API");
         }
 
         private static IEnumerable<Client> GetClients()
@@ -72,22 +42,37 @@ namespace EP.API
             yield return new Client
             {
                 ClientId = "ep.web",
-                ClientName = "EP Web",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 RequireConsent = false,
                 ClientSecrets =
                 {
                     new Secret("ep.web@P@SSW0RD".Sha256())
                 },
-                //RedirectUris = { "http://localhost:5002/signin-oidc" },
-                //PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
                 AllowedScopes =
                 {
-                    IdentityServerConstants.StandardScopes.OpenId,
-                    IdentityServerConstants.StandardScopes.Profile,
                     "ep.api"
-                },
-                AllowOfflineAccess = true
+                }
+            };
+        }
+
+        private static IEnumerable<TestUser> GetUsers()
+        {
+            // yield return new TestUser
+            // {
+            //     SubjectId = "1",
+            //     Username = "alice",
+            //     Password = "password"
+            // };
+            yield return new TestUser
+            {
+                SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
+                Username = "scott",
+                Password = "password",
+                Claims = new List<Claim> 
+                {
+                    new Claim(JwtClaimTypes.Email, "scott@scottbrady91.com"),
+                    new Claim(JwtClaimTypes.Role, "admin")
+                }
             };
         }
     }
