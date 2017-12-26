@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 
-namespace EP.API
+namespace EP.API.StartupExtensions
 {
     public static class StartupSwagger
     {

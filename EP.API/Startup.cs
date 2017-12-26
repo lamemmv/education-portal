@@ -1,8 +1,9 @@
 ﻿using EP.API.Filters;
-using EP.Data;
+using EP.API.StartupExtensions;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using EP.Data.Logger;
+using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -10,13 +11,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
+using Newtonsoft.Json;
 using Serilog.Events;
-using System;
+using Serilog;
 using System.Collections.Generic;
 using System.IO.Compression;
+using System;
 
 namespace EP.API
 {
