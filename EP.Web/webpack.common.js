@@ -165,7 +165,7 @@ module.exports = {
     // Instead of:
     // import MyComponent from './my-component.jsx';
     resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 
         alias: {
             'react': 'preact-compat',

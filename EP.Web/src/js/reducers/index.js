@@ -1,6 +1,7 @@
 import {
     combineReducers
 } from 'redux';
+
 import PostReducer from '../components/files/fileReducer';
 import DeleteReducer from '../components/files/delete/deleteReducer';
 import UploadReducer from '../components/files/upload/uploadReducer';

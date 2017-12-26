@@ -1,6 +1,5 @@
 import { h, Component } from "preact";
 import { Link, HashRouter } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
 
 class EPHeader extends Component {
     render() {
@@ -21,7 +20,6 @@ class EPHeader extends Component {
                     </div>
                 </header>
             </HashRouter>
-
         );
     };
 }

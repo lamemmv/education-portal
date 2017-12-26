@@ -24,7 +24,7 @@ export default handleActions({
     },
     [GET_NEWS_LIST_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
-            items: action.payload.items,
+            items: action.payload.items ? action.payload.items : [],
             page: action.payload.page,
             error: null,
             loading: false
