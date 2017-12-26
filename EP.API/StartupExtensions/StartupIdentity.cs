@@ -9,7 +9,7 @@ using System.Security.Claims;
 using IdentityModel;
 using System.Linq;
 
-namespace EP.API
+namespace EP.API.StartupExtensions
 {
     public static class StartupIdentity
     {
