@@ -1,8 +1,8 @@
 ﻿using EP.API.Filters;
+using EP.Data;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using EP.Data.Logger;
-using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using Serilog.Events;
+using Newtonsoft.Json.Serialization;
 using Serilog;
+using Serilog.Events;
+using System;
 using System.Collections.Generic;
 using System.IO.Compression;
-using System;
 
 namespace EP.API
 {
@@ -104,7 +104,10 @@ namespace EP.API
 
             app
                 .UseResponseCompression()
-                .UseCustomStaticFiles(env.WebRootPath, _configuration["AppSettings:ServerUploadFolder"])
+                .UseCustomStaticFiles(
+                    env.WebRootPath,
+                    _configuration["AppSettings:PublicBlob"],
+                    _configuration["AppSettings:PrivateBlob"])
                 .UseCors("AllowAllOrigins")
                 .UseCustomSwagger()
                 .UseIdentityServer()

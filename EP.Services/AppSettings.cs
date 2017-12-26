@@ -2,6 +2,8 @@
 {
     public sealed class AppSettings
     {
-        public string ServerUploadFolder { get; set; }
+        public string PublicBlob { get; set; }
+
+        public string PrivateBlob { get; set; }
     }
 }
