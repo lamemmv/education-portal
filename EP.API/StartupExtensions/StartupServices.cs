@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace EP.API
+namespace EP.API.StartupExtensions
 {
     public static class StartupServices
     {

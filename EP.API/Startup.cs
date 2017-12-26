@@ -1,22 +1,14 @@
-﻿using EP.API.Filters;
-using EP.Data;
+﻿using EP.API.StartupExtensions;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
-using EP.Data.Logger;
+using EP.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Serilog;
-using Serilog.Events;
 using System;
-using System.Collections.Generic;
-using System.IO.Compression;
 
 namespace EP.API
 {
@@ -30,66 +22,31 @@ namespace EP.API
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .WriteTo.MongoDb(_connectionString, restrictedToMinimumLevel: LogEventLevel.Warning)
-                .CreateLogger();
+            Log.Logger = StartupSerilog.CreateLogger(_connectionString);
 
             StartupMapper.RegisterMapping();
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMongoDbContext(_connectionString);
+            services
+                .AddCustomCompression()
+                .AddCustomCors("AllowAllOrigins")
+                .AddMongoDbContext(_connectionString);
 
             services
+                .AddCustomIdentity()
                 .AddIdentityMongoStores(_connectionString)
                 .AddDefaultTokenProviders();
 
             services
                 .AddMemoryCache()
                 .AddDistributedMemoryCache()
-                .AddMvc(opts =>
-                {
-                    opts.Filters.Add(typeof(GlobalExceptionFilter));
-                })
-                .AddJsonOptions(opts =>
-                {
-                    var serializerSettings = opts.SerializerSettings;
-
-                    serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    serializerSettings.Formatting = Formatting.None;
-                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                });
-
-            // Enable CORS.
-            var corsBuilder = new CorsPolicyBuilder()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .AllowCredentials();
-
-            services
-                .AddResponseCompression(opts =>
-                {
-                    opts.EnableForHttps = true;
-                    opts.Providers.Add<GzipCompressionProvider>();
-                    opts.MimeTypes = MimeTypes;
-                })
-                .Configure<GzipCompressionProviderOptions>(opts =>
-                {
-                    opts.Level = CompressionLevel.Fastest;
-                })
-                .AddCors(opts =>
-                {
-                    opts.AddPolicy("AllowAllOrigins", corsBuilder.Build());
-                })
-                .AddCustomSwaggerGen()
-                .AddCustomIdentity()
+                .AddCustomMvc()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
-                .AddSingleton(Log.Logger);
+                .AddSingleton(Log.Logger)
+                .AddCustomIdentityServer()
+                .AddCustomSwaggerGen();
 
             return services.AddInternalServices(_configuration);
         }
@@ -109,30 +66,10 @@ namespace EP.API
                     _configuration["AppSettings:PublicBlob"],
                     _configuration["AppSettings:PrivateBlob"])
                 .UseCors("AllowAllOrigins")
-                .UseCustomSwagger()
                 .UseIdentityServer()
+                .UseCustomSwagger()
                 .UseMvcWithDefaultRoute()
                 .InitDefaultData();
-        }
-
-        private static IEnumerable<string> MimeTypes
-        {
-            get
-            {
-                // General.
-                yield return "text/plain";
-                // Static files.
-                //yield return "text/css";
-                //yield return "application/javascript";
-                // MVC.
-                //yield return "text/html";
-                //yield return "application/xml";
-                //yield return "text/xml";
-                yield return "application/json";
-                yield return "text/json";
-                // Custom.
-                yield return "image/svg+xml";
-            }
         }
     }
 }

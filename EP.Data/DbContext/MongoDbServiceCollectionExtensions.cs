@@ -31,15 +31,8 @@ namespace EP.Data.DbContext
             this IServiceCollection services,
             Action<MongoDbContextConfiguration> contextConfiguration)
         {
-            return services.AddMongoDbContext<MongoDbContext>(contextConfiguration);
-        }
-
-        private static MongoDbContextBuilder<TContext> AddMongoDbContext<TContext>(
-            this IServiceCollection services,
-            Action<MongoDbContextConfiguration<TContext>> contextConfiguration) where TContext : BaseDbContext, new()
-        {
             services.Configure(contextConfiguration);
-            var builder = new MongoDbContextBuilder<TContext>(services);
+            var builder = new MongoDbContextBuilder<MongoDbContext>(services);
 
             return builder.Build();
         }

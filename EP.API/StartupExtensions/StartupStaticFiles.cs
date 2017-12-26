@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using System.IO;
 
-namespace EP.API
+namespace EP.API.StartupExtensions
 {
     public static class StartupStaticFiles
     {
