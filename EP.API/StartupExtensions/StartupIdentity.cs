@@ -1,19 +1,60 @@
 ﻿using EP.Data.AspNetIdentity;
+using IdentityModel;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Models;
+using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
-using IdentityServer4.Test;
-using System.Security.Claims;
-using IdentityModel;
 using System.Linq;
+using System.Security.Claims;
+using System;
 
 namespace EP.API.StartupExtensions
 {
     public static class StartupIdentity
     {
-        public static IServiceCollection AddCustomIdentity(this IServiceCollection services)
+        public static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
+        {
+            var builder = services.AddIdentity<AppUser, AppRole>(opts =>
+            {
+                // Password settings.
+                PasswordOptions passwordOpts = opts.Password;
+                passwordOpts.RequireDigit = false;
+                passwordOpts.RequiredLength = 6;
+                passwordOpts.RequireNonAlphanumeric = false;
+                passwordOpts.RequireUppercase = false;
+                passwordOpts.RequireLowercase = false;
+
+                // Lockout settings.
+                LockoutOptions lockoutOpts = opts.Lockout;
+                lockoutOpts.AllowedForNewUsers = true;
+                lockoutOpts.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                lockoutOpts.MaxFailedAccessAttempts = 5;
+
+                // User settings.
+                //options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
+                opts.User.RequireUniqueEmail = true;
+
+                // SignIn settings.
+                SignInOptions signinOpts = opts.SignIn;
+                signinOpts.RequireConfirmedEmail = true;
+                signinOpts.RequireConfirmedPhoneNumber = false;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings.
+                options.LoginPath = string.Empty;
+                options.LogoutPath = string.Empty;
+                options.AccessDeniedPath = string.Empty;
+            });
+
+            return builder;
+        }
+
+        public static IServiceCollection AddCustomIdentityServer(this IServiceCollection services)
         {
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
@@ -68,7 +109,7 @@ namespace EP.API.StartupExtensions
                 SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
                 Username = "scott",
                 Password = "password",
-                Claims = new List<Claim> 
+                Claims = new List<Claim>
                 {
                     new Claim(JwtClaimTypes.Email, "scott@scottbrady91.com"),
                     new Claim(JwtClaimTypes.Role, "admin")

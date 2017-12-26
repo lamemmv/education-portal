@@ -11,6 +11,7 @@ using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
+using EP.Data.Entities.Blobs;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -45,14 +46,14 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
-            if (viewModel.BlobId.IsInvalidObjectId())
+            var embeddedBlob = await GetEmbeddedBlobAsync(viewModel.BlobId);
+
+            if (embeddedBlob == null)
             {
-                ModelState.TryAddModelError(nameof(viewModel.BlobId), "Blob Id is invalid.");
+                ModelState.TryAddModelError(nameof(viewModel.BlobId), "BlobId is invalid.");
 
                 return BadRequest(ModelState);
             }
-
-            var embeddedBlob = await _blobService.GetEmbeddedBlobByIdAsync(viewModel.BlobId);
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Blob = embeddedBlob;
@@ -69,14 +70,14 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
-            if (viewModel.BlobId.IsInvalidObjectId())
+            var embeddedBlob = await GetEmbeddedBlobAsync(viewModel.BlobId);
+
+            if (embeddedBlob == null)
             {
-                ModelState.TryAddModelError(nameof(viewModel.BlobId), "Blob Id is invalid.");
-                
+                ModelState.TryAddModelError(nameof(viewModel.BlobId), "BlobId is invalid.");
+
                 return BadRequest(ModelState);
             }
-
-            var embeddedBlob = await _blobService.GetEmbeddedBlobByIdAsync(viewModel.BlobId);
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Id = id;
@@ -110,6 +111,13 @@ namespace EP.API.Areas.Admin.Controllers
             await _activityLogService.CreateAsync(SystemKeyword.DeleteNews, activityLog);
 
             return NoContent();
+        }
+
+        private async Task<EmbeddedBlob> GetEmbeddedBlobAsync(string id)
+        {
+            return id.IsInvalidObjectId() ?
+                null :
+                await _blobService.GetEmbeddedBlobByIdAsync(id);
         }
     }
 }
