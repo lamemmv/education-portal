@@ -1,15 +1,11 @@
 ﻿using EP.Data.AspNetIdentity;
-using IdentityModel;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Models;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System;
+using System.Collections.Generic;
 
 namespace EP.API.StartupExtensions
 {
@@ -26,6 +22,7 @@ namespace EP.API.StartupExtensions
                 passwordOpts.RequireNonAlphanumeric = false;
                 passwordOpts.RequireUppercase = false;
                 passwordOpts.RequireLowercase = false;
+                passwordOpts.RequiredUniqueChars = 0;
 
                 // Lockout settings.
                 LockoutOptions lockoutOpts = opts.Lockout;
@@ -60,7 +57,7 @@ namespace EP.API.StartupExtensions
                 .AddDeveloperSigningCredential()
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
-                .AddTestUsers(GetUsers().ToList());
+                .AddAspNetIdentity<AppUser>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -84,7 +81,6 @@ namespace EP.API.StartupExtensions
             {
                 ClientId = "ep.web",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                RequireConsent = false,
                 ClientSecrets =
                 {
                     new Secret("ep.web@P@SSW0RD".Sha256())
@@ -92,27 +88,6 @@ namespace EP.API.StartupExtensions
                 AllowedScopes =
                 {
                     "ep.api"
-                }
-            };
-        }
-
-        private static IEnumerable<TestUser> GetUsers()
-        {
-            // yield return new TestUser
-            // {
-            //     SubjectId = "1",
-            //     Username = "alice",
-            //     Password = "password"
-            // };
-            yield return new TestUser
-            {
-                SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
-                Username = "scott",
-                Password = "password",
-                Claims = new List<Claim>
-                {
-                    new Claim(JwtClaimTypes.Email, "scott@scottbrady91.com"),
-                    new Claim(JwtClaimTypes.Role, "admin")
                 }
             };
         }
