@@ -120,6 +120,10 @@ module.exports = {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader?limit=10000&mimetype=application/fontwoff'
             },
+            {
+                test: /\.json$/,
+                loader: 'json-loader'
+            },
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
             // {
             //     test: /\.tsx?$/,
