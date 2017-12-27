@@ -22,9 +22,9 @@ namespace EP.API
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            Log.Logger = StartupSerilog.CreateLogger(_connectionString);
+            Log.Logger = LogCreator.Create(_connectionString);
 
-            StartupMapper.RegisterMapping();
+            ObjectMapper.RegisterMapping();
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)

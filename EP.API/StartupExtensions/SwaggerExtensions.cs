@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupSwagger
+    public static class SwaggerExtensions
     {
         public static IServiceCollection AddCustomSwaggerGen(this IServiceCollection services)
         {

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupMvc
+    public static class MvcExtensions
     {
         public static IServiceCollection AddCustomMvc(this IServiceCollection services)
         {
