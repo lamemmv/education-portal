@@ -5,6 +5,7 @@ import {
 import {
     combineEpics
 } from 'redux-observable';
+import { Localizer, Text } from 'preact-i18n';
 
 import {
     UPLOAD_FILE,

@@ -1,10 +1,14 @@
 {
     "presets": [
-        ["es2015", { "loose": false }],
+        ["es2015", {
+            "loose": false
+        }],
         "stage-0"
     ],
     "plugins": [
         ["transform-decorators-legacy"],
-        ["transform-react-jsx", { "pragma": "h" }]
+        ["transform-react-jsx", {
+            "pragma": "h"
+        }]
     ]
 }

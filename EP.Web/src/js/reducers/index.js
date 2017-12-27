@@ -8,7 +8,7 @@ import UploadReducer from '../components/files/upload/uploadReducer';
 import NewsReducer from '../components/news/newsReducer';
 import NewsCreateReducer from '../components/news/create/news.create.reducer';
 import notification from '../components/notify/notification.reducer';
-import breadcrumbs from '../components/breadcrumbs/breadcrumbs.reducers';
+import breadcrumbs from '../components/breadcrumbs/reducers';
 
 const rootReducer = combineReducers({
     posts: PostReducer,

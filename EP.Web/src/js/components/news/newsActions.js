@@ -20,3 +20,4 @@ export const gotoCreateNews = createAction(GOTO_CREATE_NEWS);
 export const createNews = createAction(CREATE_NEWS);
 export const createNewsSuccess = createAction(CREATE_NEWS_SUCCESS);
 export const createNewsFailure = createAction(CREATE_NEWS_FAILURE);
+export const initCreateNews = createAction(INIT_CREATE_NEWS);

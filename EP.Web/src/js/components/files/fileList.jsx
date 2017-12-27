@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import { Link } from 'react-router-dom';
+import { Localizer, Text } from 'preact-i18n';
 import UploadIndex from './upload/index';
 import Pagination from './pagination/index';
 import DeleteFile from './delete/index';
@@ -8,8 +9,8 @@ import NotificationContainer from '../notify/notification.container';
 class FileList extends Component {
 
     componentWillMount() {
-        if (!this.props.fileState.files){
-            this.props.fileState.files =[];
+        if (!this.props.fileState.files) {
+            this.props.fileState.files = [];
         }
         this.props.getFiles(this.props.fileState.currentPage);
     }
@@ -44,8 +45,11 @@ class FileList extends Component {
                                             src={require('../../../assets/images/image.png')} />
                                     </div>
                                     <span class="mdc-grid-tile__secondary">
-                                        <i class="mdc-grid-tile__icon material-icons"
-                                            onClick={() => askForDeleting(file.id)}>clear</i>
+                                        <Localizer>
+                                            <i class="mdc-grid-tile__icon material-icons"
+                                                title={<Text id='files.deleteFile'></Text>}
+                                                onClick={() => askForDeleting(file.id)}>clear</i>
+                                        </Localizer>
                                         <span class="mdc-grid-tile__title">{file.fileName}</span>
                                     </span>
                                 </li>

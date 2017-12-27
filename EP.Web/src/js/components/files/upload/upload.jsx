@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import * as styles from './upload.css';
+import { Localizer, Text } from 'preact-i18n';
 
 const file_input_div = {
     margin: 'auto',
@@ -68,17 +69,19 @@ class Upload extends Component {
                                             {file.lastModifiedDate}
                                         </span>
                                     </span>
-                                    <button class="mdc-button mdc-ripple-upgraded mdc-list-item__end-detail"
-                                        style={epButton}
-                                        onClick={() => removeFile(file)}
-                                        title='Delete'>
-                                        <i class="material-icons mdc-button__icon"
-                                            style={{
-                                                position: 'absolute',
-                                                right: '2px',
-                                                top: '2px'
-                                            }}>clear</i>
-                                    </button>
+                                    <Localizer>
+                                        <button class="mdc-button mdc-ripple-upgraded mdc-list-item__end-detail"
+                                            style={epButton}
+                                            onClick={() => removeFile(file)}
+                                            title={<Text id='delete'></Text>}>
+                                            <i class="material-icons mdc-button__icon"
+                                                style={{
+                                                    position: 'absolute',
+                                                    right: '2px',
+                                                    top: '2px'
+                                                }}>clear</i>
+                                        </button>
+                                    </Localizer>
                                 </li>
                             )
                         })}
@@ -87,7 +90,7 @@ class Upload extends Component {
                 <button class="mdc-button mdc-button--raised"
                     onClick={() => uploadFile(files)}
                     disabled={files.length == 0} >
-                    Upload all
+                    <Text id='files.uploadAll'></Text>
                 </button>
             </div>
         );

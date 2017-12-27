@@ -1,8 +1,15 @@
 :root {
-    --breadcrumb-theme-1: #565656;
+    --breadcrumb-theme-1: #E91E63;
     --breadcrumb-theme-2: #fff;
     --breadcrumb-theme-3: #d80d52;
     --breadcrumb-theme-4: #c70041;
+}
+
+.ep-icon {
+    position: relative;
+    top: 4px;
+    right: 7px;
+    font-size: 20px;
 }
 
 .breadcrumb {
@@ -12,7 +19,7 @@
     overflow: hidden;
     counter-reset: flag;
     margin: 66px -8px 10px -8px;
-    background: var(--breadcrumb-theme-1);
+    background: var(--breadcrumb-theme-2);
 }
 
 .breadcrumb__step {
@@ -47,7 +54,8 @@
     content: none;
 }
 
-.breadcrumb__step::before {
+
+/* .breadcrumb__step::before {
     content: counter(flag);
     counter-increment: flag;
     border-radius: 100%;
@@ -61,7 +69,7 @@
     font-weight: bold;
     background: var(--breadcrumb-theme-2);
     box-shadow: 0 0 0 1px var(--breadcrumb-theme-1);
-}
+} */
 
 .breadcrumb__step::after {
     content: '';
@@ -75,7 +83,7 @@
     border-radius: 0 5px 0 50px;
     background: var(--breadcrumb-theme-2);
     transition: background 0.5s;
-    box-shadow: 2px -2px 0 2px var(--breadcrumb-theme-4);
+    box-shadow: 2px -2px 0 0 var(--breadcrumb-theme-4);
 }
 
 .breadcrumb__step--active {

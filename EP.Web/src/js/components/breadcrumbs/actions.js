@@ -5,7 +5,9 @@ import {
     GOTO_HOME,
     HANDLE_HOME_ROUTE,
     HANDLE_FILES_ROUTE,
-    HANDLE_NEWS_HOME_ROUTE
+    HANDLE_NEWS_HOME_ROUTE,
+    HANDLE_NEWS_CREATE_ROUTE,
+    HANDLE_NEWS_DETAIL_ROUTE
 } from './types';
 
 export function gotoFiles(params) {
@@ -53,6 +55,20 @@ export function handleFilesRoute(params) {
 export function handleNewsHomeRoute(params) {
     return {
         type: HANDLE_NEWS_HOME_ROUTE,
+        payload: params
+    };
+}
+
+export function handleNewsCreateRoute(params) {
+    return {
+        type: HANDLE_NEWS_CREATE_ROUTE,
+        payload: params
+    };
+}
+
+export function handleNewsDetailRoute(params) {
+    return {
+        type: HANDLE_NEWS_DETAIL_ROUTE,
         payload: params
     };
 }

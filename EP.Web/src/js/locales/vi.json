@@ -1,0 +1,21 @@
+{
+    "news": {
+        "title": "Tựa đề",
+        "ingress": "Tóm tắt",
+        "content": "Nội dung",
+        "publishedDate": "Ngày phát hành",
+        "link": "Đường dẫn",
+        "createNews": "Biên soạn tin",
+        "detail": "Chi tiết"
+    },
+    "header": {
+        "home": "Trang chủ",
+        "files": "Tài liệu",
+        "news": "Tin tức"
+    },
+    "files": {
+        "deleteFile": "Xóa tài liệu",
+        "uploadAll": "Upload tất cả"
+    },
+    "delete": "Xóa"
+}

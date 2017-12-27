@@ -1,0 +1,21 @@
+{
+    "news": {
+        "title": "Title",
+        "ingress": "Ingress",
+        "content": "Content",
+        "publishedDate": "Published Date",
+        "link": "Link",
+        "createNews": "Create News",
+        "detail": "Detail"
+    },
+    "header": {
+        "home": "Home",
+        "files": "Files",
+        "news": "News"
+    },
+    "files": {
+        "deleteFile": "Delete file",
+        "uploadAll": "Upload all"
+    },
+    "delete": "Delete"
+}

@@ -1,5 +1,6 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
+import { Localizer, Text } from 'preact-i18n';
 import * as styles from './list.css';
 
 class NewsList extends Component {
@@ -13,34 +14,38 @@ class NewsList extends Component {
         const { gotoCreateNews } = this.props.actions;
         return (
             <section class='ep-container'>
-                <button class="mdc-fab material-icons" aria-label="Favorite">
-                    <Link to='news/create'>
-                        <span class="mdc-fab__icon">
-                            add
+                <Localizer>
+                    <button class="mdc-fab material-icons"
+                        aria-label="Favorite"
+                        title={<Text id='news.createNews'></Text>}>
+                        <Link to='news/create'>
+                            <span class="mdc-fab__icon">
+                                add
                         </span>
-                    </Link>
-                </button>
+                        </Link>
+                    </button>
+                </Localizer>
                 <div class='shadow-z-1' style={{ marginTop: 10 }}>
                     <table class="table table-hover table-mc-light-blue">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Ingress</th>
-                                <th>Content</th>
-                                <th>PublishedDate</th>
-                                <th>Link</th>
+                                <th><Text id='news.title'></Text></th>
+                                <th><Text id='news.ingress'></Text></th>
+                                <th><Text id='news.content'></Text></th>
+                                <th><Text id='news.publishedDate'></Text></th>
+                                <th><Text id='news.link'></Text></th>
                             </tr>
                         </thead>
                         <tbody>
                             {items.map((item) => {
                                 return (
                                     <tr>
-                                        <td data-title="Title">{item.title}</td>                                        
+                                        <td data-title="Title">{item.title}</td>
                                         <td data-title="Ingress">{item.ingress}</td>
                                         <td data-title="Content">{item.content}</td>
                                         <td data-title="PublishedDate">{item.createdOn}</td>
                                         <td data-title="Link">
-                                            <a href="https://github.com/zavoloklom/material-design-color-palette">Link</a>
+                                            <Link to={`/news/${item.id}`}>Link</Link>
                                         </td>
                                     </tr>
                                 );

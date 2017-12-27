@@ -1,6 +1,9 @@
 import { h, Component } from 'preact';
-import * as styles from './breadcrumbs.css';
 import { Link, HashRouter } from 'react-router-dom';
+import { Text } from 'preact-i18n';
+
+import * as styles from './breadcrumbs.css';
+let classNames = require('classnames');
 
 class EPBreadcrumbs extends Component {
     render() {
@@ -11,9 +14,17 @@ class EPBreadcrumbs extends Component {
                 <div class="breadcrumb">
                     {
                         items.map((item, i) => {
-                            return (breadcrumbsLength == i + 1) ?
-                                (<span class="breadcrumb__step breadcrumb__step--active">{item.name}</span>)
-                                : (<Link class="breadcrumb__step breadcrumb__step--active" to={item.path}>{item.name}</Link>);
+                            return (
+                                (breadcrumbsLength == (i + 1)) ?
+                                    (<span class="breadcrumb__step breadcrumb__step--active">
+                                        <i class='material-icons ep-icon'>{item.icon}</i>
+                                        <Text id={item.name}></Text>
+                                    </span>)
+                                    : (<Link class="breadcrumb__step breadcrumb__step" to={item.path}>
+                                        <i class='material-icons ep-icon'>{item.icon}</i>
+                                        <Text id={item.name}></Text>
+                                    </Link>)
+                            );
                         })
                     }
                 </div>

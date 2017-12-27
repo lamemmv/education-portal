@@ -4,14 +4,12 @@ import { Observable } from 'rxjs/Observable';
 
 import {
     GET_NEWS_LIST,
-    GOTO_CREATE_NEWS,
     CREATE_NEWS
 } from './types';
 
 import {
     getNewsSuccess,
     getNewsFailure,
-    initCreateNews,
     createNewsSuccess,
     createNewsFailure
 } from './newsActions';
@@ -26,10 +24,6 @@ const fetchNewsEpic = (action$, store) =>
         .catch(error => Observable.of(getNewsFailure(error)))
     )
 
-const gotoCreateNewsEpic = (action$, store) =>
-    action$.ofType(GOTO_CREATE_NEWS)
-    .map(() => initCreateNews())
-
 const createNewsEpic = (action$, store) =>
     action$.ofType(CREATE_NEWS)
     .mergeMap((action) =>
@@ -40,7 +34,6 @@ const createNewsEpic = (action$, store) =>
 
 const epics = [
     fetchNewsEpic,
-    gotoCreateNewsEpic,
     createNewsEpic
 ];
 

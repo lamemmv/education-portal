@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { withRouter } from 'react-router-dom';
 import * as BreadcrumbsAction from './actions';
+import * as NewsAction from '../news/newsActions';
 
 class RouterContainer extends Component {
 
@@ -15,31 +16,27 @@ class RouterContainer extends Component {
     this.unlisten = this.props.history.listen((location, action) => {
       this.handleRouteChange(location, store);
     });
-
+    this.handleRouteChange(this.props.location, store);
   }
 
   handleRouteChange = (location, store) => {
     let pathname = location.pathname;
-    switch (pathname) {
-      case '/files':
-        store.dispatch(BreadcrumbsAction.gotoFiles([
-          { id: 'home', path: '/' },
-          { id: 'files', path: pathname }]));
+    switch (true) {
+      case pathname == '/files':
+        store.dispatch(BreadcrumbsAction.gotoFiles());
         break;
-      case '/news':
-        store.dispatch(BreadcrumbsAction.gotoHomeNews([
-          { id: 'home', path: '/' },
-          { id: 'news', path: pathname }]));
+      case pathname == '/news':
+        store.dispatch(BreadcrumbsAction.gotoHomeNews());
+        break;
+      case pathname == '/news/create':
+        store.dispatch(NewsAction.gotoCreateNews());
+        break;
+      case /\/news\/(?!create|list).*/.test(pathname):
+        store.dispatch(BreadcrumbsAction.gotoNewsDetail(pathname));
         break;
       default:
-        store.dispatch(BreadcrumbsAction.gotoHome([{ id: 'home', path: pathname }]));
+        store.dispatch(BreadcrumbsAction.gotoHome());
         break;
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.location !== prevProps.location) {
-      console.log(this.props.location);
     }
   }
 

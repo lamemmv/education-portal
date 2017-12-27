@@ -2,6 +2,9 @@ import {
     h,
     render
 } from 'preact';
+import { IntlProvider } from 'preact-i18n';
+import definition from './locales/en.json';
+
 import App from './components/App.jsx';
 import 'material-components-web/dist/material-components-web';
 import 'material-components-web/dist/material-components-web.css';
@@ -16,7 +19,9 @@ if (process.env.NODE_ENV !== 'production') {
 const renderApp = (rootId = 'root') => {
     const targetEl = document.getElementById(rootId);
 
-    render((<App store={store} />), targetEl);
+    render((<IntlProvider definition={definition}>
+        <App store={store} />
+    </IntlProvider>), targetEl);
 }
 
 renderApp();
