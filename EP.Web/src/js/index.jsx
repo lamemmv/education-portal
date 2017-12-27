@@ -6,7 +6,6 @@ import App from './components/App.jsx';
 import 'material-components-web/dist/material-components-web';
 import 'material-components-web/dist/material-components-web.css';
 import configureStore from './store/configureStore';
-import './i18n';
 
 const store = configureStore();
 
