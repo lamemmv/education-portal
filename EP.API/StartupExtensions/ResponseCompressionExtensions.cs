@@ -6,7 +6,7 @@ using System.IO.Compression;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupCompression
+    public static class ResponseCompressionExtensions
     {
         public static IServiceCollection AddCustomCompression(this IServiceCollection services)
         {

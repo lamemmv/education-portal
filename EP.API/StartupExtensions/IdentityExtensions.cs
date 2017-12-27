@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using IdentityServer4.Test;
+using System.Security.Claims;
+using IdentityModel;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupIdentity
+    public static class IdentityExtensions
     {
         public static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
         {
@@ -57,6 +60,7 @@ namespace EP.API.StartupExtensions
                 .AddDeveloperSigningCredential()
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
+                //.AddTestUsers(GetUsers());
                 .AddAspNetIdentity<AppUser>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -88,6 +92,23 @@ namespace EP.API.StartupExtensions
                 AllowedScopes =
                 {
                     "ep.api"
+                }
+            };
+        }
+
+        private static List<TestUser> GetUsers()
+        {
+            return new List<TestUser>
+            {
+                new TestUser
+                {
+                    SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
+                    Username = "bob",
+                    Password = "password",
+                    Claims = new List<Claim> {
+                        new Claim(JwtClaimTypes.Email, "bob@scottbrady91.com"),
+                        new Claim(JwtClaimTypes.Role, "admin")
+                    }
                 }
             };
         }

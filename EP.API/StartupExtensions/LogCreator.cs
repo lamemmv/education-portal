@@ -1,4 +1,4 @@
-using EP.Data.LogSink;
+using EP.Data.LoggerSink;
 using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
@@ -8,9 +8,9 @@ using Serilog;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupSerilog
+    public static class LogCreator
     {
-        public static Logger CreateLogger(string connectionString)
+        public static Logger Create(string connectionString)
         {
             var logLevel = LogEventLevel.Warning;
 

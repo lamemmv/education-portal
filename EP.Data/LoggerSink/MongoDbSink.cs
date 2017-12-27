@@ -6,7 +6,7 @@ using Serilog.Events;
 using Serilog.Formatting;
 using System.IO;
 
-namespace EP.Data.LogSink
+namespace EP.Data.LoggerSink
 {
     public sealed class MongoDbSink : ILogEventSink
     {

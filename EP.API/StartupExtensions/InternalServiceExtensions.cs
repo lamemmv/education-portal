@@ -13,7 +13,7 @@ using System;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupServices
+    public static class InternalServiceExtensions
     {
         public static IServiceProvider AddInternalServices(this IServiceCollection services, IConfiguration configuration)
         {

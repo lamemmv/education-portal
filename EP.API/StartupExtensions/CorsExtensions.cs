@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupCors
+    public static class CorsExtensions
     {
         public static IServiceCollection AddCustomCors(this IServiceCollection services, string policyName)
         {

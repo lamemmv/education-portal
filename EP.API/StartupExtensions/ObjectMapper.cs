@@ -8,7 +8,7 @@ using System;
 
 namespace EP.API.StartupExtensions
 {
-    public static class StartupMapper
+    public static class ObjectMapper
     {
         public static void RegisterMapping()
         {
