@@ -10,6 +10,8 @@ import {
 import * as styles from './styles.css';
 let classNames = require('classnames');
 import * as NewsActions from '../newsActions';
+import Uploader from '../../files/upload/container';
+import NotificationContainer from '../../notify/notification.container';
 
 class CreateNews extends Component {
     constructor(props) {
@@ -36,8 +38,10 @@ class CreateNews extends Component {
     render() {
         const { createNews } = this.props.actions;
         return (
-            <section class='ep-container'>
+            <section>
                 <form role='form'>
+                    <NotificationContainer />
+                    <Uploader />
                     <div class="form-group">
                         <input type="text"
                             name='title'

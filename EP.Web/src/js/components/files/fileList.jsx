@@ -1,10 +1,11 @@
 import { h, Component } from "preact";
 import { Link } from 'react-router-dom';
 import { Localizer, Text } from 'preact-i18n';
-import UploadIndex from './upload/container';
+import Uploader from './upload/container';
 import Pagination from './pagination/container';
 import DeleteFile from './delete/container';
 import NotificationContainer from '../notify/notification.container';
+import * as styles from './styles.css';
 
 class FileList extends Component {
 
@@ -32,9 +33,9 @@ class FileList extends Component {
         } = this.props.fileState;
         const { askForDeleting } = this.props;
         return (
-            <section>
+            <section class='ep-container'>
                 <NotificationContainer />
-                <UploadIndex />
+                <Uploader />
                 <div class="mdc-grid-list mdc-grid-list--with-icon-align-start">
                     <ul class="mdc-grid-list__tiles">
                         {files.map((file) => {

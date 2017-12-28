@@ -1,0 +1,50 @@
+:root {
+    --box-theme-1: #E91E63;
+    --box-theme-2: #fff;
+    --box-theme-3: #d80d52;
+    --box-theme-4: #c70041;
+}
+
+.ep-left,
+.ep-right {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.ep-center {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.ep-container {
+    margin: 20px;
+}
+
+
+/*Toolbar*/
+
+.ep-toolbar {
+    background-color: var(--box-theme-2) !important;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.25) !important;
+    color: #bababa !important;
+}
+
+.ep-toolbar .ep-toolbar__row {
+    position: relative;
+    z-index: 98;    
+    max-width: 1440px;
+    margin: 0px auto;
+}
+
+.ep-toolbar .ep-toolbar__row:first-child {
+    border-color: #eeeeee;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.social-icon a {
+    color: #bababa;
+    opacity: 0.4;
+}
+
+.ep-menu-icon {
+    color: #bababa !important;
+}

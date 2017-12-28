@@ -5,7 +5,10 @@ import {
 import {
     combineEpics
 } from 'redux-observable';
-import { Localizer, Text } from 'preact-i18n';
+import {
+    Localizer,
+    Text
+} from 'preact-i18n';
 
 import {
     UPLOAD_FILE,
@@ -54,14 +57,13 @@ const uploadFilesEpic = action$ =>
 
 const uploadFileSuccessEpic = action$ =>
     action$.ofType(UPLOAD_FILE_SUCCESS)
-    .flatMap(action =>
-        Observable.concat(
+    .flatMap(action => Observable.concat(
             Observable.of(getFiles(1)),
             Observable.of(addNotification('Uploaded', 'success', 'Upload files'))
         )
     );
-    //.takeUntil(action$.ofType(LOGIN_ABORT));
-    //.catch(({ xhr }) => Observable.of(loginFailed(xhr.response)))
+//.takeUntil(action$.ofType(LOGIN_ABORT));
+//.catch(({ xhr }) => Observable.of(loginFailed(xhr.response)))
 
 const askForDeleteFileEpic = action$ =>
     action$.ofType(ASK_FOR_DELETING_FILE)
@@ -81,7 +83,7 @@ const deleteFileSuccessEpic = action$ =>
         Observable.of(
             getFiles(1),
             addNotification('Successful', 'success', 'Delete file')
-          )
+        )
     );
 
 const epics = [
