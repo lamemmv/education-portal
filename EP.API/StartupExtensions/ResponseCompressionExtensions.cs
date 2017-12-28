@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.IO.Compression;
+using System.Linq;
 
 namespace EP.API.StartupExtensions
 {
@@ -11,19 +12,19 @@ namespace EP.API.StartupExtensions
         public static IServiceCollection AddCustomCompression(this IServiceCollection services)
         {
             return services
+                .Configure<GzipCompressionProviderOptions>(opts =>
+                {
+                    opts.Level = CompressionLevel.Fastest;
+                })
                 .AddResponseCompression(opts =>
                 {
                     opts.EnableForHttps = true;
                     opts.Providers.Add<GzipCompressionProvider>();
-                    opts.MimeTypes = MimeTypes;
-                })
-                .Configure<GzipCompressionProviderOptions>(opts =>
-                {
-                    opts.Level = CompressionLevel.Fastest;
+                    opts.MimeTypes = DefaultMimeTypes.Concat(CustomMimeTypes);
                 });
         }
 
-        private static IEnumerable<string> MimeTypes
+        private static IEnumerable<string> DefaultMimeTypes
         {
             get
             {
@@ -35,10 +36,16 @@ namespace EP.API.StartupExtensions
                 // MVC.
                 //yield return "text/html";
                 //yield return "application/xml";
-                //yield return "text/xml";
+               // yield return "text/xml";
                 yield return "application/json";
                 yield return "text/json";
-                // Custom.
+            }
+        }
+
+        private static IEnumerable<string> CustomMimeTypes
+        {
+            get
+            {
                 yield return "image/svg+xml";
             }
         }

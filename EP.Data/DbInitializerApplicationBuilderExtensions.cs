@@ -3,21 +3,25 @@ using EP.Data.Constants;
 using EP.Data.DbContext;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
+using EP.Data.Store;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Data
 {
     public static class DbInitializerApplicationBuilderExtensions
     {
         public static IApplicationBuilder InitDefaultData(this IApplicationBuilder app)
-        {
+        {           
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var serviceProvider = scope.ServiceProvider;
@@ -25,9 +29,10 @@ namespace EP.Data
                 var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
                 var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
                 var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+                var clientStore = serviceProvider.GetRequiredService<IClientStore>();
 
                 // This protects from deadlocks by starting the async method on the ThreadPool.
-                Task.Run(() => Initialize(dbContext, roleManager, userManager)).Wait();
+                Task.Run(() => Initialize(dbContext, roleManager, userManager, clientStore)).Wait();
             }
 
             return app;
@@ -36,13 +41,16 @@ namespace EP.Data
         private static async Task Initialize(
             MongoDbContext dbContext,
             RoleManager<AppRole> roleManager,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IClientStore clientStore)
         {
             await SeedIdentityAsync(roleManager, userManager);
 
             await SeedEmailAccountAsync(dbContext);
 
             await SeedActivityLogTypeAsync(dbContext);
+
+            await SeedIdentityServerAsync(clientStore);
         }
 
         private static async Task SeedIdentityAsync(
@@ -213,6 +221,84 @@ namespace EP.Data
                 await dbContext.ActivityLogTypes.DeleteAsync();
                 await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
             }
+        }
+
+        private static async Task SeedIdentityServerAsync(IClientStore clientStore)
+        {
+            bool createdNewData = false;
+
+            var mongoDbClientStore = clientStore as MongoDbClientStore;
+
+            if (mongoDbClientStore != null)
+            {
+                if (await SeedClientAsync(mongoDbClientStore))
+                {
+                    createdNewData = true;
+                }
+            }
+
+            // If there's new Data (database), need to restart the website to configure Mongo to ignore Extra Elements.
+            if (createdNewData)
+            {
+                throw new Exception("Mongo Data created/populated! Please restart your website, so Mongo driver will be configured to ignore Extra Elements.");
+            }
+        }
+
+        private static void ConfigureMongoDriver2IgnoreExtraElements()
+        {
+            BsonClassMap.RegisterClassMap<Client>(cm =>
+            {
+                cm.AutoMap();
+                cm.SetIgnoreExtraElements(true);
+            });
+            // BsonClassMap.RegisterClassMap<IdentityResource>(cm =>
+            // {
+            //     cm.AutoMap();
+            //     cm.SetIgnoreExtraElements(true);
+            // });
+            // BsonClassMap.RegisterClassMap<ApiResource>(cm =>
+            // {
+            //     cm.AutoMap();
+            //     cm.SetIgnoreExtraElements(true);
+            // });
+            // BsonClassMap.RegisterClassMap<PersistedGrant>(cm =>
+            // {
+            //     cm.AutoMap();
+            //     cm.SetIgnoreExtraElements(true);
+            // });
+        }
+
+        private static async Task<bool> SeedClientAsync(MongoDbClientStore clientStore)
+        {
+            var clients = new[]
+            {
+                new Client
+                {
+                    ClientId = "ep.web",
+                    ClientName = "EP Web Client",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    ClientSecrets =
+                    {
+                        new Secret("ep.web@P@SSW0RD".Sha256())
+                    },
+                    AllowedScopes =
+                    {
+                        "ep.api"
+                    }
+                }
+            };
+
+            var dbClientCount = await clientStore.CountAsync();
+
+            if (dbClientCount == clients.LongLength)
+            {
+                return false;
+            }
+
+            await clientStore.DeleteAsync();
+            await clientStore.CreateAsync(clients);
+
+            return true;
         }
     }
 }

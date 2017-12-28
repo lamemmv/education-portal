@@ -1,6 +1,7 @@
 ﻿using EP.API.StartupExtensions;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
+using EP.Data.Store;
 using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,7 +46,7 @@ namespace EP.API
                 .AddCustomMvc()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger)
-                .AddCustomIdentityServer()
+                .AddCustomIdentityServer(_connectionString)
                 .AddCustomSwaggerGen();
 
             return services.AddInternalServices(_configuration);
@@ -66,7 +67,9 @@ namespace EP.API
                     _configuration["AppSettings:PublicBlob"],
                     _configuration["AppSettings:PrivateBlob"])
                 .UseCors("AllowAllOrigins")
+                //.UseAuthentication()
                 .UseIdentityServer()
+                .UseMongoDbForIdentityServer()
                 .UseCustomSwagger()
                 .UseMvcWithDefaultRoute()
                 .InitDefaultData();

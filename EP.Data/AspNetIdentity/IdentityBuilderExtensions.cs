@@ -6,20 +6,31 @@ namespace EP.Data.AspNetIdentity
 {
     public static class IdentityBuilderExtensions
     {
-        private const string AspNetUsersCollectionName = "AspNetUsers";
-        private const string AspNetRolesCollectionName = "AspNetRoles";
+        private const string AspNetUserCollectionName = "AspNetUsers";
+        private const string AspNetRoleCollectionName = "AspNetRoles";
 
         public static IdentityBuilder AddIdentityMongoStores(
             this IdentityBuilder builder,
             string connectionString)
         {
+            var services = builder.Services;
             var database = MongoDbHelper.GetMongoDatabase(connectionString);
 
-            var usersCollection = database.GetCollection<AppUser>(AspNetUsersCollectionName);
-            builder.Services.AddSingleton<IUserStore<AppUser>>(p => new AppUserStore<AppUser>(usersCollection));
+            services.AddSingleton<IUserStore<AppUser>>(p => 
+            {
+                var userCollection = database.GetCollection<AppUser>(AspNetUserCollectionName);
+                IndexChecker.EnsureAppUserIndexes(userCollection).GetAwaiter().GetResult();
 
-            var rolesCollection = database.GetCollection<AppRole>(AspNetRolesCollectionName);
-            builder.Services.AddSingleton<IRoleStore<AppRole>>(p => new AppRoleStore<AppRole>(rolesCollection));
+                return new AppUserStore<AppUser>(userCollection);
+            });
+
+            services.AddSingleton<IRoleStore<AppRole>>(p =>
+            {
+                var roleCollection = database.GetCollection<AppRole>(AspNetRoleCollectionName);
+                IndexChecker.EnsureAppRoleIndex(roleCollection).GetAwaiter().GetResult();
+
+                return new AppRoleStore<AppRole>(roleCollection);
+            });
 
             return builder;
         }
