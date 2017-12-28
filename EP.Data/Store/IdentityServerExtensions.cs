@@ -2,6 +2,7 @@ using EP.Data.DbContext;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
 
@@ -28,6 +29,17 @@ namespace EP.Data.Store
             services.AddScoped<ICorsPolicyService, InMemoryCorsPolicyService>();
 
             return builder;
+        }
+
+        public static IApplicationBuilder UseMongoDbForIdentityServer(this IApplicationBuilder app)
+        {
+            BsonClassMap.RegisterClassMap<Client>(cm =>
+            {
+                cm.AutoMap();
+                cm.SetIgnoreExtraElements(true);
+            });
+
+            return app;
         }
     }
 }

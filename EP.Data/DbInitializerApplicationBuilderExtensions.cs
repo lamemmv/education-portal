@@ -242,8 +242,6 @@ namespace EP.Data
             {
                 throw new Exception("Mongo Data created/populated! Please restart your website, so Mongo driver will be configured to ignore Extra Elements.");
             }
-
-            //ConfigureMongoDriver2IgnoreExtraElements();
         }
 
         private static void ConfigureMongoDriver2IgnoreExtraElements()
