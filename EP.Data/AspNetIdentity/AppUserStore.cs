@@ -27,7 +27,6 @@ namespace EP.Data.AspNetIdentity
         public AppUserStore(IMongoCollection<TUser> users)
         {
             _users = users;
-            EnsureIndexes(users).GetAwaiter().GetResult();
         }
 
         #region IUserStore
@@ -478,29 +477,5 @@ namespace EP.Data.AspNetIdentity
         }
 
         #endregion
-
-        private async static Task EnsureIndexes(IMongoCollection<TUser> users)
-		{
-            await Task.WhenAll(
-                EnsureUniqueIndexOnNormalizedUserName(users),
-                EnsureUniqueIndexOnNormalizedEmail(users)
-            );
-		}
-
-        private async static Task EnsureUniqueIndexOnNormalizedUserName(IMongoCollection<TUser> users)
-		{
-			var userName = Builders<TUser>.IndexKeys.Ascending(e => e.NormalizedUserName);
-			var unique = new CreateIndexOptions { Unique = true };
-			
-            await users.Indexes.CreateOneAsync(userName, unique);
-		}
-
-        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TUser> users)
-		{
-			var email = Builders<TUser>.IndexKeys.Ascending(t => t.NormalizedEmail);
-			var unique = new CreateIndexOptions { Unique = true };
-
-			await users.Indexes.CreateOneAsync(email, unique);
-		}
     }
 }

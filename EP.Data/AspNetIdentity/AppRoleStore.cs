@@ -1,12 +1,12 @@
 using EP.Data.Extensions;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
 
 namespace EP.Data.AspNetIdentity
 {
@@ -19,7 +19,6 @@ namespace EP.Data.AspNetIdentity
         public AppRoleStore(IMongoCollection<TRole> roles)
         {
             _roles = roles;
-            EnsureUniqueIndexOnNormalizedEmail(roles).GetAwaiter().GetResult();
         }
 
         #region IRoleClaimStore
@@ -152,13 +151,5 @@ namespace EP.Data.AspNetIdentity
         }
 
         #endregion
-
-        private async static Task EnsureUniqueIndexOnNormalizedEmail(IMongoCollection<TRole> roles)
-        {
-            var roleName = Builders<TRole>.IndexKeys.Ascending(t => t.NormalizedName);
-            var unique = new CreateIndexOptions { Unique = true };
-
-            await roles.Indexes.CreateOneAsync(roleName, unique);
-        }
     }
 }
