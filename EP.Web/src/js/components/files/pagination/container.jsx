@@ -1,4 +1,6 @@
 import { h, Component } from "preact";
+import { connect } from 'preact-redux'
+import { getFiles } from '../fileActions';
 import * as styles from './pagination.css';
 let classNames = require('classnames');
 
@@ -40,4 +42,19 @@ class Pagination extends Component {
     }
 }
 
-export default Pagination;
+
+const mapStateToProps = (state) => {
+    return {
+        fileState: state.posts.fileState
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getFiles: (page) => {
+            dispatch(getFiles(page));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Pagination);

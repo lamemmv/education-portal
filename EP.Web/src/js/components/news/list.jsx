@@ -45,7 +45,7 @@ class NewsList extends Component {
                                         <td data-title="Content">{item.content}</td>
                                         <td data-title="PublishedDate">{item.createdOn}</td>
                                         <td data-title="Link">
-                                            <Link to={`/news/${item.id}`}>Link</Link>
+                                            <Link to={`news/${item.id}`}>Link</Link>
                                         </td>
                                     </tr>
                                 );

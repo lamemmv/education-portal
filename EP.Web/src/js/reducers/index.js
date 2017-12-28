@@ -3,10 +3,10 @@ import {
 } from 'redux';
 
 import PostReducer from '../components/files/fileReducer';
-import DeleteReducer from '../components/files/delete/deleteReducer';
-import UploadReducer from '../components/files/upload/uploadReducer';
+import DeleteReducer from '../components/files/delete/reducers';
+import UploadReducer from '../components/files/upload/reducers';
 import NewsReducer from '../components/news/newsReducer';
-import NewsCreateReducer from '../components/news/create/news.create.reducer';
+import NewsCreateReducer from '../components/news/create/reducers';
 import notification from '../components/notify/notification.reducer';
 import breadcrumbs from '../components/breadcrumbs/reducers';
 

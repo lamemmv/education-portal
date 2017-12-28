@@ -15,7 +15,8 @@
     },
     "files": {
         "deleteFile": "Delete file",
-        "uploadAll": "Upload all"
+        "uploadAll": "Upload all",
+        "preview": "Preview"
     },
     "delete": "Delete"
 }

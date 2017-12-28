@@ -2,7 +2,6 @@ import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { withRouter } from 'react-router-dom';
 import * as BreadcrumbsAction from './actions';
-import * as NewsAction from '../news/newsActions';
 
 class RouterContainer extends Component {
 
@@ -25,11 +24,14 @@ class RouterContainer extends Component {
       case pathname == '/files':
         store.dispatch(BreadcrumbsAction.gotoFiles());
         break;
+      case /\/file\/(?!create|list).*/.test(pathname):
+        store.dispatch(BreadcrumbsAction.gotoFilePreview(pathname));
+        break;
       case pathname == '/news':
         store.dispatch(BreadcrumbsAction.gotoHomeNews());
         break;
       case pathname == '/news/create':
-        store.dispatch(NewsAction.gotoCreateNews());
+        store.dispatch(BreadcrumbsAction.gotoNewsCreate());
         break;
       case /\/news\/(?!create|list).*/.test(pathname):
         store.dispatch(BreadcrumbsAction.gotoNewsDetail(pathname));

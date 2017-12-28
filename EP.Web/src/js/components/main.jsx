@@ -6,7 +6,7 @@ import FileIndex from './files/index';
 import FilePreview from './files/preview';
 import NewsIndex from './news/index';
 import NewsDetail from './news/detail';
-import CreateNewsIndex from './news/create/index';
+import CreateNews from './news/create/container';
 import EPBreadcrumbs from './breadcrumbs/container';
 import RouterContainer from './breadcrumbs/router.container';
 
@@ -21,10 +21,10 @@ class Main extends Component {
                             <Switch>
                                 <Route exact path='/' component={Home} />
                                 <Route exact path='/files' component={FileIndex} />
-                                <Route path='/files/:id' component={FilePreview} />
+                                <Route path='/file/:id' component={FilePreview} />
                                 <Route exact path='/news' component={NewsIndex} />
-                                <Route exact path='/news/:id' component={NewsDetail} />
-                                <Route exact path='/news/create' component={CreateNewsIndex} />
+                                <Route exact path='/news/create' component={CreateNews} />
+                                <Route exact path='/news/:id' component={NewsDetail} />                                
                             </Switch>
                         </RouterContainer>
                     </HashRouter>

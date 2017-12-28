@@ -1,5 +1,13 @@
 import { h, Component } from "preact";
 import { MDCDialog } from '@material/dialog';
+import {
+    connect
+} from 'preact-redux'
+import {
+    closeModal,
+    deleteFile
+} from './actions';
+
 class DeleteModal extends Component {
     componentDidMount() {
         this.dialog = new MDCDialog(this.deleteDialog);
@@ -57,4 +65,21 @@ class DeleteModal extends Component {
     }
 }
 
-export default DeleteModal;
+const mapStateToProps = (state) => {
+    return {
+        deleteState: state.deleteFile.deleteState
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        closeModal: () => {
+            dispatch(closeModal());
+        },
+        confirmDeleteFile: (id) => {
+            dispatch(deleteFile(id));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteModal);

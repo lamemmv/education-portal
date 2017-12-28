@@ -5,7 +5,7 @@ import {
     getFilesFailure
 } from './fileActions';
 
-import { askForDeleting } from './delete/deleteActions';
+import { askForDeleting } from './delete/actions';
 
 import FileList from './fileList';
 

@@ -1,6 +1,14 @@
 import { h, Component } from "preact";
-import * as styles from './upload.css';
+import {
+    connect
+} from 'preact-redux'
+import {
+    selectFile,
+    uploadFiles,
+    removeFile
+} from './actions';
 import { Localizer, Text } from 'preact-i18n';
+import * as styles from './styles.css';
 
 const file_input_div = {
     margin: 'auto',
@@ -97,4 +105,24 @@ class Upload extends Component {
     };
 }
 
-export default Upload;
+const mapStateToProps = (state) => {
+    return {
+        uploadState: state.uploadFile.uploadState
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        selectFile: (file) => {
+            dispatch(selectFile(file));
+        },
+        uploadFile: (files) => {
+            dispatch(uploadFiles(files));
+        },
+        removeFile: (file) => {
+            dispatch(removeFile(file))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Upload);

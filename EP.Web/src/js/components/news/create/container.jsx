@@ -1,6 +1,15 @@
 import { h, Component } from 'preact';
-import * as styles from './create.css';
+import {
+    connect
+} from 'preact-redux';
+
+import {
+    bindActionCreators
+} from 'redux';
+
+import * as styles from './styles.css';
 let classNames = require('classnames');
+import * as NewsActions from '../newsActions';
 
 class CreateNews extends Component {
     constructor(props) {
@@ -82,4 +91,15 @@ class CreateNews extends Component {
     }
 }
 
-export default CreateNews;
+const mapStateToProps = (state) => {
+    return {
+        news: state.newsCreate
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators(NewsActions, dispatch)
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(CreateNews);

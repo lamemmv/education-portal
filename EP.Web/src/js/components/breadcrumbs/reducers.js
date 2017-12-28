@@ -8,7 +8,8 @@ import {
     HANDLE_NEWS_HOME_ROUTE,
     HANDLE_FILES_ROUTE,
     HANDLE_NEWS_CREATE_ROUTE,
-    HANDLE_NEWS_DETAIL_ROUTE
+    HANDLE_NEWS_DETAIL_ROUTE,
+    HANDLE_FILE_PREVIEW_ROUTE
 } from './types';
 
 const initialState = {
@@ -50,6 +51,8 @@ let mapResources = (name) => {
             return 'news.createNews';
         case 'detailNews':
             return 'news.detail';
+        case 'filePreview':
+            return 'files.preview';
         default:
             return 'home';
     }
@@ -65,6 +68,8 @@ let mapIcon = (name) => {
             return 'playlist_add';
         case 'detailNews':
             return 'details';
+        case 'filePreview':
+            return 'find_in_page';
         default:
             return 'home';
     }
@@ -78,7 +83,7 @@ export default handleActions({
                 path: '/'
             }]),
             error: null,
-            loading: true
+            loading: false
         });
     },
     [HANDLE_FILES_ROUTE]: (state, action) => {
@@ -93,7 +98,7 @@ export default handleActions({
                 }
             ]),
             error: null,
-            loading: true
+            loading: false
         });
     },
     [HANDLE_NEWS_HOME_ROUTE]: (state, action) => {
@@ -108,7 +113,7 @@ export default handleActions({
                 }
             ]),
             error: null,
-            loading: true
+            loading: false
         });
     },
     [HANDLE_NEWS_CREATE_ROUTE]: (state, action) => {
@@ -127,7 +132,7 @@ export default handleActions({
                 }
             ]),
             error: null,
-            loading: true
+            loading: false
         });
     },
     [HANDLE_NEWS_DETAIL_ROUTE]: (state, action) => {
@@ -146,7 +151,26 @@ export default handleActions({
                 }
             ]),
             error: null,
-            loading: true
+            loading: false
+        });
+    },
+    [HANDLE_FILE_PREVIEW_ROUTE]: (state, action) => {
+        return Object.assign({}, state, {
+            items: getBreadcrumbs([{
+                    id: 'home',
+                    path: '/'
+                },
+                {
+                    id: 'files',
+                    path: '/files'
+                },
+                {
+                    id: 'filePreview',
+                    path: action.payload
+                }
+            ]),
+            error: null,
+            loading: false
         });
     },
 }, initialState);

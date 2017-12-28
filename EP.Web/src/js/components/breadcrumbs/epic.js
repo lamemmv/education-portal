@@ -10,10 +10,10 @@ import {
     GOTO_NEWS_HOME,
     GOTO_FILES,
     GOTO_HOME,
-    GOTO_NEWS_DETAIL
+    GOTO_NEWS_DETAIL,
+    GOTO_FILE_PREVIEW,
+    GOTO_NEWS_CREATE
 } from './types';
-
-import { GOTO_CREATE_NEWS } from '../news/types';
 
 import {
     gotoFiles,
@@ -23,7 +23,8 @@ import {
     handleFilesRoute,
     handleNewsHomeRoute,
     handleNewsCreateRoute,
-    handleNewsDetailRoute
+    handleNewsDetailRoute,
+    handleFilePreviewRoute
 } from './actions';
 
 const gotoHomeEpic = (action$, store) =>
@@ -40,7 +41,7 @@ const gotoNewsHomeEpic = (action$, store) =>
     );
 
 const gotoNewsCreateEpic = (action$, store) =>
-    action$.ofType(GOTO_CREATE_NEWS)
+    action$.ofType(GOTO_NEWS_CREATE)
     .flatMap(action =>
         Observable.of(
             handleHomeRoute(),
@@ -68,11 +69,22 @@ const gotoFilesEpic = (action$, store) =>
         )
     );
 
+const gotoFilePreviewEpic = (action$, store) =>
+    action$.ofType(GOTO_FILE_PREVIEW)
+    .flatMap(action =>
+        Observable.of(
+            handleHomeRoute(),
+            handleFilesRoute(),
+            handleFilePreviewRoute(action.payload)
+        )
+    );
+
 const epics = [
     gotoNewsHomeEpic,
     gotoNewsCreateEpic,
     gotoNewsDetailEpic,
     gotoFilesEpic,
+    gotoFilePreviewEpic,
     gotoHomeEpic
 ];
 

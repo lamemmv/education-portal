@@ -15,7 +15,8 @@
     },
     "files": {
         "deleteFile": "Xóa tài liệu",
-        "uploadAll": "Upload tất cả"
+        "uploadAll": "Upload tất cả",
+        "preview": "Xem"
     },
     "delete": "Xóa"
 }

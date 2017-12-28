@@ -23,12 +23,12 @@ import {
 import {
     uploadFileSuccess,
     uploadFileFailure
-} from './upload/uploadActions';
+} from './upload/actions';
 import {
     showModal,
     deleteFileSuccess,
     deleteFileFailure
-} from './delete/deleteActions';
+} from './delete/actions';
 
 import {
     addNotification

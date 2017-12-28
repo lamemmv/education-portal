@@ -3,7 +3,6 @@ import {
     GET_NEWS_LIST,
     GET_NEWS_LIST_FAILURE,
     GET_NEWS_LIST_SUCCESS,
-    GOTO_CREATE_NEWS
 } from './types';
 
 const initialState = {
@@ -38,13 +37,6 @@ export default handleActions({
             items: [],
             page: action.payload.page,
             error: error,
-            loading: false
-        });
-    },
-    [GOTO_CREATE_NEWS]: (state, action) => {
-        return Object.assign({}, state, {
-            items: [],
-            error: null,
             loading: false
         });
     },
