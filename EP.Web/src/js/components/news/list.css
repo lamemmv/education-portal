@@ -4,8 +4,9 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
 
-.mdc-fab.material-icons a {
+.mdc-button.mdc-button--raised a {
     color: #fff;
+    text-decoration: none;
 }
 
 

@@ -13,10 +13,10 @@ export function selectFile(file) {
     };
 }
 
-export function uploadFiles(files) {
+export function uploadFiles(request) {
     return {
         type: UPLOAD_FILE,
-        payload: files
+        payload: request
     };
 }
 

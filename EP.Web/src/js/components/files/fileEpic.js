@@ -50,7 +50,7 @@ const fetchFilesEpic = action$ =>
 const uploadFilesEpic = action$ =>
     action$.ofType(UPLOAD_FILE)
     .mergeMap(action =>
-        Observable.fromPromise(API.uploadFiles(action.payload))
+        Observable.fromPromise(API.uploadFiles(action.payload.files))
         .map(response => uploadFileSuccess(response.data))
         .catch(error => Observable.of(uploadFileFailure(error)))
     );

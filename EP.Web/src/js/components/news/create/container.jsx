@@ -38,7 +38,7 @@ class CreateNews extends Component {
     render() {
         const { createNews } = this.props.actions;
         return (
-            <section>
+            <section class='ep-container'>
                 <form role='form'>
                     <NotificationContainer />
                     <Uploader />

@@ -11,7 +11,9 @@
     "header": {
         "home": "Trang chủ",
         "files": "Tài liệu",
-        "news": "Tin tức"
+        "news": "Tin tức",
+        "courses": "Khóa học",
+        "contact": "Liên hệ"
     },
     "files": {
         "deleteFile": "Xóa tài liệu",
@@ -19,5 +21,7 @@
         "preview": "Xem"
     },
     "delete": "Xóa",
-    "home": "Education Portal"
+    "home": "Education Portal",
+    "signin": "Đăng nhập",
+    "signup": "Đăng ký"
 }

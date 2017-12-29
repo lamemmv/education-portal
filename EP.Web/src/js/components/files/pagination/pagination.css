@@ -1,6 +1,6 @@
 .ep-pg{
-    position: absolute;
-    right: 10px;
+    position: relative;
+    top: 10px;
 }
 
 .ep-pg li {

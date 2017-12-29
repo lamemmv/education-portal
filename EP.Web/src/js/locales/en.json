@@ -11,7 +11,9 @@
     "header": {
         "home": "Home",
         "files": "Files",
-        "news": "News"
+        "news": "News",
+        "courses": "Courses",
+        "contact": "Contact"
     },
     "files": {
         "deleteFile": "Delete file",
@@ -19,5 +21,7 @@
         "preview": "Preview"
     },
     "delete": "Delete",
-    "home": "Education Portal"
+    "home": "Education Portal",
+    "signin": "Sign In",
+    "signup": "Sign Up"
 }

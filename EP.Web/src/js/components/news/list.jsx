@@ -15,15 +15,13 @@ class NewsList extends Component {
         return (
             <section class='ep-container'>
                 <Localizer>
-                    <button class="mdc-fab material-icons"
-                        aria-label="Favorite"
-                        title={<Text id='news.createNews'></Text>}>
-                        <Link to='news/create'>
-                            <span class="mdc-fab__icon">
-                                add
-                        </span>
-                        </Link>
-                    </button>
+                    <Link to='news/create'>
+                        <button class="mdc-button mdc-button--raised"
+                            title={<Text id='news.createNews'></Text>}>
+                            <i class="material-icons mdc-button__icon">add</i>
+                            <span><Text id='news.createNews'></Text></span>
+                        </button>
+                    </Link>
                 </Localizer>
                 <div class='shadow-z-1' style={{ marginTop: 10 }}>
                     <table class="table table-hover table-mc-light-blue">

@@ -39,7 +39,7 @@ class Upload extends Component {
     render() {
         let fileInput = null;
         const uid = 'testinput';
-        const { removeFile, selectFile, uploadFile } = this.props;
+        const { removeFile, selectFile, uploadFile, callbackAction } = this.props;
         const { files } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
@@ -96,7 +96,7 @@ class Upload extends Component {
                     </ul>
                 </div>
                 <button class="mdc-button mdc-button--raised"
-                    onClick={() => uploadFile(files)}
+                    onClick={() => uploadFile({ files: files, callbackAction: callbackAction })}
                     disabled={files.length == 0} >
                     <Text id='files.uploadAll'></Text>
                 </button>
