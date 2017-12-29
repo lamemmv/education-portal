@@ -20,6 +20,7 @@ class CreateNews extends Component {
             title: '',
             ingress: '',
             content: '',
+            blobId: null,
             published: false
         };
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -35,13 +36,22 @@ class CreateNews extends Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        const { blobId } = nextProps.news;
+        this.setState((prevState, nextState) => {
+            return {
+                blobId: blobId
+            }
+        })
+    }
+
     render() {
         const { createNews } = this.props.actions;
         return (
             <section class='ep-container'>
                 <form role='form'>
                     <NotificationContainer />
-                    <Uploader />
+                    <Uploader callbackAction={NewsActions.prepareDataForCreatingNews} />
                     <div class="form-group">
                         <input type="text"
                             name='title'

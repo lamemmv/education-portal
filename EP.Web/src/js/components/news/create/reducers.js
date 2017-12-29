@@ -2,7 +2,8 @@ import { handleActions, Action } from 'redux-actions';
 import {
     CREATE_NEWS,
     CREATE_NEWS_SUCCESS,
-    CREATE_NEWS_FAILURE
+    CREATE_NEWS_FAILURE,
+    PREPARE_DATA_FOR_NEWS_CREATE
 } from '../types';
 
 const initialState = {
@@ -11,10 +12,19 @@ const initialState = {
     title: '',
     published: false,
     publishedDate: null,
-    id: null
+    id: null,
+    blobId: null
 };
 
 export default handleActions({
+    [PREPARE_DATA_FOR_NEWS_CREATE]: (state, action) => {
+        return Object.assign({}, state, {
+            id: null,
+            error: null,
+            loading: true,
+            blobId: action.payload[0]
+        });
+    },
     [CREATE_NEWS]: (state, action) => {
         return Object.assign({}, state, {
             id: null,

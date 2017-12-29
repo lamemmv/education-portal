@@ -2,10 +2,15 @@ import axios from 'axios';
 import PageSetting from '../settings/page';
 
 const baseUri = 'http://localhost:5000/api/';
+const serverDomain = 'http://localhost:5000/';
 
 const API = {
     getBaseUri() {
         return baseUri;
+    },
+    
+    getServerDomain() {
+        return serverDomain;
     },
 
     queryParams(params) {

@@ -2,3 +2,7 @@
     color: #fff;
     text-decoration: none;
 }
+
+.ep-grid-tile__title{
+    font-size: 0.75rem !important;
+}

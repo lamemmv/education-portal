@@ -1,6 +1,17 @@
 import { h, Component } from "preact";
 import { Link } from 'react-router-dom';
+import { connect } from 'preact-redux';
 import { Localizer, Text } from 'preact-i18n';
+import API from '../api';
+
+import {
+    getFiles,
+    getFilesSuccess,
+    getFilesFailure
+} from './fileActions';
+
+import { askForDeleting } from './delete/actions';
+
 import Uploader from './upload/container';
 import Pagination from './pagination/container';
 import DeleteFile from './delete/container';
@@ -8,6 +19,7 @@ import NotificationContainer from '../notify/notification.container';
 import * as styles from './styles.css';
 
 class FileList extends Component {
+
 
     componentWillMount() {
         if (!this.props.fileState.files) {
@@ -32,6 +44,7 @@ class FileList extends Component {
             showPagination
         } = this.props.fileState;
         const { askForDeleting } = this.props;
+        const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='ep-container'>
                 <NotificationContainer />
@@ -43,8 +56,13 @@ class FileList extends Component {
                                 <li class="mdc-grid-tile">
                                     <Link to={`file/${file.id}`}>
                                         <div class="mdc-grid-tile__primary">
-                                            <img class="mdc-grid-tile__primary-content"
-                                                src={require('../../../assets/images/image.png')} />
+                                            {imageTypes.indexOf(file.contentType) < 0 ?
+                                                <img class="mdc-grid-tile__primary-content"
+                                                    src={require('../../../assets/images/image.png')} /> :
+                                                <img class="mdc-grid-tile__primary-content"
+                                                    src={API.getServerDomain() + file.virtualPath} />
+                                            }
+
                                         </div>
                                     </Link>
                                     <span class="mdc-grid-tile__secondary">
@@ -54,7 +72,7 @@ class FileList extends Component {
                                                 onClick={() => askForDeleting(file.id)}>clear</i>
                                         </Localizer>
                                         <Link to={`file/${file.id}`}>
-                                            <span class="mdc-grid-tile__title">{file.fileName}</span>
+                                            <span class="mdc-grid-tile__title ep-grid-tile__title">{file.fileName}</span>
                                         </Link>
                                     </span>
 
@@ -71,4 +89,21 @@ class FileList extends Component {
     };
 }
 
-export default FileList;
+const mapStateToProps = (state) => {
+    return {
+        fileState: state.posts.fileState
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getFiles: (page) => {
+            dispatch(getFiles(page));
+        },
+        askForDeleting: (id) => {
+            dispatch(askForDeleting(id));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FileList);

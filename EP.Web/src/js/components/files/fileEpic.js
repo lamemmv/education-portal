@@ -51,17 +51,25 @@ const uploadFilesEpic = action$ =>
     action$.ofType(UPLOAD_FILE)
     .mergeMap(action =>
         Observable.fromPromise(API.uploadFiles(action.payload.files))
-        .map(response => uploadFileSuccess(response.data))
+        .map(response => uploadFileSuccess({
+            data: response.data,
+            action: action.payload.callbackAction
+        }))
         .catch(error => Observable.of(uploadFileFailure(error)))
     );
 
 const uploadFileSuccessEpic = action$ =>
     action$.ofType(UPLOAD_FILE_SUCCESS)
-    .flatMap(action => Observable.concat(
-            Observable.of(getFiles(1)),
-            Observable.of(addNotification('Uploaded', 'success', 'Upload files'))
-        )
-    );
+    .flatMap(action => {
+        return action.payload.action ?
+            Observable.concat(
+                Observable.of(getFiles(1)),
+                Observable.of(action.payload.action(action.payload.data)),
+                Observable.of(addNotification('Uploaded', 'success', 'Upload files'))) :
+            Observable.concat(
+                Observable.of(getFiles(1)),
+                Observable.of(addNotification('Uploaded', 'success', 'Upload files')))
+    });
 //.takeUntil(action$.ofType(LOGIN_ABORT));
 //.catch(({ xhr }) => Observable.of(loginFailed(xhr.response)))
 

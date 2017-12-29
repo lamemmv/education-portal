@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import { Route, HashRouter, Switch } from 'react-router-dom';
 
 import Home from './home/home';
-import FileIndex from './files/index';
+import Files from './files/fileList';
 import FilePreview from './files/preview';
 import NewsIndex from './news/index';
 import NewsDetail from './news/detail';
@@ -59,7 +59,7 @@ class Main extends Component {
                                     <RouterContainer>
                                         <Switch>
                                             <Route exact path='/' component={Home} />
-                                            <Route exact path='/files' component={FileIndex} />
+                                            <Route exact path='/files' component={Files} />
                                             <Route path='/file/:id' component={FilePreview} />
                                             <Route exact path='/news' component={NewsIndex} />
                                             <Route exact path='/news/create' component={CreateNews} />
