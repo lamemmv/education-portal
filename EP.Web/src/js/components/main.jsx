@@ -24,18 +24,9 @@ class Main extends Component {
                             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2 ep-left">
                                 <div class="mdc-card demo-card">
                                     <section class="mdc-card__media demo-card__16-9-media"></section>
-                                    <section class="mdc-card__supporting-text">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.
-                                    </section>
-                                </div>
-                                <div class="mdc-card demo-card">
                                     <section class="mdc-card__primary">
-                                        <h1 class="mdc-card__title mdc-card__title--large">Title goes here</h1>
+                                        <h1 class="mdc-card__title mdc-card__title--large">Các cơ sở liên kết</h1>
                                         <h2 class="mdc-card__subtitle">Subtitle here</h2>
-                                    </section>
-                                    <section class="mdc-card__supporting-text">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                                     </section>
                                     <section class="mdc-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
@@ -44,15 +35,11 @@ class Main extends Component {
                                 </div>
                                 <div class="mdc-card demo-card">
                                     <section class="mdc-card__media demo-card__16-9-media"></section>
-                                    <section class="mdc-card__primary">
-                                        <h1 class="mdc-card__title mdc-card__title--large">Title goes here</h1>
-                                        <h2 class="mdc-card__subtitle">Subtitle here</h2>
-                                    </section>
-                                    <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                    <section class="mdc-card__supporting-text">
+                                        Hình sách
                                     </section>
                                 </div>
+
                             </div>
                             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7 ep-center">
                                 <HashRouter>
@@ -72,8 +59,32 @@ class Main extends Component {
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Title here</h1>
+                                            <h1 class="mdc-card__title mdc-card__title--large">Phương pháp & chường trình dạy</h1>
+                                            <h2 class="mdc-card__subtitle">Phương pháp dạy</h2>
+                                        </section>
+                                        <img class="mdc-card__media-item" src={demoimages} />
+                                    </div>
+                                    <section class="mdc-card__actions">
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                    </section>
+                                </div>
+                                <div class="mdc-card demo-card">
+                                    {/* <div class="mdc-card__horizontal-block">
+                                        <section class="mdc-card__primary">
+                                            <h1 class="mdc-card__title mdc-card__title--large">Chương trình dạy</h1>
                                             <h2 class="mdc-card__subtitle">Subtitle here</h2>
+                                        </section>
+                                        <img class="mdc-card__media-item mdc-card__media-item--2x" src={demoimages} />
+                                    </div>
+                                    <section class="mdc-card__actions">
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                    </section> */}
+                                    <div class="mdc-card__horizontal-block">
+                                        <section class="mdc-card__primary">
+                                            <h1 class="mdc-card__title mdc-card__title--large">Qui định học phí</h1>
+                                            <h2 class="mdc-card__subtitle">Phương pháp dạy</h2>
                                         </section>
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
@@ -85,24 +96,25 @@ class Main extends Component {
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Title here</h1>
-                                            <h2 class="mdc-card__subtitle">Subtitle here</h2>
+                                            <h1 class="mdc-card__title mdc-card__title--large">Nội qui trung tâm</h1>
+                                            <h2 class="mdc-card__subtitle">Ưu tiên </h2>
                                         </section>
-                                        <img class="mdc-card__media-item mdc-card__media-item--2x" src={demoimages} />
+                                        <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
                                     </section>
                                 </div>
-                                <div class="mdc-card mdc-card--theme-dark demo-card demo-card--bg-demo">
-                                    <section class="mdc-card__primary">
-                                        <h1 class="mdc-card__title mdc-card__title--large">Title goes here</h1>
-                                        <h2 class="mdc-card__subtitle">Subtitle here</h2>
-                                    </section>
+                                <div class="mdc-card demo-card">
+                                    <div class="mdc-card__horizontal-block">
+                                        <section class="mdc-card__primary">
+                                            <h1 class="mdc-card__title mdc-card__title--large">Chính sách ưu đãi</h1>
+                                            <h2 class="mdc-card__subtitle">Ưu tiên </h2>
+                                        </section>
+                                        <img class="mdc-card__media-item" src={demoimages} />
+                                    </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action">Action 2</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
                                     </section>
                                 </div>
                             </div>

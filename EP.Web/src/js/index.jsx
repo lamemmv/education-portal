@@ -3,7 +3,7 @@ import {
     render
 } from 'preact';
 import { IntlProvider } from 'preact-i18n';
-import definition from './locales/en.json';
+import definition from './locales/vi.json';
 
 import App from './components/App.jsx';
 import 'material-components-web/dist/material-components-web';

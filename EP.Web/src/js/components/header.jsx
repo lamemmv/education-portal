@@ -17,11 +17,11 @@ class EPHeader extends Component {
                             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                                 <div class='ep-toolbar_item'>
                                     <i class="material-icons">phone</i>
-                                    <span>(+84)986-448-474</span>
+                                    <span>(+84)909 972 559</span>
                                 </div>
                                 <div class='ep-toolbar_item'>
                                     <i class="material-icons">email</i>
-                                    <span>contact@education-portal.com</span>
+                                    <span>trinhanmail@gmail.com</span>
                                 </div>
                             </section>
                             <section class="mdc-toolbar__section ep-toolbar__section__end">
@@ -72,14 +72,25 @@ class EPHeader extends Component {
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.home'></Text>
                                 </Link>
+                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                    Giới thiệu
+                                </Link>
+                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                    Phụ huynh
+                                </Link>
+                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                    Thi thử
+                                </Link>
                                 <Link to="/files" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.files'></Text>
                                 </Link>
                                 <Link to="/news" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    <Text id='header.news'></Text>
+                                    {/* <Text id='header.news'></Text> */}
+                                    Thông báo
                                 </Link>
                                 <Link to="/courses" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    <Text id='header.courses'></Text>
+                                    {/* <Text id='header.courses'></Text> */}
+                                    Tuyển dụng
                                 </Link>
                                 <Link to="/contact" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.contact'></Text>
