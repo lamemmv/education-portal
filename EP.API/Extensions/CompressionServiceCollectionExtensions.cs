@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class ResponseCompressionExtensions
+    public static class CompressionServiceCollectionExtensions
     {
         public static IServiceCollection AddCustomCompression(this IServiceCollection services)
         {

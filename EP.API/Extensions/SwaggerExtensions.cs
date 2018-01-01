@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
     public static class SwaggerExtensions
     {

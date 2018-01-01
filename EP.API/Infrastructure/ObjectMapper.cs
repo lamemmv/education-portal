@@ -6,7 +6,7 @@ using EP.Services.Extensions;
 using ExpressMapper;
 using System;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Infrastructure
 {
     public static class ObjectMapper
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class CorsExtensions
+    public static class CorsServiceCollectionExtensions
     {
         public static IServiceCollection AddCustomCors(this IServiceCollection services, string policyName)
         {

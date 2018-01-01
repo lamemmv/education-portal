@@ -11,9 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class InternalServiceExtensions
+    public static class InternalServiceCollectionExtensions
     {
         public static IServiceProvider AddInternalServices(this IServiceCollection services, IConfiguration configuration)
         {

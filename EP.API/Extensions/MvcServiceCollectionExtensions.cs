@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class MvcExtensions
+    public static class MvcServiceCollectionExtensions
     {
         public static IServiceCollection AddCustomMvc(this IServiceCollection services)
         {

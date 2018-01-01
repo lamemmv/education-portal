@@ -6,7 +6,7 @@ using Serilog.Formatting.Compact;
 using Serilog.Formatting;
 using Serilog;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Infrastructure
 {
     public static class LogCreator
     {

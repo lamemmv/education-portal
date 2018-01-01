@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using System.IO;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class StaticFileExtensions
+    public static class StaticFileApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseCustomStaticFiles(
             this IApplicationBuilder app,

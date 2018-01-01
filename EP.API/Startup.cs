@@ -1,8 +1,8 @@
-﻿using EP.API.StartupExtensions;
+﻿using EP.API.Extensions;
+using EP.API.Infrastructure;
+using EP.Data;
 using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
-using EP.Data.Store;
-using EP.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -69,7 +69,6 @@ namespace EP.API
                 .UseCors("AllowAllOrigins")
                 //.UseAuthentication()
                 .UseIdentityServer()
-                .UseMongoDbForIdentityServer()
                 .UseCustomSwagger()
                 .UseMvcWithDefaultRoute()
                 .InitDefaultData();

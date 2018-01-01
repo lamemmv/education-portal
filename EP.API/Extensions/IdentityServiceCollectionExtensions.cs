@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using System;
 
-namespace EP.API.StartupExtensions
+namespace EP.API.Extensions
 {
-    public static class IdentityExtensions
+    public static class IdentityServiceCollectionExtensions
     {
         public static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
         {
@@ -79,11 +79,10 @@ namespace EP.API.StartupExtensions
         {
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddInMemoryApiResources(GetApiResources())
-                //.AddInMemoryClients(GetClients())
-                .AddMongoDbClients(connectionString)
-                .AddTestUsers(GetUsers());
-            //.AddAspNetIdentity<AppUser>();
+                .AddMongoDbIdentityApiResources()
+                .AddMongoDbClients()
+                .AddMongoDbPersistedGrants()
+                .AddAspNetIdentity<AppUser>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(opts =>

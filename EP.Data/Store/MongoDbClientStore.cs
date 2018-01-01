@@ -1,47 +1,40 @@
-using EP.Data.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EP.Data.Store
 {
     public sealed class MongoDbClientStore : IClientStore
     {
-        private readonly IMongoCollection<Client> _clients;
-        
-        public MongoDbClientStore(IMongoCollection<Client> clients)
-        {
-            _clients = clients;
-        }
-
         public async Task<Client> FindClientByIdAsync(string clientId)
         {
-            var filter = Builders<Client>.Filter.Eq(e => e.ClientId, clientId);
-            var cursor = await _clients.FindAsync(filter);
-
-            return await cursor.FirstOrDefaultAsync();
+            return await Task.FromResult(Clients.FirstOrDefault(e =>
+                e.ClientId.Equals(clientId, StringComparison.OrdinalIgnoreCase)));
         }
 
-        internal async Task<long> CountAsync()
+        private static IEnumerable<Client> Clients
         {
-            var filter = Builders<Client>.Filter.Empty;
-
-            return await _clients.CountAsync(filter);
-        }
-
-        internal async Task CreateAsync(IEnumerable<Client> clients)
-        {
-            await _clients.InsertManyAsync(clients);
-        }
-
-        internal async Task<bool> DeleteAsync()
-        {
-            var filter = Builders<Client>.Filter.Empty;
-            var result = await _clients.DeleteManyAsync(filter);
-
-            return result.IsSuccess();
+            get
+            {
+                yield return new Client
+                {
+                    ClientId = "ep.web",
+                    ClientName = "EP Web Client",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowOfflineAccess = true,
+                    ClientSecrets =
+                    {
+                        new Secret("ep.web@P@SSW0RD".Sha256())
+                    },
+                    AllowedScopes =
+                    {
+                        "ep.api"
+                    }
+                };
+            }
         }
     }
 }
