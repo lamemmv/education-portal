@@ -11,9 +11,13 @@
     "header": {
         "home": "Trang chủ",
         "files": "Tài liệu",
-        "news": "Tin tức",
+        "news": "Thông báo",
         "courses": "Khóa học",
-        "contact": "Liên hệ"
+        "contact": "Liên hệ",
+        "about": "Giới thiệu",
+        "parents": "Phụ huynh",
+        "examination": "Thi thử",
+        "recruitments": "Tuyển dụng"
     },
     "files": {
         "deleteFile": "Xóa tài liệu",
@@ -23,5 +27,7 @@
     "delete": "Xóa",
     "home": "Education Portal",
     "signin": "Đăng nhập",
-    "signup": "Đăng ký"
+    "signup": "Đăng ký",
+    "teaching-methods-and-programs": "Phương pháp & chương trình dạy",
+    "fee-policy": "Qui định học phí"
 }

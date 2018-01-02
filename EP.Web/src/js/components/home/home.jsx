@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 import ShortNews from './shortNews/index';
 import EPActivities from './activities/index';
+import SkeletonScreen from '../skeleton-screen/index';
 import * as styles from './styles.css';
 
 class Home extends Component {
@@ -23,6 +24,7 @@ class Home extends Component {
                                 Giáo viên Lê Văn Khiêm vừa được phòng giáo dục Tân Phú ban tặng danh hiệu giáo viên xuất sắc, có nhiều đóng góp tích cực cho sự phát triển giáo dục quận nhà.
                             </section>
                         </div>
+                        <SkeletonScreen />
                     </div>
                     <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
                         <EPActivities />

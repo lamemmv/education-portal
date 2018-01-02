@@ -73,24 +73,22 @@ class EPHeader extends Component {
                                     <Text id='header.home'></Text>
                                 </Link>
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    Giới thiệu
+                                    <Text id='header.about'></Text>
                                 </Link>
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    Phụ huynh
+                                    <Text id='header.parents'></Text>
                                 </Link>
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    Thi thử
+                                    <Text id='header.examination'></Text>
                                 </Link>
                                 <Link to="/files" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.files'></Text>
                                 </Link>
                                 <Link to="/news" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    {/* <Text id='header.news'></Text> */}
-                                    Thông báo
+                                    <Text id='header.news'></Text>
                                 </Link>
                                 <Link to="/courses" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    {/* <Text id='header.courses'></Text> */}
-                                    Tuyển dụng
+                                    <Text id='header.recruitments'></Text>
                                 </Link>
                                 <Link to="/contact" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.contact'></Text>

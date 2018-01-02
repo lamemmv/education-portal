@@ -13,7 +13,11 @@
         "files": "Files",
         "news": "News",
         "courses": "Courses",
-        "contact": "Contact"
+        "contact": "Contact",
+        "about": "About",
+        "parents": "Parents",
+        "examination": "Exam",
+        "recruitments": "Recruitments"
     },
     "files": {
         "deleteFile": "Delete file",
@@ -23,5 +27,7 @@
     "delete": "Delete",
     "home": "Education Portal",
     "signin": "Sign In",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "teaching-methods-and-programs": "Teaching methods & programs",
+    "fee-policy": "Fee policy"
 }

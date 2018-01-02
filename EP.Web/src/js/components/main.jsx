@@ -1,5 +1,6 @@
 import { h, Component } from 'preact';
 import { Route, HashRouter, Switch } from 'react-router-dom';
+import { Text } from 'preact-i18n';
 
 import Home from './home/home';
 import Files from './files/fileList';
@@ -29,14 +30,13 @@ class Main extends Component {
                                         <h2 class="mdc-card__subtitle">Subtitle here</h2>
                                     </section>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
                                     <section class="mdc-card__media">
-                                    <img class="mdc-card__media-item"
-                                    src={require('../../assets/images/books.jpg')} />
+                                        <img class="mdc-card__media-item"
+                                            src={require('../../assets/images/books.jpg')} />
                                     </section>
                                     <section class="mdc-card__supporting-text">
                                         Hình sách
@@ -62,26 +62,28 @@ class Main extends Component {
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Phương pháp & chương trình dạy</h1>
+                                            <h1 class="mdc-card__title mdc-card__title--large"><Text id='teaching-methods-and-programs'></Text></h1>
                                             <h2 class="mdc-card__subtitle" style={{ marginTop: '5px' }}>
                                                 Trung tâm áp dụng phương pháp dạy tiên tiến nhất. Học viên có thể phát huy hết khả năng...</h2>
                                         </section>
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Qui định học phí</h1>
-                                            <h2 class="mdc-card__subtitle"  style={{ marginTop: '5px' }}>Đối với học viên thường xuyên của trung tâm...</h2>
+                                            <h1 class="mdc-card__title mdc-card__title--large">
+                                                <Text id='fee-policy'></Text></h1>
+                                            <h2 class="mdc-card__subtitle" style={{ marginTop: '5px' }}>
+                                                Đối với học viên thường xuyên của trung tâm...</h2>
                                         </section>
                                         <img class="mdc-card__media-item" src={require('../../assets/images/money-bag.jpg')} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
@@ -93,7 +95,7 @@ class Main extends Component {
                                         <img class="mdc-card__media-item" src={require('../../assets/images/rules.jpg')} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
@@ -105,7 +107,7 @@ class Main extends Component {
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
                             </div>
