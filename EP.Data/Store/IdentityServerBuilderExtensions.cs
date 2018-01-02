@@ -32,5 +32,13 @@ namespace EP.Data.Store
 
             return builder;
         }
+
+        public static IIdentityServerBuilder AddMongoDbProfileService(
+            this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddScoped<IProfileService, ProfileService>();
+            
+            return builder.AddProfileService<ProfileService>();
+        }
     }
 }

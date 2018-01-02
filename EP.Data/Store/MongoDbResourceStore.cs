@@ -1,9 +1,9 @@
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Data.Store
 {
@@ -11,8 +11,8 @@ namespace EP.Data.Store
     {
         public async Task<ApiResource> FindApiResourceAsync(string name)
         {
-            return await Task.FromResult(ApiResources.FirstOrDefault(e =>
-                e.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+            return await Task.FromResult(
+                ApiResources.FirstOrDefault(e => e.Name.Equals(name, StringComparison.Ordinal)));
         }
 
         public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(

@@ -11,8 +11,8 @@ namespace EP.Data.Store
     {
         public async Task<Client> FindClientByIdAsync(string clientId)
         {
-            return await Task.FromResult(Clients.FirstOrDefault(e =>
-                e.ClientId.Equals(clientId, StringComparison.OrdinalIgnoreCase)));
+            return await Task.FromResult(
+                Clients.FirstOrDefault(e => e.ClientId.Equals(clientId, StringComparison.Ordinal)));
         }
 
         private static IEnumerable<Client> Clients

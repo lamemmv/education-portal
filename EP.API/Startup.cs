@@ -36,7 +36,6 @@ namespace EP.API
                 .AddMongoDbContext(_connectionString);
 
             services
-                .AddCustomIdentity()
                 .AddIdentityMongoStores(_connectionString)
                 .AddDefaultTokenProviders();
 
@@ -46,6 +45,7 @@ namespace EP.API
                 .AddCustomMvc()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger)
+                .ConfigureCustomIdentity()               
                 .AddCustomIdentityServer(_connectionString)
                 .AddCustomSwaggerGen();
 

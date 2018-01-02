@@ -1,24 +1,21 @@
 ﻿using EP.Data.AspNetIdentity;
 using EP.Data.Store;
 using IdentityServer4.AccessTokenValidation;
-using IdentityServer4.Models;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Extensions
 {
     public static class IdentityServiceCollectionExtensions
     {
-        public static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
+        public static IServiceCollection ConfigureCustomIdentity(this IServiceCollection services)
         {
-            var builder = services.AddIdentity<AppUser, AppRole>(opts =>
+            services.Configure<IdentityOptions>(opts =>
             {
                 // Password settings.
                 PasswordOptions passwordOpts = opts.Password;
@@ -70,7 +67,7 @@ namespace EP.API.Extensions
                 };
             });
 
-            return builder;
+            return services;
         }
 
         public static IServiceCollection AddCustomIdentityServer(
@@ -81,8 +78,9 @@ namespace EP.API.Extensions
                 .AddDeveloperSigningCredential()
                 .AddMongoDbIdentityApiResources()
                 .AddMongoDbClients()
-                .AddMongoDbPersistedGrants();
-                //.AddAspNetIdentity<AppUser>();
+                //.AddMongoDbPersistedGrants();
+                .AddAspNetIdentity<AppUser>()
+                .AddMongoDbProfileService();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(opts =>
@@ -93,45 +91,6 @@ namespace EP.API.Extensions
                 });
 
             return services;
-        }
-
-        private static IEnumerable<ApiResource> GetApiResources()
-        {
-            yield return new ApiResource("ep.api", "EP API");
-        }
-
-        // private static IEnumerable<Client> GetClients()
-        // {
-        //     yield return new Client
-        //     {
-        //         ClientId = "ep.web",
-        //         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-        //         ClientSecrets =
-        //         {
-        //             new Secret("ep.web@P@SSW0RD".Sha256())
-        //         },
-        //         AllowedScopes =
-        //         {
-        //             "ep.api"
-        //         }
-        //     };
-        // }
-
-        private static List<TestUser> GetUsers()
-        {
-            return new List<TestUser>
-            {
-                new TestUser
-                {
-                    SubjectId = "5BE86359-073C-434B-AD2D-A3932222DABE",
-                    Username = "bob",
-                    Password = "password"/*,
-                    Claims = new List<Claim> {
-                        new Claim(JwtClaimTypes.Email, "bob@scottbrady91.com"),
-                        new Claim(JwtClaimTypes.Role, "admin")
-                    }*/
-                }
-            };
         }
     }
 }
