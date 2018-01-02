@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.Logs;
@@ -19,9 +20,9 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<ActivityLogType>> Get(int? page, int? size)
+        public async Task<IPagedList<ActivityLogType>> Get([FromQuery]PaginationSearchViewModel viewModel)
         {
-            return await _activityLogService.GetLogTypePagedListAsync(page, size);
+            return await _activityLogService.GetLogTypePagedListAsync(viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]

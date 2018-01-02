@@ -81,8 +81,8 @@ namespace EP.API.Extensions
                 .AddDeveloperSigningCredential()
                 .AddMongoDbIdentityApiResources()
                 .AddMongoDbClients()
-                .AddMongoDbPersistedGrants()
-                .AddAspNetIdentity<AppUser>();
+                .AddMongoDbPersistedGrants();
+                //.AddAspNetIdentity<AppUser>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(opts =>

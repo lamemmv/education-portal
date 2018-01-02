@@ -41,7 +41,7 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<Blob>> Get(BlobSearchViewModel viewModel)
+        public async Task<IPagedList<Blob>> Get([FromQuery]BlobSearchViewModel viewModel)
         {
             return await _blobService.GetPagedListAsync(viewModel.Ext, viewModel.Page, viewModel.Size);
         }

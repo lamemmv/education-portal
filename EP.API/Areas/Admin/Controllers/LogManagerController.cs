@@ -20,7 +20,7 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<Log>> Get(LogSearchViewModel viewModel)
+        public async Task<IPagedList<Log>> Get([FromQuery]LogSearchViewModel viewModel)
         {
             var from = viewModel.From ?? DateTime.Now.AddDays(-1);
             var to = viewModel.To ?? DateTime.Now;

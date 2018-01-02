@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Emails;
+using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
 using EP.Data.Constants;
 using EP.Data.Entities.Emails;
@@ -26,9 +27,9 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<EmailAccount>> Get(int? page, int? size)
+        public async Task<IPagedList<EmailAccount>> Get([FromQuery]PaginationSearchViewModel viewModel)
         {
-            return await _emailAccountService.GetPagedListAsync(page, size);
+            return await _emailAccountService.GetPagedListAsync(viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]

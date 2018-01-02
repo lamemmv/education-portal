@@ -8,6 +8,7 @@ namespace EP.Data.Entities.News
     {
         public string Title { get; set; }
 
+        [BsonIgnoreIfNull]
         public EmbeddedBlob Blob { get; set; }
 
         [BsonIgnoreIfNull]

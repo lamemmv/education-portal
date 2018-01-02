@@ -1,6 +1,8 @@
 ﻿using EP.API.Areas.Admin.ViewModels.News;
+using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
 using EP.Data.Constants;
+using EP.Data.Entities.Blobs;
 using EP.Data.Entities.News;
 using EP.Data.Extensions;
 using EP.Data.Paginations;
@@ -11,7 +13,6 @@ using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using EP.Data.Entities.Blobs;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -32,9 +33,9 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IPagedList<NewsItem>> Get(int? page, int? size)
+        public async Task<IPagedList<NewsItem>> Get([FromQuery]PaginationSearchViewModel viewModel)
         {
-            return await _newsService.GetPagedListAsync(page, size);
+            return await _newsService.GetPagedListAsync(viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]
@@ -47,13 +48,6 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
             var embeddedBlob = await GetEmbeddedBlobAsync(viewModel.BlobId);
-
-            if (embeddedBlob == null)
-            {
-                ModelState.TryAddModelError(nameof(viewModel.BlobId), "BlobId is invalid.");
-
-                return BadRequest(ModelState);
-            }
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Blob = embeddedBlob;
@@ -71,14 +65,7 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
             var embeddedBlob = await GetEmbeddedBlobAsync(viewModel.BlobId);
-
-            if (embeddedBlob == null)
-            {
-                ModelState.TryAddModelError(nameof(viewModel.BlobId), "BlobId is invalid.");
-
-                return BadRequest(ModelState);
-            }
-
+            
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Id = id;
             entity.Blob = embeddedBlob;
