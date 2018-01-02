@@ -19,10 +19,10 @@ const API = {
             .join('&');
     },
 
-    getNews(page) {
+    getNews(page, size) {
         let params = {
             page: page ? page : 1,
-            size: PageSetting.getPageSize()
+            size: size ? size : PageSetting.getPageSize()
         };
         let url = `${baseUri}admin/newsManager`;
         url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);

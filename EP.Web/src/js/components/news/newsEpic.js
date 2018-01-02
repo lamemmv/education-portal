@@ -19,7 +19,7 @@ import API from '../api';
 const fetchNewsEpic = (action$, store) =>
     action$.ofType(GET_NEWS_LIST)
     .mergeMap((action) =>
-        Observable.fromPromise(API.getNews(action.payload.page))
+        Observable.fromPromise(API.getNews(action.payload.page, action.payload.size))
         .map(response => getNewsSuccess(response.data))
         .catch(error => Observable.of(getNewsFailure(error)))
     )

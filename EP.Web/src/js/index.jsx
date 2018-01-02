@@ -3,12 +3,14 @@ import {
     render
 } from 'preact';
 import { IntlProvider } from 'preact-i18n';
-import definition from './locales/vi.json';
 
-import App from './components/App.jsx';
 import 'material-components-web/dist/material-components-web';
 import 'material-components-web/dist/material-components-web.css';
 import { MDCToolbar, MDCToolbarFoundation } from '@material/toolbar';
+import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
+
+import definition from './locales/vi.json';
+import App from './components/App.jsx';
 import configureStore from './store/configureStore';
 
 const store = configureStore();

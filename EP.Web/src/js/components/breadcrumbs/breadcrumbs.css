@@ -1,5 +1,5 @@
 :root {
-    --breadcrumb-theme-1: #9d0f3e;
+    --breadcrumb-theme-1: #8BC34A;
     --breadcrumb-theme-2: #fff;
     --breadcrumb-theme-3: #d80d52;
     --breadcrumb-theme-4: #9d0f3e;
@@ -33,7 +33,7 @@
     line-height: 36px;
     position: relative;
     background: var(--breadcrumb-theme-2);
-    color: var(--breadcrumb-theme-1);
+    color: var(--box-theme-3);
     transition: background 0.5s;
 }
 

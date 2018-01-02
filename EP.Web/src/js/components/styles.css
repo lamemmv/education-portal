@@ -1,8 +1,8 @@
 :root {
-    --box-theme-1: #E91E63;
+    --box-theme-1: #8BC34A;
     --box-theme-2: #fff;
-    --box-theme-3: #d80d52;
-    --box-theme-4: #c70041;
+    --box-theme-3: #4CAF50;
+    --box-theme-4: #33691E;
 }
 
 
@@ -90,6 +90,7 @@
 .ep-logo {
     text-transform: uppercase;
     text-decoration: none;
+    color: var(--box-theme-3);
 }
 
 .ep-toolbar .ep-toolbar__row:first-child {
@@ -104,7 +105,7 @@
 }
 
 .ep-menu-icon {
-    color: #4e4e4e !important;
+    color: var(--box-theme-3) !important;
     min-width: 103px;
     padding-left: 5px !important;
     padding-right: 5px !important;
@@ -203,4 +204,11 @@ footer .container {
     padding: 10px 0px;
     color: #4e4e4e;
     background-color: rgba(51, 51, 51, 0.08);
+}
+
+
+/*Cards*/
+
+.ep-card {
+    padding: 10px;
 }

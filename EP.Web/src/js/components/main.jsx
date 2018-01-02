@@ -9,7 +9,7 @@ import NewsDetail from './news/detail';
 import CreateNews from './news/create/container';
 import EPBreadcrumbs from './breadcrumbs/container';
 import RouterContainer from './breadcrumbs/router.container';
-import demoimages from '../../assets/images/1-1.jpg'
+import demoimages from '../../assets/images/teaching-methods.jpg';
 
 import * as styles from './styles.css';
 
@@ -34,7 +34,10 @@ class Main extends Component {
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
-                                    <section class="mdc-card__media demo-card__16-9-media"></section>
+                                    <section class="mdc-card__media">
+                                    <img class="mdc-card__media-item"
+                                    src={require('../../assets/images/books.jpg')} />
+                                    </section>
                                     <section class="mdc-card__supporting-text">
                                         Hình sách
                                     </section>
@@ -59,47 +62,35 @@ class Main extends Component {
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Phương pháp & chường trình dạy</h1>
-                                            <h2 class="mdc-card__subtitle">Phương pháp dạy</h2>
+                                            <h1 class="mdc-card__title mdc-card__title--large">Phương pháp & chương trình dạy</h1>
+                                            <h2 class="mdc-card__subtitle" style={{ marginTop: '5px' }}>
+                                                Trung tâm áp dụng phương pháp dạy tiên tiến nhất. Học viên có thể phát huy hết khả năng...</h2>
                                         </section>
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
-                                    {/* <div class="mdc-card__horizontal-block">
-                                        <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title--large">Chương trình dạy</h1>
-                                            <h2 class="mdc-card__subtitle">Subtitle here</h2>
-                                        </section>
-                                        <img class="mdc-card__media-item mdc-card__media-item--2x" src={demoimages} />
-                                    </div>
-                                    <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
-                                    </section> */}
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
                                             <h1 class="mdc-card__title mdc-card__title--large">Qui định học phí</h1>
-                                            <h2 class="mdc-card__subtitle">Phương pháp dạy</h2>
+                                            <h2 class="mdc-card__subtitle"  style={{ marginTop: '5px' }}>Đối với học viên thường xuyên của trung tâm...</h2>
                                         </section>
-                                        <img class="mdc-card__media-item" src={demoimages} />
+                                        <img class="mdc-card__media-item" src={require('../../assets/images/money-bag.jpg')} />
                                     </div>
                                     <section class="mdc-card__actions">
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 1</button>
-                                        <button class="mdc-button mdc-button--compact mdc-card__action">Action 2</button>
+                                        <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
                                     </section>
                                 </div>
                                 <div class="mdc-card demo-card">
                                     <div class="mdc-card__horizontal-block">
                                         <section class="mdc-card__primary">
                                             <h1 class="mdc-card__title mdc-card__title--large">Nội qui trung tâm</h1>
-                                            <h2 class="mdc-card__subtitle">Ưu tiên </h2>
+                                            <h2 class="mdc-card__subtitle">Học viên khi tham gia học tại trung tâm phải chấp hành một số nội qui sau... </h2>
                                         </section>
-                                        <img class="mdc-card__media-item" src={demoimages} />
+                                        <img class="mdc-card__media-item" src={require('../../assets/images/rules.jpg')} />
                                     </div>
                                     <section class="mdc-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>

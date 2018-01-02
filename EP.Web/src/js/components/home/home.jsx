@@ -1,62 +1,31 @@
 import { h, Component } from 'preact';
+import ShortNews from './shortNews/index';
+import EPActivities from './activities/index';
+import * as styles from './styles.css';
 
-export default class Home extends Component {
+class Home extends Component {
     render() {
         return (
-            <div class="owl-stage" style="transform: translate3d(-1406px, 0px, 0px); transition: 0s; width: 4921px;">
-                <div class="owl-item cloned" style="width: 703px;">
-                    <div class="item">
-                        <img src="http://www.jiib.ch/material-slider/img/red-planet.png" alt="4.jpg" />
-                        <div class="slide-text">
-                            <h2>Go red, everywhere</h2>
-                            <p>And explore the world</p>
-                            <a class="btn waves-effect waves-purple lighten-2">Learn more</a>
+            <div class="mdc-layout-grid">
+                <div class="mdc-layout-grid__inner">
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <ShortNews />
+                    </div>
+                </div>
+                <div class="mdc-layout-grid__inner" style={{ marginTop: '80px' }}>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+                        <div class="mdc-card">
+                            <section class="mdc-card__media">
+                                <img class="mdc-card__media-item"
+                                    src={require('../../../assets/images/award.jpg')} style={{ height: 'auto' }} />
+                            </section>
+                            <section class="mdc-card__supporting-text">
+                                Giáo viên Lê Văn Khiêm vừa được phòng giáo dục Tân Phú ban tặng danh hiệu giáo viên xuất sắc, có nhiều đóng góp tích cực cho sự phát triển giáo dục quận nhà.
+                            </section>
                         </div>
                     </div>
-                </div>
-                <div class="owl-item cloned" style="width: 703px;"><div class="item">
-                    <img src="http://www.jiib.ch/material-slider/img/ballons.png" alt="3.jpg" />
-                    <div class="slide-text">
-                        <h2>Your files, anywhere</h2>
-                        <a class="btn waves-effect waves-purple lighten-2">Learn more</a>
-                    </div>
-                </div></div><div class="owl-item active" style="width: 703px;"><div class="item">
-                    <img src="http://www.jiib.ch/material-slider/img/earth.png" alt="1.jpg" />
-                    <div class="slide-text">
-                        <h2>Your lab, everywhere</h2>
-                        <p>Use everyday object in your experiments</p>
-                        <a class="btn waves-effect waves-purple  lighten-2">Get started</a>
-                    </div>
-                </div></div><div class="owl-item" style="width: 703px;"><div class="item">
-                    <img src="http://www.jiib.ch/material-slider/img/red-planet.png" alt="4.jpg" />
-                    <div class="slide-text">
-                        <h2>Go red, everywhere</h2>
-                        <p>And explore the world</p>
-                        <a class="btn waves-effect waves-purple lighten-2">Learn more</a>
-                    </div>
-                </div></div><div class="owl-item" style="width: 703px;"><div class="item">
-                    <img src="http://www.jiib.ch/material-slider/img/ballons.png" alt="3.jpg" />
-                    <div class="slide-text">
-                        <h2>Your files, anywhere</h2>
-                        <a class="btn waves-effect waves-purple lighten-2">Learn more</a>
-                    </div>
-                </div></div><div class="owl-item cloned" style="width: 703px;"><div class="item">
-                    <img src="http://www.jiib.ch/material-slider/img/earth.png" alt="1.jpg" />
-                    <div class="slide-text">
-                        <h2>Your lab, everywhere</h2>
-                        <p>Use everyday object in your experiments</p>
-                        <a class="btn waves-effect waves-purple  lighten-2">Get started</a>
-                    </div>
-                </div>
-                </div>
-                <div class="owl-item cloned" style="width: 703px;">
-                    <div class="item">
-                        <img src="http://www.jiib.ch/material-slider/img/red-planet.png" alt="4.jpg" />
-                        <div class="slide-text">
-                            <h2>Go red, everywhere</h2>
-                            <p>And explore the world</p>
-                            <a class="btn waves-effect waves-purple lighten-2">Learn more</a>
-                        </div>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+                        <EPActivities />
                     </div>
                 </div>
             </div>
@@ -64,3 +33,4 @@ export default class Home extends Component {
     }
 }
 
+export default Home;
