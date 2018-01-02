@@ -29,7 +29,7 @@ class Main extends Component {
                                         <h1 class="mdc-card__title mdc-card__title--large">Các cơ sở liên kết</h1>
                                         <h2 class="mdc-card__subtitle">Subtitle here</h2>
                                     </section>
-                                    <section class="mdc-card__actions">
+                                    <section class="mdc-card__actions ep-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết</button>
                                     </section>
                                 </div>
@@ -68,7 +68,7 @@ class Main extends Component {
                                         </section>
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
-                                    <section class="mdc-card__actions">
+                                    <section class="mdc-card__actions ep-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
@@ -82,7 +82,7 @@ class Main extends Component {
                                         </section>
                                         <img class="mdc-card__media-item" src={require('../../assets/images/money-bag.jpg')} />
                                     </div>
-                                    <section class="mdc-card__actions">
+                                    <section class="mdc-card__actions ep-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
@@ -94,7 +94,7 @@ class Main extends Component {
                                         </section>
                                         <img class="mdc-card__media-item" src={require('../../assets/images/rules.jpg')} />
                                     </div>
-                                    <section class="mdc-card__actions">
+                                    <section class="mdc-card__actions ep-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>
@@ -106,7 +106,7 @@ class Main extends Component {
                                         </section>
                                         <img class="mdc-card__media-item" src={demoimages} />
                                     </div>
-                                    <section class="mdc-card__actions">
+                                    <section class="mdc-card__actions ep-card__actions">
                                         <button class="mdc-button mdc-button--compact mdc-card__action"><Text id='news.detail'></Text></button>
                                     </section>
                                 </div>

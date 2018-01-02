@@ -40,7 +40,7 @@ class ShortNews extends Component {
                                         : null
                                 }
                             </div>
-                            <section class="mdc-card__actions">
+                            <section class="mdc-card__actions" style={{ padding: '8px' }}>
                                 <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
                             </section>
                         </div>

@@ -206,9 +206,21 @@ footer .container {
     background-color: rgba(51, 51, 51, 0.08);
 }
 
+.mdc-card__primary .mdc-card__title--large {
+    color: var(--box-theme-3);
+}
+
 
 /*Cards*/
 
 .ep-card {
     padding: 10px;
+}
+
+.ep-card__actions {
+    background-color: var(--box-theme-1);
+}
+
+.ep-card__actions button {
+    color: var(--box-theme-2) !important;
 }
