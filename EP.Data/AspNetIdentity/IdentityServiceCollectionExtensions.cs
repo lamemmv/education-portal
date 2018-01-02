@@ -4,16 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EP.Data.AspNetIdentity
 {
-    public static class IdentityBuilderExtensions
+    public static class IdentityServiceCollectionExtensions
     {
         private const string AspNetUserCollectionName = "AspNetUsers";
         private const string AspNetRoleCollectionName = "AspNetRoles";
 
         public static IdentityBuilder AddIdentityMongoStores(
-            this IdentityBuilder builder,
+            this IServiceCollection services,
             string connectionString)
         {
-            var services = builder.Services;
             var database = MongoDbHelper.GetMongoDatabase(connectionString);
 
             services.AddSingleton<IUserStore<AppUser>>(p => 
@@ -32,7 +31,7 @@ namespace EP.Data.AspNetIdentity
                 return new AppRoleStore<AppRole>(roleCollection);
             });
 
-            return builder;
+            return services.AddIdentity<AppUser, AppRole>();
         }
     }
 }
