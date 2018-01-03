@@ -1,14 +1,19 @@
-﻿using EP.Services;
+﻿using EP.Data.IdentityServerStore;
+using EP.Services;
+using EP.Services.Accounts;
 using EP.Services.Blobs;
 using EP.Services.Caching;
 using EP.Services.Emails;
 using EP.Services.Logs;
 using EP.Services.News;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using LightInject;
 using LightInject.Microsoft.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace EP.API.Extensions
@@ -17,18 +22,7 @@ namespace EP.API.Extensions
     {
         public static IServiceProvider AddInternalServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // If you need access to generic IConfiguration this is required.
-            services.AddSingleton(x => configuration);
-
-            // Add functionality to inject IOptions<T>.
-            services.AddOptions();
-
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-            // services.Configure<AppSettings>(appSettings =>
-            // {
-            //     appSettings.PublicBlob = configuration["AppSettings:PublicBlob"];
-            //     appSettings.PrivateBlob = configuration["AppSettings:PrivateBlob"];
-            // });
 
             var container = new ServiceContainer(new ContainerOptions
             {
@@ -39,6 +33,9 @@ namespace EP.API.Extensions
                 .SetDefaultLifetime<PerScopeLifetime>()
                 // Infrastructure.
                 .Register<IMemoryCacheService, MemoryCacheService>()
+                // IdentityServer4.
+                .Register<ICorsPolicyService, InMemoryCorsPolicyService>()
+                .Register<IProfileService, ProfileService>()
                 // Emails.
                 .Register<IEmailSender, NetEmailSender>()
                 .Register<IEmailAccountService, EmailAccountService>()
@@ -51,8 +48,15 @@ namespace EP.API.Extensions
                 // News.
                 .Register<INewsService, NewsService>();
 
-            // Background tasks.
-            container.Register<IHostedService, QueuedEmailSendTask>(new PerContainerLifetime());
+            container
+                // Background tasks.
+                .Register<IHostedService, QueuedEmailSendTask>(new PerContainerLifetime())
+                // AppSettings.
+                .Register(factory => factory.GetInstance<IOptionsSnapshot<AppSettings>>().Value, new PerContainerLifetime())
+                // IdentityServer4.
+                .Register<IResourceStore, MongoDbResourceStore>(new PerContainerLifetime())
+                .Register<IClientStore, MongoDbClientStore>(new PerContainerLifetime())
+                .Register<IPersistedGrantStore, MongoDbPersistedGrantStore>(new PerContainerLifetime());
 
             return container.CreateServiceProvider(services);
         }

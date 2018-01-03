@@ -1,20 +1,42 @@
 ﻿using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
-using EP.Data.IdentityServerStore;
+using EP.Services.Accounts;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Extensions
 {
     public static class IdentityExtensions
     {
-        public static IdentityBuilder AddCustomIdentity(
+        public static IServiceCollection AddCustomIdentityServer(
+            this IServiceCollection services,
+            string connectionString)
+        {
+            services.AddCustomIdentity(connectionString);
+
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+                .AddAspNetIdentity<AppUser>()
+                .AddProfileService<ProfileService>();
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(opts =>
+                {
+                    opts.Authority = "http://localhost:5000";
+                    opts.RequireHttpsMetadata = false;
+                    opts.ApiName = "ep.api";
+                });
+
+            return services;
+        }
+
+        private static IdentityBuilder AddCustomIdentity(
             this IServiceCollection services,
             string connectionString,
             string userCollectionName = "AspNetUsers",
@@ -106,29 +128,6 @@ namespace EP.API.Extensions
             });
 
             return identityBuilder;
-        }
-
-        public static IServiceCollection AddCustomIdentityServer(
-            this IServiceCollection services,
-            string connectionString)
-        {
-            services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddMongoDbIdentityApiResources()
-                .AddMongoDbClients()
-                //.AddMongoDbPersistedGrants();
-                .AddAspNetIdentity<AppUser>()
-                .AddMongoDbProfileService();
-
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(opts =>
-                {
-                    opts.Authority = "http://localhost:5000";
-                    opts.RequireHttpsMetadata = false;
-                    opts.ApiName = "ep.api";
-                });
-
-            return services;
         }
     }
 }

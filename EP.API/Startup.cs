@@ -1,10 +1,9 @@
 ﻿using EP.API.Extensions;
 using EP.API.Infrastructure;
 using EP.Data;
-using EP.Data.AspNetIdentity;
+using EP.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -16,11 +15,13 @@ namespace EP.API
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _hostingEnvironment = env;
 
             Log.Logger = LogCreator.Create(_connectionString);
 
@@ -32,16 +33,14 @@ namespace EP.API
             services
                 .AddCustomCompression()
                 .AddCustomCors("AllowAllOrigins")
-                .AddMongoDbContext(_connectionString);
-
-            services.AddCustomIdentity(_connectionString);
-
-            services
                 .AddMemoryCache()
                 .AddDistributedMemoryCache()
-                .AddCustomMvc()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger)
+                .AddMongoDbContext(_connectionString);
+
+            services
+                .AddCustomMvc()
                 .AddCustomIdentityServer(_connectionString)
                 .AddCustomSwaggerGen();
 
@@ -49,9 +48,9 @@ namespace EP.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, AppSettings appSettings)
         {
-            if (env.IsDevelopment())
+            if (_hostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -59,11 +58,10 @@ namespace EP.API
             app
                 .UseResponseCompression()
                 .UseCustomStaticFiles(
-                    env.WebRootPath,
-                    _configuration["AppSettings:PublicBlob"],
-                    _configuration["AppSettings:PrivateBlob"])
+                    _hostingEnvironment.WebRootPath,
+                    appSettings.PublicBlob,
+                    appSettings.PrivateBlob)
                 .UseCors("AllowAllOrigins")
-                //.UseAuthentication()
                 .UseIdentityServer()
                 .UseCustomSwagger()
                 .UseMvcWithDefaultRoute()

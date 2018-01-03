@@ -3,7 +3,7 @@ using System.IO;
 
 namespace EP.API.Extensions
 {
-    public static class StaticFileApplicationBuilderExtensions
+    public static class StaticFileExtensions
     {
         public static IApplicationBuilder UseCustomStaticFiles(
             this IApplicationBuilder app,
