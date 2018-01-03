@@ -2,7 +2,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EP.Data.Store
+namespace EP.Data.IdentityServerStore
 {
     public static class IdentityServerBuilderExtensions
     {

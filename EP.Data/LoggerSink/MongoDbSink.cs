@@ -1,45 +1,65 @@
 ﻿using EP.Data.DbContext;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
+using Serilog.Sinks.PeriodicBatching;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace EP.Data.LoggerSink
 {
-    public sealed class MongoDbSink : ILogEventSink
+    public sealed class MongoDbSink : PeriodicBatchingSink
     {
+        public const string DefaultCollectionName = "Logs";
+        public const int DefaultBatchPostingLimit = 50;
+        public static readonly TimeSpan DefaultPeriod = TimeSpan.FromSeconds(2);
+
         private readonly string _connectionString;
         private readonly string _collectionName;
         private readonly ITextFormatter _formatter;
 
-        public MongoDbSink(string connectionString, string collectionName, ITextFormatter formatter)
+        public MongoDbSink(
+            ITextFormatter formatter,
+            string connectionString,
+            string collectionName = DefaultCollectionName,            
+            int batchPostingLimit = DefaultBatchPostingLimit,
+            TimeSpan? period = null) : base(batchPostingLimit, period ?? DefaultPeriod)
         {
+            _formatter = formatter;
             _connectionString = connectionString;
             _collectionName = collectionName;
-            _formatter = formatter;
         }
 
-        public void Emit(LogEvent logEvent)
+        protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
         {
-            BsonDocument bsonDocument = GenerateBsonDocument(logEvent, _formatter);
-
-            if (bsonDocument != null)
+            if (events == null || !events.Any())
             {
-                GetMongoCollection(_connectionString, _collectionName)
-                    .InsertOne(bsonDocument);
+                var documents = GenerateBsonDocuments(events, _formatter);
+
+                await GetMongoCollection(_connectionString, _collectionName)
+                    .InsertManyAsync(documents);
             }
         }
 
-        private static BsonDocument GenerateBsonDocument(LogEvent logEvent, ITextFormatter formatter)
+        private static IEnumerable<BsonDocument> GenerateBsonDocuments(
+            IEnumerable<LogEvent> events,
+            ITextFormatter formatter)
         {
-            TextWriter writer = new StringWriter();
-            formatter.Format(logEvent, writer);
+            TextWriter writer;
 
-            BsonDocument.TryParse(writer.ToString(), out BsonDocument bsonDocument);
+            foreach (var logEvent in events)
+            {
+                writer = new StringWriter();
+                formatter.Format(logEvent, writer);
 
-            return bsonDocument;
+                BsonDocument.TryParse(writer.ToString(), out BsonDocument bsonDocument);
+
+                yield return bsonDocument;
+            }
         }
 
         private static IMongoCollection<BsonDocument> GetMongoCollection(

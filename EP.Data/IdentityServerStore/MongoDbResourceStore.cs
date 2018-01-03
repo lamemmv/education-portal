@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 
-namespace EP.Data.Store
+namespace EP.Data.IdentityServerStore
 {
     public sealed class MongoDbResourceStore : IResourceStore
     {

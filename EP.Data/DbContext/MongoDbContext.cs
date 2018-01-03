@@ -10,9 +10,9 @@ namespace EP.Data.DbContext
     {
         private const string NewsCollectionName = "News";
 
-        public override void SetupCollections()
-        {
-        }
+        // public override void SetupCollections()
+        // {
+        // }
 
         #region Emails
 

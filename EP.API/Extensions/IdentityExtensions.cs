@@ -1,5 +1,6 @@
 ﻿using EP.Data.AspNetIdentity;
-using EP.Data.Store;
+using EP.Data.DbContext;
+using EP.Data.IdentityServerStore;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -11,10 +12,19 @@ using System;
 
 namespace EP.API.Extensions
 {
-    public static class IdentityServiceCollectionExtensions
+    public static class IdentityExtensions
     {
-        public static IServiceCollection ConfigureCustomIdentity(this IServiceCollection services)
+        public static IdentityBuilder AddCustomIdentity(
+            this IServiceCollection services,
+            string connectionString,
+            string userCollectionName = "AspNetUsers",
+            string roleCollectionName = "AspNetRoles")
         {
+            var identityBuilder = services
+                .AddIdentity<AppUser, AppRole>()
+                .AddIdentityMongoDbStores(connectionString, userCollectionName, roleCollectionName)
+                .AddDefaultTokenProviders();
+
             services.Configure<IdentityOptions>(opts =>
             {
                 // Password settings.
@@ -61,13 +71,41 @@ namespace EP.API.Extensions
                         {
                             ctx.Response.Redirect(ctx.RedirectUri);
                         }
-                        
+
                         return Task.CompletedTask;
                     }
                 };
             });
 
-            return services;
+            return identityBuilder;
+        }
+
+        private static IdentityBuilder AddIdentityMongoDbStores(
+            this IdentityBuilder identityBuilder,
+            string connectionString,
+            string userCollectionName,
+            string roleCollectionName)
+        {
+            var services = identityBuilder.Services;
+            var database = MongoDbHelper.GetMongoDatabase(connectionString);
+
+            services.AddSingleton<IUserStore<AppUser>>(p =>
+            {
+                var userCollection = database.GetCollection<AppUser>(userCollectionName);
+                IndexChecker.EnsureAppUserIndexes(userCollection).GetAwaiter().GetResult();
+
+                return new AppUserStore<AppUser>(userCollection);
+            });
+
+            services.AddSingleton<IRoleStore<AppRole>>(p =>
+            {
+                var roleCollection = database.GetCollection<AppRole>(roleCollectionName);
+                IndexChecker.EnsureAppRoleIndex(roleCollection).GetAwaiter().GetResult();
+
+                return new AppRoleStore<AppRole>(roleCollection);
+            });
+
+            return identityBuilder;
         }
 
         public static IServiceCollection AddCustomIdentityServer(

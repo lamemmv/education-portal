@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using IdentityModel;
 
-namespace EP.Data.Store
+namespace EP.Data.IdentityServerStore
 {
     public sealed class ProfileService : IProfileService
     {

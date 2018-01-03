@@ -1,9 +1,10 @@
+using EP.Data.DbContext;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace EP.Data.DbContext
+namespace EP.API.Extensions
 {
-    public static class MongoDbServiceCollectionExtensions
+    public static class MongoDbContextExtensions
     {
         public static MongoDbContextBuilder<MongoDbContext> AddMongoDbContext(
             this IServiceCollection services,

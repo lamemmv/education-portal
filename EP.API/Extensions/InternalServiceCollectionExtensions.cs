@@ -23,11 +23,12 @@ namespace EP.API.Extensions
             // Add functionality to inject IOptions<T>.
             services.AddOptions();
 
-            services.Configure<AppSettings>(appSettings =>
-            {
-                appSettings.PublicBlob = configuration["AppSettings:PublicBlob"];
-                appSettings.PrivateBlob = configuration["AppSettings:PrivateBlob"];
-            });
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+            // services.Configure<AppSettings>(appSettings =>
+            // {
+            //     appSettings.PublicBlob = configuration["AppSettings:PublicBlob"];
+            //     appSettings.PrivateBlob = configuration["AppSettings:PrivateBlob"];
+            // });
 
             var container = new ServiceContainer(new ContainerOptions
             {

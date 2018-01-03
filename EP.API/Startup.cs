@@ -2,7 +2,6 @@
 using EP.API.Infrastructure;
 using EP.Data;
 using EP.Data.AspNetIdentity;
-using EP.Data.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -35,9 +34,7 @@ namespace EP.API
                 .AddCustomCors("AllowAllOrigins")
                 .AddMongoDbContext(_connectionString);
 
-            services
-                .AddIdentityMongoStores(_connectionString)
-                .AddDefaultTokenProviders();
+            services.AddCustomIdentity(_connectionString);
 
             services
                 .AddMemoryCache()
@@ -45,7 +42,6 @@ namespace EP.API
                 .AddCustomMvc()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
                 .AddSingleton(Log.Logger)
-                .ConfigureCustomIdentity()               
                 .AddCustomIdentityServer(_connectionString)
                 .AddCustomSwaggerGen();
 
