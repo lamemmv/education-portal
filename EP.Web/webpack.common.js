@@ -27,7 +27,17 @@ module.exports = {
             title: 'Production',
             template: path.join(paths.SRC, 'index.html'),
         }),
-        new ExtractTextPlugin('style.bundle.css')
+        new ExtractTextPlugin('style.bundle.css'),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            "Tether": 'tether',
+            Popper: ['popper.js', 'default'],
+            // In case you imported plugins individually, you must also require them here:
+            Util: "exports-loader?Util!bootstrap/js/dist/util",
+            Dropdown: "exports-loader?Dropdown!bootstrap/js/dist/dropdown",
+          })
     ],
     output: {
         filename: '[name].bundle.js',

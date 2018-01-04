@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { Link, HashRouter } from 'react-router-dom';
-import { Text } from 'preact-i18n';
+import { Localizer, Text } from 'preact-i18n';
 import logo from '../../assets/images/logo.png';
 import linkedin from '../../assets/images/in-128-2.png';
 import twitter from '../../assets/images/twitter-128.png';
@@ -11,92 +11,59 @@ class EPHeader extends Component {
     render() {
         return (
             < HashRouter >
-                <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--fixed-lastrow-only ep-toolbar">
-                    <div class="mdc-toolbar__row ep-toolbar__row">
-                        <div class='ep-toolbar__section'>
-                            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                                <div class='ep-toolbar_item'>
-                                    <i class="material-icons">phone</i>
-                                    <span>(+84)909 972 559</span>
-                                </div>
-                                <div class='ep-toolbar_item'>
-                                    <i class="material-icons">email</i>
-                                    <span>trinhanmail@gmail.com</span>
-                                </div>
-                            </section>
-                            <section class="mdc-toolbar__section ep-toolbar__section__end">
-                                <div class="social-icon">
-                                    <a href="#" target="_blank">
-                                        <img width="32" height="32" src={facebook} alt="Facebook" />
-                                    </a>
-                                </div>
-                                <div class="social-icon">
-                                    <a href="#" target="_blank">
-                                        <img width="32" height="32" src={linkedin} alt="Linkedin" />
-                                    </a>
-                                </div>
-                                <div class="social-icon">
-                                    <a href="#" target="_blank">
-                                        <img width="32" height="32" src={twitter} alt="Twitter" />
-                                    </a>
-                                </div>
-                                <div class="social-icon">
-                                    <a href="#" target="_blank">
-                                        <img width="32" height="32" src={googleplus} alt="Twitter" />
-                                    </a>
-                                </div>
-                                <div class='ep-toolbar__end'>
-                                    <i class="material-icons">lock</i>
-                                    <Link to='/login'>
-                                        <span><Text id='signin'></Text></span>
-                                    </Link>
-                                    <span class="ep-separator">|</span>
-                                    <Link to='/signup'>
-                                        <span><Text id='signup'></Text></span>
-                                    </Link>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                    <div class="mdc-toolbar__row ep-toolbar__row">
-                        <div class='ep-toolbar__section'>
-                            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                                <Link to='/' class='ep-logo'>
-                                    <span><Text id='home'></Text></span>
-                                </Link>
-                            </section>
-                            <section class="mdc-toolbar__section">
-
-                            </section>
-                            <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
-                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
-                                    <Text id='header.home'></Text>
-                                </Link>
+                <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+                    <Link to="/" class="navbar-brand">
+                        <Text id='header.home'></Text>
+                    </Link>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.about'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.parents'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.examination'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/files" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.files'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/news" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.news'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/courses" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.recruitments'></Text>
                                 </Link>
+                            </li>
+                            <li class="nav-item">
                                 <Link to="/contact" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
                                     <Text id='header.contact'></Text>
                                 </Link>
-                            </section>
-                        </div>
+                            </li>
+                        </ul>
+                        <form class="form-inline mt-2 mt-md-0">
+                            <Localizer>
+                                <input class="form-control mr-sm-2" type="text" placeholder={<Text id='search'></Text>} aria-label="Search" />
+                            </Localizer>
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><Text id='search'></Text></button>
+                        </form>
                     </div>
-                </header>
+                </nav>
             </HashRouter>
         );
     };

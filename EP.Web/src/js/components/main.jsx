@@ -19,7 +19,19 @@ class Main extends Component {
         return (
             <main>
                 <EPBreadcrumbs />
-                <div class="mdc-toolbar-fixed-adjust">
+                <HashRouter>
+                    <RouterContainer>
+                        <Switch>
+                            <Route exact path='/' component={Home} />
+                            <Route exact path='/files' component={Files} />
+                            <Route path='/file/:id' component={FilePreview} />
+                            <Route exact path='/news' component={NewsIndex} />
+                            <Route exact path='/news/create' component={CreateNews} />
+                            <Route exact path='/news/:id' component={NewsDetail} />
+                        </Switch>
+                    </RouterContainer>
+                </HashRouter>
+                {/* <div class="mdc-toolbar-fixed-adjust">
                     <div class='mdc-layout-grid'>
                         <div class='mdc-layout-grid__inner' >
                             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2 ep-left">
@@ -114,7 +126,7 @@ class Main extends Component {
                         </div>
                     </div>
 
-                </div>
+                </div> */}
             </main>
         );
     };

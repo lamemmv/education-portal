@@ -20,33 +20,81 @@ class ShortNews extends Component {
     render() {
         let { items } = this.props.news;
         return (
-            <Carousel
-                showThumbs={false}
-                autoPlay={true}
-                showStatus={false}
-                transitionTime={1000}
-                interval={5000}>
-                {items.map((item) => {
-                    return (
-                        <div class="mdc-card ep-card">
-                            <div class="mdc-card__horizontal-block">
-                                <section class="mdc-card__primary">
-                                    <h1 class="mdc-card__title mdc-card__title--large">{item.title}</h1>
-                                    <h2 class="mdc-card__subtitle">{item.ingress} </h2>
-                                </section>
-                                {
-                                    item.blob ?
-                                        (<img class="mdc-card__media-item" src={API.getServerDomain() + item.blob.virtualPath} />)
-                                        : null
-                                }
+            // <Carousel
+            //     showThumbs={false}
+            //     autoPlay={true}
+            //     showStatus={false}
+            //     transitionTime={1000}
+            //     interval={5000}>
+            //     {items.map((item) => {
+            //         return (
+            //             <div class="mdc-card ep-card">
+            //                 <div class="mdc-card__horizontal-block">
+            //                     <section class="mdc-card__primary">
+            //                         <h1 class="mdc-card__title mdc-card__title--large">{item.title}</h1>
+            //                         <h2 class="mdc-card__subtitle">{item.ingress} </h2>
+            //                     </section>
+            //                     {
+            //                         item.blob ?
+            //                             (<img class="mdc-card__media-item" src={API.getServerDomain() + item.blob.virtualPath} />)
+            //                             : null
+            //                     }
+            //                 </div>
+            //                 <section class="mdc-card__actions" style={{ padding: '8px' }}>
+            //                     <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
+            //                 </section>
+            //             </div>                        
+            //         )
+            //     })}
+            // </Carousel>
+
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class=""></li>
+                    <li data-target="#myCarousel" data-slide-to="1" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="2" class=""></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item">
+                        <img class="first-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide" />
+                        <div class="container">
+                            <div class="carousel-caption d-none d-md-block text-left">
+                                <h1>Example headline.</h1>
+                                <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                                <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
                             </div>
-                            <section class="mdc-card__actions" style={{ padding: '8px' }}>
-                                <button class="mdc-button mdc-button--compact mdc-card__action">Chi tiết >></button>
-                            </section>
                         </div>
-                    )
-                })}
-            </Carousel>
+                    </div>
+                    <div class="carousel-item active">
+                        <img class="second-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide" />
+                        <div class="container">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h1>Another example headline.</h1>
+                                <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                                <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="third-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Third slide" />
+                        <div class="container">
+                            <div class="carousel-caption d-none d-md-block text-right">
+                                <h1>One more for good measure.</h1>
+                                <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                                <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
         );
     }
 }

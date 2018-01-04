@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { bindActionCreators } from 'redux';
 import { addNotification } from './notification.actions';
-import { MDCSnackbar, MDCSnackbarFoundation } from '@material/snackbar';
+//import { MDCSnackbar, MDCSnackbarFoundation } from '@material/snackbar';
 
 class NotificationContainer extends Component {
 

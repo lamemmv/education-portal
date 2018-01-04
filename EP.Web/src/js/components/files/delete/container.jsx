@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { MDCDialog } from '@material/dialog';
+//import { MDCDialog } from '@material/dialog';
 import {
     connect
 } from 'preact-redux'
