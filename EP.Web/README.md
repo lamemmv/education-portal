@@ -7,5 +7,6 @@ This is simple webpack + babel + react template
 
 `
 npm install
+
 npm start
 `
