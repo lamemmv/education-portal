@@ -12,14 +12,8 @@ namespace EP.Services.Logs
 
         Task<ActivityLogType> GetLogTypeByIdAsync(string id);
 
-        Task<long> CountLogTypeAsync();
-
-        Task CreateLogTypeAsync(IEnumerable<ActivityLogType> entities);
-
         Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled);
 
-        Task<bool> DeleteLogTypeAsync();
-        
         Task<IPagedList<ActivityLog>> GetPagedListAsync(
             DateTime createdFromUtc,
             DateTime createdToUtc,

@@ -11,12 +11,16 @@ namespace EP.API.Extensions
             string publicBlob,
             string privateBlob)
         {
-            EnsureAvailableDirectories(webRootPath, publicBlob, privateBlob);
-
-            return app.UseStaticFiles();
+            return app
+                .EnsureAvailableDirectories(webRootPath, publicBlob, privateBlob)
+                .UseStaticFiles();
         }
 
-        private static void EnsureAvailableDirectories(string webRootPath, string publicBlob, string privateBlob)
+        private static IApplicationBuilder EnsureAvailableDirectories(
+            this IApplicationBuilder app,
+            string webRootPath,
+            string publicBlob,
+            string privateBlob)
         {
             string publicBlobPath = Path.Combine(webRootPath, publicBlob);
             string privateBlobPath = Path.Combine(Directory.GetCurrentDirectory(), privateBlob);
@@ -30,6 +34,8 @@ namespace EP.API.Extensions
             {
                 Directory.CreateDirectory(privateBlobPath);
             }
+
+            return app.InitDefaultBlob(publicBlob, publicBlobPath, privateBlob, privateBlobPath);
         }
     }
 }
