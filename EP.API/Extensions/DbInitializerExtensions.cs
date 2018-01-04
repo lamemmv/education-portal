@@ -1,8 +1,9 @@
 using EP.Data.AspNetIdentity;
-using EP.Data.Constants;
 using EP.Data.DbContext;
+using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
+using EP.Services.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,43 +12,97 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 
-namespace EP.Data
+namespace EP.API.Extensions
 {
     public static class DbInitializerExtensions
     {
-        public static IApplicationBuilder InitDefaultData(this IApplicationBuilder app)
-        {           
+        public static IApplicationBuilder InitDefaultBlob(
+            this IApplicationBuilder app,
+            string publicBlob,
+            string publicBlobPath,
+            string privateBlob,
+            string privateBlobPath)
+        {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var serviceProvider = scope.ServiceProvider;
-
-                var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
-                var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
-                var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
-
                 // This protects from deadlocks by starting the async method on the ThreadPool.
-                Task.Run(() => Initialize(dbContext, roleManager, userManager)).Wait();
+                Task.Run(() => SeedBlobAsync(
+                    scope.ServiceProvider,
+                    publicBlob,
+                    publicBlobPath,
+                    privateBlob,
+                    privateBlobPath)).Wait();
             }
 
             return app;
         }
 
-        private static async Task Initialize(
-            MongoDbContext dbContext,
-            RoleManager<AppRole> roleManager,
-            UserManager<AppUser> userManager)
+        public static IApplicationBuilder InitDefaultData(this IApplicationBuilder app)
         {
-            await SeedIdentityAsync(roleManager, userManager);
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
+
+                // This protects from deadlocks by starting the async method on the ThreadPool.
+                Task.Run(() => Initialize(scope.ServiceProvider, dbContext)).Wait();
+            }
+
+            return app;
+        }
+
+        private static async Task SeedBlobAsync(
+            IServiceProvider serviceProvider,
+            string publicBlob,
+            string publicBlobPath,
+            string privateBlob,
+            string privateBlobPath)
+        {
+            var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
+            
+            var filter = Builders<Blob>.Filter.Eq(e => e.Name, publicBlob);
+            var projection = Builders<Blob>.Projection.Include(e => e.Id);
+            var blob = await dbContext.Blobs.GetSingleAsync(filter, projection);
+
+            if (blob == null)
+            {
+                blob = new Blob
+                {
+                    Name = publicBlob,
+                    PhysicalPath = publicBlobPath,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                await dbContext.Blobs.CreateAsync(blob);
+            }
+
+            filter = Builders<Blob>.Filter.Eq(e => e.Name, privateBlob);
+            blob = await dbContext.Blobs.GetSingleAsync(filter, projection);
+
+            if (blob == null)
+            {
+                blob = new Blob
+                {
+                    Name = privateBlob,
+                    PhysicalPath = privateBlobPath,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                await dbContext.Blobs.CreateAsync(blob);
+            }
+        }
+
+        private static async Task Initialize(IServiceProvider serviceProvider, MongoDbContext dbContext)
+        {
+            await SeedIdentityAsync(serviceProvider);
 
             await SeedEmailAccountAsync(dbContext);
 
             await SeedActivityLogTypeAsync(dbContext);
         }
 
-        private static async Task SeedIdentityAsync(
-            RoleManager<AppRole> roleManager,
-            UserManager<AppUser> userManager)
+        private static async Task SeedIdentityAsync(IServiceProvider serviceProvider)
         {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
             var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
 
             foreach (var roleName in roles)
@@ -60,6 +115,7 @@ namespace EP.Data
                 }
             }
 
+            var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
             string email = "ankn85@yahoo.com";
             string password = "1qazXSW@";
 
@@ -88,16 +144,14 @@ namespace EP.Data
 
         private static async Task SeedEmailAccountAsync(MongoDbContext dbContext)
         {
-            string email = "eschoolapi@gmail.com";
-            string password = "1qaw3(OLP_";
+            var dbCount = await dbContext.EmailAccounts.CountAsync();
 
-            var filter = Builders<EmailAccount>.Filter.Eq(e => e.Email, email);
-            var projection = Builders<EmailAccount>.Projection.Include(e => e.Id);
-            var emailAcc = await dbContext.EmailAccounts.GetSingleAsync(filter, projection);
-
-            if (emailAcc == null)
+            if (dbCount == 0)
             {
-                emailAcc = new EmailAccount
+                string email = "eschoolapi@gmail.com";
+                string password = "1qaw3(OLP_";
+
+                var emailAcc = new EmailAccount
                 {
                     Email = email,
                     DisplayName = "No Reply",

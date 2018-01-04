@@ -6,7 +6,7 @@ using System;
 namespace EP.API.Areas.Admin.Controllers
 {
     [Route("api/admin/[controller]")]
-    public abstract class AdminController : Controller
+    public abstract class AdminController : ControllerBase
     {
         protected ActivityLog GetCreatedActivityLog(Type objectType, object newValue)
         {

@@ -1,9 +1,9 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Emails;
 using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
-using EP.Data.Constants;
 using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
+using EP.Services.Constants;
 using EP.Services.Emails;
 using EP.Services.Logs;
 using ExpressMapper.Extensions;

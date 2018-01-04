@@ -1,7 +1,7 @@
 using EP.API.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace EP.API.Extensions
 {
@@ -10,18 +10,19 @@ namespace EP.API.Extensions
         public static IServiceCollection AddCustomMvc(this IServiceCollection services)
         {
             services
-                .AddMvc(opts =>
+                .AddMvcCore(opts =>
                 {
                     opts.Filters.Add(typeof(GlobalExceptionFilter));
                 })
-                .AddJsonOptions(opts =>
+                .AddApiExplorer()
+                .AddFormatterMappings()
+                .AddDataAnnotations()
+                .AddJsonFormatters(settings => 
                 {
-                    var serializerSettings = opts.SerializerSettings;
-
-                    serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    serializerSettings.Formatting = Formatting.None;
-                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    settings.Formatting = Formatting.None;
+                    settings.NullValueHandling = NullValueHandling.Ignore;
+                    settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
             return services;

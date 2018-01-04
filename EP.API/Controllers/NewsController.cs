@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace EP.API.Controllers
 {
     [Route("api/[controller]")]
-    public class NewsController : Controller
+    public class NewsController : ControllerBase
     {
         private readonly INewsService _newsService;
 

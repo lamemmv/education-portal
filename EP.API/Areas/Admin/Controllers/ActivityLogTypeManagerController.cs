@@ -1,9 +1,9 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
 using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
-using EP.Data.Constants;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
+using EP.Services.Constants;
 using EP.Services.Logs;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
