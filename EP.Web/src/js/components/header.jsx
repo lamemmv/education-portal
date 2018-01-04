@@ -12,7 +12,7 @@ class EPHeader extends Component {
         return (
             < HashRouter >
                 <nav class="navbar navbar-expand-md navbar-dark sticky-top">
-                    <Link to="/" class="navbar-brand">
+                    <Link to="/" class="navbar-brand ep-navbar-brand">
                         <Text id='header.home'></Text>
                     </Link>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,37 +21,37 @@ class EPHeader extends Component {
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item active">
-                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/" class='nav-link ep-nav-link'>
                                     <Text id='header.about'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/" class='nav-link ep-nav-link'>
                                     <Text id='header.parents'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/" class='nav-link ep-nav-link'>
                                     <Text id='header.examination'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/files" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/files" class='nav-link ep-nav-link'>
                                     <Text id='header.files'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/news" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/news" class='nav-link ep-nav-link'>
                                     <Text id='header.news'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/courses" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/courses" class='nav-link ep-nav-link'>
                                     <Text id='header.recruitments'></Text>
                                 </Link>
                             </li>
                             <li class="nav-item">
-                                <Link to="/contact" class="mdc-toolbar__menu-icon ep-menu-icon ep-menu-icon">
+                                <Link to="/contact" class='nav-link ep-nav-link'>
                                     <Text id='header.contact'></Text>
                                 </Link>
                             </li>
