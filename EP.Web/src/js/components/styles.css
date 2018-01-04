@@ -4,3 +4,11 @@
     --box-theme-3: #4CAF50;
     --box-theme-4: #33691E;
 }
+
+.ep-nav-link {
+    color: var(--box-theme-3) !important;
+}
+
+.ep-navbar-brand {
+    color: var(--box-theme-3) !important;
+}
