@@ -1,8 +1,9 @@
 using EP.Data.AspNetIdentity;
-using EP.Data.Constants;
 using EP.Data.DbContext;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
+using EP.Services.Constants;
+using EP.Services.Logs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 
-namespace EP.Data
+namespace EP.API.Extensions
 {
     public static class DbInitializerExtensions
     {
@@ -24,9 +25,10 @@ namespace EP.Data
                 var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
                 var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
                 var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+                var activityLogService = serviceProvider.GetRequiredService<IActivityLogService>();
 
                 // This protects from deadlocks by starting the async method on the ThreadPool.
-                Task.Run(() => Initialize(dbContext, roleManager, userManager)).Wait();
+                Task.Run(() => Initialize(dbContext, roleManager, userManager, activityLogService)).Wait();
             }
 
             return app;
@@ -35,13 +37,14 @@ namespace EP.Data
         private static async Task Initialize(
             MongoDbContext dbContext,
             RoleManager<AppRole> roleManager,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IActivityLogService activityLogService)
         {
             await SeedIdentityAsync(roleManager, userManager);
 
             await SeedEmailAccountAsync(dbContext);
 
-            await SeedActivityLogTypeAsync(dbContext);
+            await SeedActivityLogTypeAsync(activityLogService);
         }
 
         private static async Task SeedIdentityAsync(
@@ -115,7 +118,7 @@ namespace EP.Data
             }
         }
 
-        private static async Task SeedActivityLogTypeAsync(MongoDbContext dbContext)
+        private static async Task SeedActivityLogTypeAsync(IActivityLogService activityLogService)
         {
             var activityLogTypes = new[]
             {
@@ -211,12 +214,12 @@ namespace EP.Data
                 }
             };
 
-            var dbCount = await dbContext.ActivityLogTypes.CountAsync();
+            var dbCount = await activityLogService.CountLogTypeAsync();
 
             if (dbCount != activityLogTypes.LongLength)
             {
-                await dbContext.ActivityLogTypes.DeleteAsync();
-                await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
+                await activityLogService.DeleteLogTypeAsync();
+                await activityLogService.CreateLogTypeAsync(activityLogTypes);
             }
         }
     }

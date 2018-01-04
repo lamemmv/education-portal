@@ -7,7 +7,7 @@ namespace EP.API.Areas.Admin.Controllers
 {
     [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     [Route("api/admin/[controller]")]
-    public class DashboardController : Controller
+    public class DashboardController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get()

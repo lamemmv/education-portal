@@ -1,4 +1,4 @@
-﻿namespace EP.Data.Constants
+﻿namespace EP.Services.Constants
 {
     public static class SystemKeyword
     {

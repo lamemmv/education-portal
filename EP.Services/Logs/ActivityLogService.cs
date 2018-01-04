@@ -40,6 +40,16 @@ namespace EP.Services.Logs
             return await _activityLogTypes.GetByIdAsync(id);
         }
 
+        public async Task<long> CountLogTypeAsync()
+        {
+            return await _activityLogTypes.CountAsync();
+        }
+
+        public async Task CreateLogTypeAsync(IEnumerable<ActivityLogType> entities)
+        {
+            await _activityLogTypes.CreateAsync(entities);
+        }
+
         public async Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled)
         {
             var update = Builders<ActivityLogType>.Update
@@ -54,6 +64,11 @@ namespace EP.Services.Logs
             }
 
             return oldEntity;
+        }
+
+        public async Task<bool> DeleteLogTypeAsync()
+        {
+            return await _activityLogTypes.DeleteAsync();
         }
 
         #endregion

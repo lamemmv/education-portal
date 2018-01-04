@@ -1,8 +1,8 @@
 ﻿using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Services.Logs
 {
@@ -12,7 +12,13 @@ namespace EP.Services.Logs
 
         Task<ActivityLogType> GetLogTypeByIdAsync(string id);
 
+        Task<long> CountLogTypeAsync();
+
+        Task CreateLogTypeAsync(IEnumerable<ActivityLogType> entities);
+
         Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled);
+
+        Task<bool> DeleteLogTypeAsync();
         
         Task<IPagedList<ActivityLog>> GetPagedListAsync(
             DateTime createdFromUtc,

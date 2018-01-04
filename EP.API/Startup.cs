@@ -41,10 +41,10 @@ namespace EP.API
 
             services
                 .AddCustomMvc()
-                .AddCustomIdentityServer(_connectionString)
+                .AddCustomIdentityServer(_hostingEnvironment.IsDevelopment())
                 .AddCustomSwaggerGen();
 
-            return services.AddInternalServices(_configuration);
+            return services.AddInternalServices(_configuration, _connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

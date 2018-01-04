@@ -25,49 +25,44 @@ namespace EP.Services.Accounts
             var subjectId = context.Subject.GetSubjectId();
             var user = await _userManger.FindByIdAsync(subjectId);
 
-            //var claims = new List<Claim>
-            //{
-            //    new Claim(JwtClaimTypes.Role, string.Join(',', user.Roles)),
-            //    new Claim(JwtClaimTypes.Name, user.UserName),
-            //    new Claim(JwtClaimTypes.Email, user.Email)
-            //};
-
-            context.IssuedClaims = await GetClaims(user);
+            context.IssuedClaims = await GetIssuedClaims(user);
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
         {
-            context.IsActive = false;
+            bool isActive = false;
+            var subjectId = context?.Subject?.GetSubjectId();
 
-            if (context == null || context.Subject == null)
+            if (!string.IsNullOrEmpty(subjectId))
             {
-                return;
+                var user = await _userManger.FindByIdAsync(subjectId);
+
+                isActive = user != null && !await _userManger.IsLockedOutAsync(user);
             }
 
-            var subjectId = context.Subject.GetSubjectId();
-            var user = await _userManger.FindByIdAsync(subjectId);
-
-            context.IsActive = user != null && !await _userManger.IsLockedOutAsync(user);
+            context.IsActive = isActive;
         }
 
-        private async Task<List<Claim>> GetClaims(AppUser user)
+        private async Task<List<Claim>> GetIssuedClaims(AppUser user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Subject, await _userManger.GetUserIdAsync(user)),
                 new Claim(JwtClaimTypes.Name, await _userManger.GetUserNameAsync(user))
             };
 
             if (_userManger.SupportsUserEmail)
             {
                 var email = await _userManger.GetEmailAsync(user);
-                if (!string.IsNullOrWhiteSpace(email))
+
+                if (!string.IsNullOrEmpty(email))
                 {
                     claims.AddRange(new[]
                     {
                         new Claim(JwtClaimTypes.Email, email),
-                        new Claim(JwtClaimTypes.EmailVerified,
-                            await _userManger.IsEmailConfirmedAsync(user) ? "true" : "false", ClaimValueTypes.Boolean)
+                        new Claim(
+                            JwtClaimTypes.EmailVerified,
+                            await _userManger.IsEmailConfirmedAsync(user) ? "true" : "false",
+                            ClaimValueTypes.Boolean)
                     });
                 }
             }
@@ -75,13 +70,16 @@ namespace EP.Services.Accounts
             if (_userManger.SupportsUserPhoneNumber)
             {
                 var phoneNumber = await _userManger.GetPhoneNumberAsync(user);
-                if (!string.IsNullOrWhiteSpace(phoneNumber))
+                
+                if (!string.IsNullOrEmpty(phoneNumber))
                 {
                     claims.AddRange(new[]
                     {
                         new Claim(JwtClaimTypes.PhoneNumber, phoneNumber),
-                        new Claim(JwtClaimTypes.PhoneNumberVerified,
-                            await _userManger.IsPhoneNumberConfirmedAsync(user) ? "true" : "false", ClaimValueTypes.Boolean)
+                        new Claim(
+                            JwtClaimTypes.PhoneNumberVerified,
+                            await _userManger.IsPhoneNumberConfirmedAsync(user) ? "true" : "false",
+                            ClaimValueTypes.Boolean)
                     });
                 }
             }
@@ -94,6 +92,7 @@ namespace EP.Services.Accounts
             if (_userManger.SupportsUserRole)
             {
                 var roles = await _userManger.GetRolesAsync(user);
+
                 claims.AddRange(roles.Select(role => new Claim(JwtClaimTypes.Role, role)));
             }
 

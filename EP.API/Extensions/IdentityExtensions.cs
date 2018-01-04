@@ -1,14 +1,13 @@
 ﻿using EP.Data.AspNetIdentity;
-using EP.Data.DbContext;
 using EP.Services.Accounts;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Net;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Extensions
 {
@@ -16,9 +15,9 @@ namespace EP.API.Extensions
     {
         public static IServiceCollection AddCustomIdentityServer(
             this IServiceCollection services,
-            string connectionString)
+            bool isDevelopment)
         {
-            services.AddCustomIdentity(connectionString);
+            services.AddCustomIdentity();
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
@@ -29,22 +28,17 @@ namespace EP.API.Extensions
                 .AddIdentityServerAuthentication(opts =>
                 {
                     opts.Authority = "http://localhost:5000";
-                    opts.RequireHttpsMetadata = false;
+                    opts.RequireHttpsMetadata = !isDevelopment;
                     opts.ApiName = "ep.api";
                 });
 
             return services;
         }
 
-        private static IdentityBuilder AddCustomIdentity(
-            this IServiceCollection services,
-            string connectionString,
-            string userCollectionName = "AspNetUsers",
-            string roleCollectionName = "AspNetRoles")
+        private static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
         {
             var identityBuilder = services
                 .AddIdentity<AppUser, AppRole>()
-                .AddIdentityMongoDbStores(connectionString, userCollectionName, roleCollectionName)
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(opts =>
@@ -97,34 +91,6 @@ namespace EP.API.Extensions
                         return Task.CompletedTask;
                     }
                 };
-            });
-
-            return identityBuilder;
-        }
-
-        private static IdentityBuilder AddIdentityMongoDbStores(
-            this IdentityBuilder identityBuilder,
-            string connectionString,
-            string userCollectionName,
-            string roleCollectionName)
-        {
-            var services = identityBuilder.Services;
-            var database = MongoDbHelper.GetMongoDatabase(connectionString);
-
-            services.AddSingleton<IUserStore<AppUser>>(p =>
-            {
-                var userCollection = database.GetCollection<AppUser>(userCollectionName);
-                IndexChecker.EnsureAppUserIndexes(userCollection).GetAwaiter().GetResult();
-
-                return new AppUserStore<AppUser>(userCollection);
-            });
-
-            services.AddSingleton<IRoleStore<AppRole>>(p =>
-            {
-                var roleCollection = database.GetCollection<AppRole>(roleCollectionName);
-                IndexChecker.EnsureAppRoleIndex(roleCollection).GetAwaiter().GetResult();
-
-                return new AppRoleStore<AppRole>(roleCollection);
             });
 
             return identityBuilder;

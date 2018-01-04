@@ -1,12 +1,12 @@
 ﻿using EP.API.Areas.Admin.ViewModels.News;
 using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
-using EP.Data.Constants;
 using EP.Data.Entities.Blobs;
 using EP.Data.Entities.News;
 using EP.Data.Extensions;
 using EP.Data.Paginations;
 using EP.Services.Blobs;
+using EP.Services.Constants;
 using EP.Services.Logs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
