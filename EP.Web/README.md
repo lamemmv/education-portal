@@ -5,8 +5,6 @@ This is simple webpack + babel + react template
 
 * Run following commands in the root folder where package.json is located.
 
-`
-npm install
+`npm install`
 
-npm start
-`
+`npm start`
