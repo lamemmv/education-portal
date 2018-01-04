@@ -1,8 +1,10 @@
 ﻿using EP.Data.DbContext;
 using EP.Data.Entities.Blobs;
-using EP.Data.Paginations;
+using EP.Data.Extensions;
 using EP.Data.Repositories;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,15 +19,29 @@ namespace EP.Services.Blobs
             _blobs = dbContext.Blobs;
         }
 
-        public async Task<IPagedList<Blob>> GetPagedListAsync(string[] fileExtensions, int? page, int? size)
+        public async Task<IEnumerable<Blob>> GetChildListAsync(string id)
         {
-            var filter = fileExtensions == null || fileExtensions.Length == 0 ?
-                Builders<Blob>.Filter.Empty :
-                Builders<Blob>.Filter.In(e => e.FileExtension, fileExtensions.Select(ext => ext.ToLowerInvariant()));
+            FilterDefinition<Blob> filter;
 
-            var projection = Builders<Blob>.Projection.Exclude(e => e.PhysicalPath);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                filter = Builders<Blob>.Filter.Eq("Parent", BsonNull.Value);
+            }
+            else if (id.IsInvalidObjectId())
+            {
+                return Enumerable.Empty<Blob>();
+            }
+            else
+            {
+                filter = Builders<Blob>.Filter.Eq(e => e.Parent, id);
+            }
 
-            return await _blobs.GetPagedListAsync(filter, projection: projection, skip: page, take: size);
+            var projection = Builders<Blob>.Projection
+                .Include(e => e.Id)
+                .Include(e => e.Name)
+                .Include(e => e.ContentType);
+
+            return await _blobs.GetAllAsync(filter, projection: projection);
         }
 
         public async Task<Blob> GetByIdAsync(string id)
@@ -41,9 +57,27 @@ namespace EP.Services.Blobs
                 .Include(e => e.Id)
                 .Include(e => e.VirtualPath);
 
-            var entity = await GetByIdAsync(id);
+            var entity = await _blobs.GetByIdAsync(id, projection);
 
             return new EmbeddedBlob { Id = entity.Id, VirtualPath = entity.VirtualPath };
+        }
+
+        public async Task<string> GetPhysicalPath(string id)
+        {
+            var projection = Builders<Blob>.Projection.Include(e => e.PhysicalPath);
+            var entity = await _blobs.GetByIdAsync(id, projection);
+
+            return entity?.PhysicalPath;
+        }
+
+        public async Task<bool> ExistBlob(string parent, string name)
+        {
+            var filter = Builders<Blob>.Filter.Eq(e => e.Parent, parent) &
+                Builders<Blob>.Filter.Eq(e => e.Name, name.ToLowerInvariant());
+            var projection = Builders<Blob>.Projection.Include(e => e.Id);
+            var entity = await _blobs.GetSingleAsync(filter, projection);
+
+            return entity != null;
         }
 
         public async Task<Blob> CreateAsync(Blob entity)

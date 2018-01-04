@@ -1,23 +1,20 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
-using EP.API.Extensions;
 using EP.API.Filters;
 using EP.API.ViewModels.Errors;
 using EP.Data.Entities.Blobs;
-using EP.Data.Paginations;
+using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Constants;
 using EP.Services.Logs;
 using EP.Services.Utilities;
-using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System;
-using EP.Data.Extensions;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -40,10 +37,10 @@ namespace EP.API.Areas.Admin.Controllers
             _publicBlob = appSettings.PublicBlob;
         }
 
-        [HttpGet]
-        public async Task<IPagedList<Blob>> Get([FromQuery]BlobSearchViewModel viewModel)
+        [HttpGet("ChildList")]
+        public async Task<IEnumerable<Blob>> ChildList(string id)
         {
-            return await _blobService.GetPagedListAsync(viewModel.Ext, viewModel.Page, viewModel.Size);
+            return await _blobService.GetChildListAsync(id);
         }
 
         [HttpGet("{id}")]
@@ -61,23 +58,40 @@ namespace EP.API.Areas.Admin.Controllers
             return File(fileStream, entity.ContentType);
         }
 
-        [HttpPost, ValidateMimeMultipartContent]
-        public async Task<IActionResult> Post([FromForm]BlobViewModel viewModel)
+        [HttpPost("Directory"), ValidateViewModel]
+        public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
         {
-            var parent = await _blobService.GetByIdAsync(viewModel.Parent);
+            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
 
-            if (parent == null)
+            if (string.IsNullOrEmpty(parentPhysicalPath))
             {
                 var parentName = nameof(viewModel.Parent);
-                ModelState.AddModelError(parentName, $"{parentName} is invalid.");
+                ModelState.AddModelError(parentName, $"The {parentName} field is invalid.");
 
                 return BadRequest(new ApiError(ModelState));
             }
 
-            if (viewModel.IsValidDirectory)
+            string directoryName = viewModel.Name.Trim();
+            var blob = new Blob
             {
+                Name = directoryName,
+                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
+                Parent = viewModel.Parent,
+                CreatedOn = DateTime.UtcNow
+            };
 
+            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) ||
+                Directory.Exists(blob.PhysicalPath))
+            {
+                ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
+
+                return BadRequest(new ApiError(ModelState));
             }
+
+            Directory.CreateDirectory(blob.PhysicalPath);
+            await _blobService.CreateAsync(blob);
+
+            return Created(nameof(Directory), blob.Id);
 
             // if (files == null || files.Length == 0)
             // {
@@ -105,6 +119,35 @@ namespace EP.API.Areas.Admin.Controllers
             // return Created(nameof(Post), ids);
         }
 
+        //[HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
+        //public async Task<IActionResult> PostFile([FromForm]FileViewModel viewModel)
+        //{
+        //    if (viewModel.Files == null || files.Length == 0)
+        //    {
+        //        ModelState.AddModelError(nameof(files), "Files should not be empty.");
+
+        //        return BadRequest(new ApiError(ModelState));
+        //    }
+
+        //    Blob entity;
+        //    IList<string> ids = new List<string>();
+
+        //    foreach (var file in files)
+        //    {
+        //        entity = BuildBlob(file);
+        //        var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
+
+        //        await Task.WhenAll(
+        //            _blobService.CreateAsync(entity),
+        //            file.SaveAsAsync(entity.PhysicalPath),
+        //            _activityLogService.CreateAsync(SystemKeyword.CreateBlob, activityLog));
+
+        //        ids.Add(entity.Id);
+        //    }
+
+        //    return Created(nameof(Post), ids);
+        //}
+
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
@@ -126,18 +169,11 @@ namespace EP.API.Areas.Admin.Controllers
             return NoContent();
         }
 
-        // private async Task<bool> IsValidParentBlob(string parent)
-        // {
-        //     return parent.IsInvalidObjectId() ?
-        //         false :
-        //         await _blobService.GetBlobByIdAsync(parent);
-        // }
-
         private Blob BuildBlob(IFormFile file, int randomSize = 7)
         {
             string contentType = file.ContentType;
             string firstMimeType = GetFirstMimeType(contentType);
-            string publicBlobPath = GetPublicBlobPath(_webRootPath ,_publicBlob, firstMimeType);
+            string publicBlobPath = GetPublicBlobPath(_webRootPath, _publicBlob, firstMimeType);
 
             string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
             string name = Path.GetFileNameWithoutExtension(fileName);

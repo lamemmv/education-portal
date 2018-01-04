@@ -1,16 +1,20 @@
 ﻿using EP.Data.Entities.Blobs;
-using EP.Data.Paginations;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
 {
     public interface IBlobService
     {
-        Task<IPagedList<Blob>> GetPagedListAsync(string[] fileExtensions, int? page, int? size);
+        Task<IEnumerable<Blob>> GetChildListAsync(string id);
         
         Task<Blob> GetByIdAsync(string id);
 
         Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id);
+
+        Task<string> GetPhysicalPath(string id);
+
+        Task<bool> ExistBlob(string parent, string name);
 
         Task<Blob> CreateAsync(Blob entity);
 
