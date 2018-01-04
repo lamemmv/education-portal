@@ -11,7 +11,7 @@ class EPHeader extends Component {
     render() {
         return (
             < HashRouter >
-                <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+                <nav class="navbar navbar-expand-md navbar-dark sticky-top">
                     <Link to="/" class="navbar-brand">
                         <Text id='header.home'></Text>
                     </Link>
