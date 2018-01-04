@@ -25,12 +25,17 @@ const epButton = {
 
 class Upload extends Component {
 
+    componentWillMount() {
+
+    }
+
     selectFile(file) {
+        const { single } = this.props;
         if (file) {
             let reader = new FileReader();
             reader.onloadend = () => {
                 file.url = reader.result;
-                this.props.selectFile(file);
+                this.props.selectFile({ file: file, single: single });
             }
             reader.readAsDataURL(file);
         }
@@ -74,7 +79,7 @@ class Upload extends Component {
                                     <span class="mdc-list-item__text">
                                         {file.name}
                                         <span class="mdc-list-item__secondary-text">
-                                            {file.lastModifiedDate}
+                                            {file.lastModifiedDate.toString()}
                                         </span>
                                     </span>
                                     <Localizer>

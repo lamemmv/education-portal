@@ -6,7 +6,9 @@
         "publishedDate": "Published Date",
         "link": "Link",
         "createNews": "Create News",
-        "detail": "Detail"
+        "detail": "Detail",
+        "create": "Create",
+        "published": "Published"
     },
     "header": {
         "home": "Home",

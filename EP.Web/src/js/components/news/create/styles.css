@@ -36,6 +36,10 @@
     box-shadow: none;
 }
 
+.has-error .form-control {
+    border-bottom-color: #f44336;
+}
+
 
 /* -- label styles ---------------------------------- */
 

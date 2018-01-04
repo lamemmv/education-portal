@@ -3,7 +3,6 @@ import { Link, HashRouter } from 'react-router-dom';
 import { Text } from 'preact-i18n';
 
 import * as styles from './breadcrumbs.css';
-let classNames = require('classnames');
 
 class EPBreadcrumbs extends Component {
     render() {

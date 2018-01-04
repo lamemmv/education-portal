@@ -94,7 +94,38 @@ const API = {
                 'Content-Type': 'application/json',
             }
         });
-    }
+    },
+
+    getFolders(page, size) {
+        let params = {
+            page: page ? page : 1,
+            size: size ? size : PageSetting.getPageSize()
+        };
+        let url = `${baseUri}admin/folders`;
+        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+        let headers = new Headers({
+            'Access-Control-Allow-Origin': '*'
+        });
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: headers
+        });
+    },
+
+    createFolder(request) {
+        let url = `${baseUri}admin/folders`;
+        return axios({
+            method: 'post',
+            url: url,
+            data: request,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
 }
 
 export default API;

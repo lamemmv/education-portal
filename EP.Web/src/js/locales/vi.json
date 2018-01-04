@@ -6,7 +6,9 @@
         "publishedDate": "Ngày phát hành",
         "link": "Đường dẫn",
         "createNews": "Biên soạn tin",
-        "detail": "Chi tiết"
+        "detail": "Chi tiết",
+        "create": "Tạo tin",
+        "published": "Công bố"
     },
     "header": {
         "home": "Trang chủ",

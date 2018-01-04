@@ -13,7 +13,7 @@ class NewsList extends Component {
         const { items } = this.props.news;
         const { gotoCreateNews } = this.props.actions;
         return (
-            <section class='ep-container'>
+            <div>
                 <Localizer>
                     <Link to='news/create'>
                         <button class="mdc-button mdc-button--raised"
@@ -23,8 +23,8 @@ class NewsList extends Component {
                         </button>
                     </Link>
                 </Localizer>
-                <div class='shadow-z-1' style={{ marginTop: 10 }}>
-                    <table class="table table-hover table-mc-light-blue">
+                <div class='table-responsive-vertical shadow-z-1' style={{ margin: 10 }}>
+                    <table id='table' class="table table-striped table-hover table-mc-light-blue">
                         <thead>
                             <tr>
                                 <th><Text id='news.title'></Text></th>
@@ -51,7 +51,7 @@ class NewsList extends Component {
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
         );
     }
 }
