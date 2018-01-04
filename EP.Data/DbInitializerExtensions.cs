@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Data
 {
-    public static class DbInitializerApplicationBuilderExtensions
+    public static class DbInitializerExtensions
     {
         public static IApplicationBuilder InitDefaultData(this IApplicationBuilder app)
         {           
@@ -49,7 +48,6 @@ namespace EP.Data
             RoleManager<AppRole> roleManager,
             UserManager<AppUser> userManager)
         {
-            var currentTime = DateTime.UtcNow;
             var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
 
             foreach (var roleName in roles)
@@ -58,7 +56,7 @@ namespace EP.Data
 
                 if (identityRole == null)
                 {
-                    await roleManager.CreateAsync(new AppRole(roleName) { CreatedOn = currentTime });
+                    await roleManager.CreateAsync(new AppRole(roleName) { CreatedOn = DateTime.UtcNow });
                 }
             }
 
@@ -76,13 +74,7 @@ namespace EP.Data
                     EmailConfirmed = true,
                     //FullName = "System Administrator"
                     Roles = roles.ToList(),
-                    Claims = new List<AppUserClaim>
-                    {
-                        new AppUserClaim("name", email),
-                        new AppUserClaim("email", email),
-                        new AppUserClaim("website", "http://localhost:5000/api/admin/dashboard")
-                    },
-                    CreatedOn = currentTime
+                    CreatedOn = DateTime.UtcNow
                 };
 
                 var result = await userManager.CreateAsync(user, password);
@@ -115,7 +107,8 @@ namespace EP.Data
                     Password = password,
                     EnableSsl = false,
                     UseDefaultCredentials = true,
-                    IsDefault = true
+                    IsDefault = true,
+                    CreatedOn = DateTime.UtcNow
                 };
 
                 await dbContext.EmailAccounts.CreateAsync(emailAcc);
@@ -130,19 +123,22 @@ namespace EP.Data
                 {
                     SystemKeyword = SystemKeyword.UpdateActivityLogType,
                     Name = "Update an Activity Log Type",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateEmailAccount,
                     Name = "Create a new Email Account",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateEmailAccount,
                     Name = "Update an Email Account",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
@@ -154,55 +150,64 @@ namespace EP.Data
                 {
                     SystemKeyword = SystemKeyword.CreateUser,
                     Name = "Create a new User",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateUser,
                     Name = "Update an User",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteUser,
                     Name = "Delete an User",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.ResetUserPassword,
                     Name = "Reset password of an User",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateBlob,
                     Name = "Create a new Blob",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteBlob,
                     Name = "Delete a Blob",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateNews,
                     Name = "Create a new News",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateNews,
                     Name = "Update a News",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteNews,
                     Name = "Delete a News",
-                    Enabled = true
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
                 }
             };
 

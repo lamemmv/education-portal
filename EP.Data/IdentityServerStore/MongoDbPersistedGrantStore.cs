@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EP.Data.Store
+namespace EP.Data.IdentityServerStore
 {
     public sealed class MongoDbPersistedGrantStore : IPersistedGrantStore
     {

@@ -1,11 +1,11 @@
 using EP.API.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace EP.API.Extensions
 {
-    public static class MvcServiceCollectionExtensions
+    public static class MvcExtensions
     {
         public static IServiceCollection AddCustomMvc(this IServiceCollection services)
         {

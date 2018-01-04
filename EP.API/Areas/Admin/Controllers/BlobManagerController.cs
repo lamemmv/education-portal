@@ -12,7 +12,6 @@ using EP.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -32,12 +31,12 @@ namespace EP.API.Areas.Admin.Controllers
             IBlobService blobService,
             IActivityLogService activityLogService,
             IHostingEnvironment hostingEnvironment,
-            IOptionsSnapshot<AppSettings> options)
+            AppSettings appSettings)
         {
             _blobService = blobService;
             _activityLogService = activityLogService;
             _webRootPath = hostingEnvironment.WebRootPath;
-            _publicBlob = options.Value.PublicBlob;
+            _publicBlob = appSettings.PublicBlob;
         }
 
         [HttpGet]

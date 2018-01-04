@@ -21,7 +21,7 @@ namespace EP.Data.DbContext
 
         public TContext CreateContext()
         {
-            var ctx = new TContext
+            var context = new TContext
             {
                 MongoDatabase = MongoDbHelper.GetMongoDatabase(
                     _configuration.ConnectionString,
@@ -29,9 +29,9 @@ namespace EP.Data.DbContext
                     _configuration.DatabaseSettings)
             };
 
-            ctx.SetupCollections();
+            //ctx.SetupCollections();
 
-            return ctx;
+            return context;
         }
     }
 }

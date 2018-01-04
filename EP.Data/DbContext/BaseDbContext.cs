@@ -11,7 +11,7 @@ namespace EP.Data.DbContext
     {
         public IMongoDatabase MongoDatabase { get; set; }
 
-        public abstract void SetupCollections();
+        //public abstract void SetupCollections();
 
         public abstract IRepository<EmailAccount> EmailAccounts { get; }
 

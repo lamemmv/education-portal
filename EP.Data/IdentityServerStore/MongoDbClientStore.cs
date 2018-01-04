@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EP.Data.Store
+namespace EP.Data.IdentityServerStore
 {
     public sealed class MongoDbClientStore : IClientStore
     {

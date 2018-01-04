@@ -7,20 +7,20 @@ using System.Linq;
 
 namespace EP.API.Extensions
 {
-    public static class CompressionServiceCollectionExtensions
+    public static class CompressionExtensions
     {
         public static IServiceCollection AddCustomCompression(this IServiceCollection services)
         {
             return services
-                .Configure<GzipCompressionProviderOptions>(opts =>
-                {
-                    opts.Level = CompressionLevel.Fastest;
-                })
                 .AddResponseCompression(opts =>
                 {
                     opts.EnableForHttps = true;
                     opts.Providers.Add<GzipCompressionProvider>();
                     opts.MimeTypes = DefaultMimeTypes.Concat(CustomMimeTypes);
+                })
+                .Configure<GzipCompressionProviderOptions>(opts =>
+                {
+                    opts.Level = CompressionLevel.Fastest;
                 });
         }
 
