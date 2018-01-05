@@ -11,54 +11,6 @@ class EPHeader extends Component {
     render() {
         return (
             < HashRouter >
-<<<<<<< HEAD
-                <nav class="navbar navbar-expand-md navbar-dark sticky-top">
-                    <Link to="/" class="navbar-brand ep-navbar-brand">
-                        <Text id='header.home'></Text>
-                    </Link>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item active">
-                                <Link to="/" class='nav-link ep-nav-link'>
-                                    <Text id='header.about'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/" class='nav-link ep-nav-link'>
-                                    <Text id='header.parents'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/" class='nav-link ep-nav-link'>
-                                    <Text id='header.examination'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/files" class='nav-link ep-nav-link'>
-                                    <Text id='header.files'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/news" class='nav-link ep-nav-link'>
-                                    <Text id='header.news'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/courses" class='nav-link ep-nav-link'>
-                                    <Text id='header.recruitments'></Text>
-                                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/contact" class='nav-link ep-nav-link'>
-                                    <Text id='header.contact'></Text>
-                                </Link>
-                            </li>
-                        </ul>
-                        <form class="form-inline mt-2 mt-md-0">
-=======
                 <div class='container'>
                     <nav class="navbar navbar-expand navbar-light ep-navbar">
                         <button class="navbar-toggler"
@@ -157,17 +109,9 @@ class EPHeader extends Component {
                                     </Link>
                                 </li>
                             </ul>
-                            {/* <form class="form-inline mt-2 mt-md-0">
->>>>>>> a65f8e60ad80e805d7a09c932563d124228b5288
-                            <Localizer>
-                                <input class="form-control mr-sm-2" type="text" placeholder={<Text id='search'></Text>} aria-label="Search" />
-                            </Localizer>
-                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><Text id='search'></Text></button>
-                        </form> */}
                         </div>
                     </nav>
                 </div>
-
             </HashRouter>
         );
     };

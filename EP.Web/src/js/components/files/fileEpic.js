@@ -17,6 +17,7 @@ import {
     ASK_FOR_DELETING_FILE,
     DELETE_FILE,
     DELETE_FILE_SUCCESS,
+    HIT_TO_BROWSE_FILE
 } from './types';
 import {
     getFiles,
@@ -25,7 +26,8 @@ import {
 } from './fileActions';
 import {
     uploadFileSuccess,
-    uploadFileFailure
+    uploadFileFailure,
+    browseFile
 } from './upload/actions';
 import {
     showModal,
@@ -77,6 +79,10 @@ const askForDeleteFileEpic = action$ =>
     action$.ofType(ASK_FOR_DELETING_FILE)
     .map(action => showModal(action.payload));
 
+const browseFileEpic = action$ =>
+    action$.ofType(HIT_TO_BROWSE_FILE)
+    .map(action => browseFile(action.payload));
+
 const confirmDeleteFilePic = action$ =>
     action$.ofType(DELETE_FILE)
     .mergeMap(action =>
@@ -98,6 +104,7 @@ const epics = [
     fetchFilesEpic,
     uploadFilesEpic,
     uploadFileSuccessEpic,
+    browseFileEpic,
     askForDeleteFileEpic,
     confirmDeleteFilePic,
     deleteFileSuccessEpic

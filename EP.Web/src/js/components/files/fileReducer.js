@@ -19,7 +19,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES: // start fetching files and set loading = true
@@ -44,8 +44,8 @@ export default function (state = INITIAL_STATE, action) {
             }
 
             let files = [];
-            if (action.payload) {
-                action.payload.map((node) => {
+            if (action.payload.items) {
+                action.payload.items.map((node) => {
                     files.push(Object.assign({}, node, {
                         nodeType: !isfile(node) ? 1 : 2 // 1: folder, 2: file
                     }));

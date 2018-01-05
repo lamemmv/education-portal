@@ -10,20 +10,13 @@ import {
 import { Localizer, Text } from 'preact-i18n';
 import * as styles from './styles.css';
 
-const file_input_div = {
-    margin: 'auto',
-    width: '250px',
-    height: '40px',
-}
-
-const epButton = {
-    borderRadius: '50%',
-    minWidth: '40px',
-    width: '40px',
-    height: '40px'
-}
-
 class Upload extends Component {
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.uploadState.browseFile) {
+            $('#file-input').trigger('click');
+        }
+    }
 
     componentWillMount() {
 
@@ -45,70 +38,61 @@ class Upload extends Component {
         let fileInput = null;
         const uid = 'testinput';
         const { removeFile, selectFile, uploadFile, callbackAction } = this.props;
-        const { files } = this.props.uploadState;
+        const { files, browseFile } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
             <div>
-                <div style={file_input_div}>
-                    <div style={{ float: 'left', marginTop: '10px' }}>
-                        {/* <label class="mdc-button mdc-button--raised" style={epButton} >
-                            <i class="material-icons mdc-button__icon" style={{
-                                position: 'absolute',
-                                right: '2px'
-                            }}>file_upload</i>
-                            <input id="file_input_file" style={{ display: 'none' }} type="file"
-                                type="file" id={uid}
-                                style={{ display: "none" }}
-                                onChange={() => {
-                                    this.selectFile(fileInput.files[0]);
-                                }}
-                                ref={input => {
-                                    fileInput = input;
-                                }} />
-                        </label> */}
-                        <label class="custom-file">
-                            <input type="file" id="file" class="custom-file-input" />
-                            <span class="custom-file-control"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="mdc-list-group ep-group">
-                    <ul class='mdc-list mdc-list--two-line mdc-list--avatar-list'>
-                        {files.map(file => {
-                            return (
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__start-detail ep-list-item" role="presentation">
-                                        <i class="material-icons" aria-hidden="true">insert_drive_file</i>
-                                    </span>
-                                    <span class="mdc-list-item__text">
-                                        {file.name}
-                                        <span class="mdc-list-item__secondary-text">
-                                            {file.lastModifiedDate.toString()}
-                                        </span>
-                                    </span>
-                                    <Localizer>
-                                        <button class="mdc-button mdc-ripple-upgraded mdc-list-item__end-detail"
-                                            style={epButton}
-                                            onClick={() => removeFile(file)}
-                                            title={<Text id='delete'></Text>}>
-                                            <i class="material-icons mdc-button__icon"
-                                                style={{
-                                                    position: 'absolute',
-                                                    right: '2px',
-                                                    top: '2px'
-                                                }}>clear</i>
-                                        </button>
-                                    </Localizer>
-                                </li>
-                            )
-                        })}
-                    </ul>
-                </div>
-                <button class="mdc-button mdc-button--raised"
+                <label class="custom-file">
+                    <input type="file" id="file-input"
+                        style={{ display: 'none' }}
+                        class="custom-file-input"
+                        onChange={() => {
+                            this.selectFile(fileInput.files[0]);
+                        }}
+                        ref={input => {
+                            fileInput = input;
+                        }} />
+                    <span class="custom-file-control"></span>
+                </label>
+                <ul class='list-group'>
+                    {files.map(file => {
+                        return (
+                            <li class="list-group-item">
+                                <i class="material-icons" aria-hidden="true">insert_drive_file</i>
+                                <span>
+                                    {file.name}
+                                    {/* <span>
+                                        {file.lastModifiedDate.toString()}
+                                    </span> */}
+                                </span>
+                                <Localizer>
+                                    <button type="button"
+                                        class="btn btn-danger bmd-btn-fab bmd-btn-fab-sm"
+                                        onClick={() => removeFile(file)}
+                                        title={<Text id='delete'></Text>}
+                                        style={{
+                                            width: 25,
+                                            height: 25,
+                                            minWidth: 25,
+                                            marginLeft: 50
+                                        }}>
+                                        <i class="material-icons" style={{
+                                            position: 'relative',
+                                            left: 6,
+                                            fontSize: 12
+                                        }}>clear</i>
+                                    </button>
+                                </Localizer>
+                            </li>
+                        )
+                    })}
+                </ul>
+                {files.length > 0 ? (<button type="button"
+                    class="btn btn-raised btn-primary"
                     onClick={() => uploadFile({ files: files, callbackAction: callbackAction })}
-                    disabled={files.length == 0} >
+                    disabled={files.length == 0}>
                     <Text id='files.uploadAll'></Text>
-                </button>
+                </button>) : null}
             </div>
         );
     };

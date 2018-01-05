@@ -166,7 +166,7 @@ export default handleActions({
                 },
                 {
                     id: 'filePreview',
-                    path: action.payload
+                    path: action.payload.path
                 }
             ]),
             error: null,

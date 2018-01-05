@@ -3,6 +3,7 @@ import {
     UPLOAD_FILE_FAILURE,
     UPLOAD_FILE_SUCCESS,
     SELECTED_FILE,
+    BROWSE_FILE,
     REMOVE_FILE
 } from '../types';
 
@@ -14,7 +15,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case SELECTED_FILE:
@@ -75,7 +76,17 @@ export default function (state = INITIAL_STATE, action) {
                     loading: true,
                     error: null
                 }
-            }
+            };
+        case BROWSE_FILE:
+            return {
+                ...state,
+                uploadState: {
+                    files: [],
+                    browseFile: true,
+                    loading: true,
+                    error: null
+                }
+            };
         default:
             return state;
     }

@@ -10,6 +10,7 @@ import {
 
 import { askForDeleting } from './delete/actions';
 import { askToShowCreateFolderDialog } from '../folders/actions';
+import { hitToBrowseFile } from './upload/actions';
 
 import Uploader from './upload/container';
 import Pagination from './pagination/container';
@@ -21,7 +22,6 @@ import folderIcon from '../../../assets/images/folder_icon_green.png';
 
 class FileList extends Component {
     componentWillReceiveProps(nextProps) {
-        //this.initialize();
     }
 
     componentWillMount() {
@@ -76,7 +76,11 @@ class FileList extends Component {
             pages,
             showPagination
         } = this.props.fileState;
-        const { askToShowCreateFolderDialog } = this.props;
+
+        const { askToShowCreateFolderDialog,
+            hitToBrowseFile
+        } = this.props;
+
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
@@ -94,7 +98,8 @@ class FileList extends Component {
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                    onClick={() => hitToBrowseFile()}>
                                     <i class='material-icons'>add_to_queue</i>
                                     <Text id='files.selectFile'></Text>
                                 </button>
@@ -120,8 +125,6 @@ class FileList extends Component {
                         </ul>
                     </div>
                 </nav>
-                {/* <NotificationContainer />
-                <Uploader /> */}
                 <div class='row'>
                     {
                         files.map((node) => {
@@ -129,9 +132,8 @@ class FileList extends Component {
                         })
                     }
                 </div>
-                {/* <DeleteFile />
-                {this.renderTableFooter(pages, currentPage, showPagination)} */}
                 <CreateFolder />
+                <Uploader />
             </section>
         );
     };
@@ -153,6 +155,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         askToShowCreateFolderDialog: () => {
             dispatch(askToShowCreateFolderDialog());
+        },
+        hitToBrowseFile: () => {
+            dispatch(hitToBrowseFile());
         }
     }
 }
