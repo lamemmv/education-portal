@@ -25,7 +25,7 @@ namespace EP.Services.Blobs
 
             if (string.IsNullOrWhiteSpace(id))
             {
-                filter = Builders<Blob>.Filter.Eq("Parent", BsonNull.Value);
+                filter = Builders<Blob>.Filter.Exists(e => e.Parent, false);
             }
             else if (id.IsInvalidObjectId())
             {
@@ -68,6 +68,14 @@ namespace EP.Services.Blobs
             var entity = await _blobs.GetByIdAsync(id, projection);
 
             return entity?.PhysicalPath;
+        }
+
+        public bool IsFile(Blob entity)
+        {
+            return entity != null &&
+                !string.IsNullOrEmpty(entity.FileExtension) &&
+                !string.IsNullOrEmpty(entity.ContentType) &&
+                !string.IsNullOrEmpty(entity.VirtualPath);
         }
 
         public async Task<bool> ExistBlob(string parent, string name)

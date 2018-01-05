@@ -12,6 +12,8 @@ namespace EP.Services.Blobs
 
         Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id);
 
+        bool IsFile(Blob entity);
+
         Task<string> GetPhysicalPath(string id);
 
         Task<bool> ExistBlob(string parent, string name);

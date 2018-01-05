@@ -37,7 +37,7 @@ namespace EP.API.Areas.Admin.Controllers
             _publicBlob = appSettings.PublicBlob;
         }
 
-        [HttpGet("ChildList")]
+        [HttpGet("ChildList/{id}")]
         public async Task<IEnumerable<Blob>> ChildList(string id)
         {
             return await _blobService.GetChildListAsync(id);
@@ -48,9 +48,11 @@ namespace EP.API.Areas.Admin.Controllers
         {
             var entity = await _blobService.GetByIdAsync(id);
 
-            if (entity == null || !System.IO.File.Exists(entity.PhysicalPath))
+            if (!_blobService.IsFile(entity))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), $"The {id} is not a file.");
+
+                return BadRequest(new ApiError(ModelState));
             }
 
             Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
