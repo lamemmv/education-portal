@@ -2,16 +2,11 @@
 using EP.API.Filters;
 using EP.API.ViewModels.Errors;
 using EP.Data.Entities.Blobs;
+using EP.Data.Paginations;
 using EP.Services.Blobs;
 using EP.Services.Constants;
 using EP.Services.Logs;
-using EP.Services.Utilities;
-using EP.Services;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System;
@@ -22,25 +17,19 @@ namespace EP.API.Areas.Admin.Controllers
     {
         private readonly IBlobService _blobService;
         private readonly IActivityLogService _activityLogService;
-        private readonly string _webRootPath;
-        private readonly string _publicBlob;
 
         public BlobManagerController(
             IBlobService blobService,
-            IActivityLogService activityLogService,
-            IHostingEnvironment hostingEnvironment,
-            AppSettings appSettings)
+            IActivityLogService activityLogService)
         {
             _blobService = blobService;
             _activityLogService = activityLogService;
-            _webRootPath = hostingEnvironment.WebRootPath;
-            _publicBlob = appSettings.PublicBlob;
         }
 
         [HttpGet("ChildList")]
-        public async Task<IEnumerable<Blob>> ChildList(string id)
+        public async Task<IPagedList<Blob>> ChildList(BlobSearchViewModel viewModel)
         {
-            return await _blobService.GetChildListAsync(id);
+            return await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]
@@ -63,9 +52,9 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("Directory"), ValidateViewModel]
         public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
         {
-            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
+            var parentEntity = await _blobService.GetByIdAsync(viewModel.Parent);
 
-            if (string.IsNullOrEmpty(parentPhysicalPath))
+            if (parentEntity == null)
             {
                 ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
 
@@ -73,22 +62,21 @@ namespace EP.API.Areas.Admin.Controllers
             }
 
             string directoryName = viewModel.Name.Trim();
-            var entity = new Blob
-            {
-                Name = directoryName,
-                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
-                Parent = viewModel.Parent,
-                CreatedOn = DateTime.UtcNow
-            };
 
-            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) || Directory.Exists(entity.PhysicalPath))
+            if (await _blobService.IsExistence(viewModel.Parent, directoryName))
             {
                 ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
 
                 return BadRequest(new ApiError(ModelState));
             }
 
-            Directory.CreateDirectory(entity.PhysicalPath);
+            var entity = new Blob
+            {
+                Name = directoryName,
+                Parent = viewModel.Parent,
+                CreatedOn = DateTime.UtcNow
+            };
+
             await _blobService.CreateAsync(entity);
 
             return Created(nameof(Directory), entity.Id);
@@ -123,12 +111,12 @@ namespace EP.API.Areas.Admin.Controllers
         //    return Created(nameof(Post), ids);
         //}
 
-        [HttpPut("{id}/Directory"), ValidateViewModel]
+        [HttpPut("Directory/{id}"), ValidateViewModel]
         public async Task<IActionResult> PutDirectory(string id, [FromBody]DirectoryViewModel viewModel)
         {
-            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
+            var parentEntity = await _blobService.GetByIdAsync(viewModel.Parent);
 
-            if (string.IsNullOrEmpty(parentPhysicalPath))
+            if (parentEntity == null)
             {
                 ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
 
@@ -136,23 +124,22 @@ namespace EP.API.Areas.Admin.Controllers
             }
 
             string directoryName = viewModel.Name.Trim();
-            var entity = new Blob
-            {
-                Name = directoryName,
-                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
-                Parent = viewModel.Parent,
-                CreatedOn = DateTime.UtcNow
-            };
 
-            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) || Directory.Exists(entity.PhysicalPath))
+            if (await _blobService.IsExistence(viewModel.Parent, directoryName))
             {
                 ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
 
                 return BadRequest(new ApiError(ModelState));
             }
 
-            var oldEntity = await _blobService.UpdateAsync(entity);
-            Directory.Move(oldEntity.PhysicalPath, entity.PhysicalPath);
+            var entity = new Blob
+            {
+                Id = id,
+                Name = directoryName,
+                Parent = viewModel.Parent
+            };
+
+            await _blobService.UpdateAsync(entity);
 
             return NoContent();
         }
@@ -160,6 +147,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
+            if (await _blobService.HasChildren(id))
+            {
+                ModelState.AddModelError(nameof(id), $"The {id} has sub directories or files.");
+
+                return BadRequest(new ApiError(ModelState));
+            }
+
             var entity = await _blobService.DeleteAsync(id);
 
             if (entity == null)
@@ -167,7 +161,8 @@ namespace EP.API.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (System.IO.File.Exists(entity.PhysicalPath))
+            if (_blobService.IsFile(entity) &&
+                System.IO.File.Exists(entity.PhysicalPath))
             {
                 System.IO.File.Delete(entity.PhysicalPath);
             }
@@ -178,59 +173,59 @@ namespace EP.API.Areas.Admin.Controllers
             return NoContent();
         }
 
-        private Blob BuildBlob(IFormFile file, int randomSize = 7)
-        {
-            string contentType = file.ContentType;
-            string firstMimeType = GetFirstMimeType(contentType);
-            string publicBlobPath = GetPublicBlobPath(_webRootPath, _publicBlob, firstMimeType);
+        // private Blob BuildBlob(IFormFile file, int randomSize = 7)
+        // {
+        //     string contentType = file.ContentType;
+        //     string firstMimeType = GetFirstMimeType(contentType);
+        //     string publicBlobPath = GetPublicBlobPath(_webRootPath, _publicBlob, firstMimeType);
 
-            string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
-            string name = Path.GetFileNameWithoutExtension(fileName);
-            string extension = Path.GetExtension(fileName);
-            string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
+        //     string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
+        //     string name = Path.GetFileNameWithoutExtension(fileName);
+        //     string extension = Path.GetExtension(fileName);
+        //     string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
 
-            return new Blob
-            {
-                Name = newFileName,
-                FileExtension = extension.ToLowerInvariant(),
-                ContentType = contentType,
-                VirtualPath = string.IsNullOrWhiteSpace(firstMimeType) ?
-                    $"{_publicBlob}/{newFileName}" :
-                    $"{_publicBlob}/{firstMimeType}/{newFileName}",
-                PhysicalPath = Path.Combine(publicBlobPath, newFileName),
-                CreatedOn = DateTime.UtcNow
-            };
-        }
+        //     return new Blob
+        //     {
+        //         Name = newFileName,
+        //         FileExtension = extension.ToLowerInvariant(),
+        //         ContentType = contentType,
+        //         VirtualPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+        //             $"{_publicBlob}/{newFileName}" :
+        //             $"{_publicBlob}/{firstMimeType}/{newFileName}",
+        //         PhysicalPath = Path.Combine(publicBlobPath, newFileName),
+        //         CreatedOn = DateTime.UtcNow
+        //     };
+        // }
 
-        private static string GetFirstMimeType(string contentType)
-        {
-            if (string.IsNullOrWhiteSpace(contentType))
-            {
-                return null;
-            }
+        // private static string GetFirstMimeType(string contentType)
+        // {
+        //     if (string.IsNullOrWhiteSpace(contentType))
+        //     {
+        //         return null;
+        //     }
 
-            var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        //     var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-            if (types.Length == 0 || string.IsNullOrWhiteSpace(types[0]))
-            {
-                return null;
-            }
+        //     if (types.Length == 0 || string.IsNullOrWhiteSpace(types[0]))
+        //     {
+        //         return null;
+        //     }
 
-            return types[0];
-        }
+        //     return types[0];
+        // }
 
-        private static string GetPublicBlobPath(string webRootPath, string publicBlob, string firstMimeType)
-        {
-            string publicBlobPath = string.IsNullOrWhiteSpace(firstMimeType) ?
-                Path.Combine(webRootPath, publicBlob) :
-                Path.Combine(webRootPath, publicBlob, firstMimeType);
+        // private static string GetPublicBlobPath(string webRootPath, string publicBlob, string firstMimeType)
+        // {
+        //     string publicBlobPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+        //         Path.Combine(webRootPath, publicBlob) :
+        //         Path.Combine(webRootPath, publicBlob, firstMimeType);
 
-            if (!Directory.Exists(publicBlobPath))
-            {
-                Directory.CreateDirectory(publicBlobPath);
-            }
+        //     if (!Directory.Exists(publicBlobPath))
+        //     {
+        //         Directory.CreateDirectory(publicBlobPath);
+        //     }
 
-            return publicBlobPath;
-        }
+        //     return publicBlobPath;
+        // }
     }
 }
