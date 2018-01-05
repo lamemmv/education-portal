@@ -15,6 +15,7 @@ namespace EP.Data.Entities.Blobs
         [BsonIgnoreIfNull]
         public string VirtualPath { get; set; }
 
+        [BsonIgnoreIfNull]
         public string PhysicalPath { get; set; }
 
         [BsonIgnoreIfNull]
