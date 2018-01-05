@@ -20,6 +20,8 @@ namespace EP.Services.Blobs
 
         Task<Blob> CreateAsync(Blob entity);
 
+        Task<Blob> UpdateAsync(Blob entity);
+
         Task<Blob> DeleteAsync(string id);
     }
 }

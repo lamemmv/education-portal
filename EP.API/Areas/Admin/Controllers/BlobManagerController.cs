@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
+using EP.API.Filters;
 using EP.API.ViewModels.Errors;
 using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System;
-using EP.API.Filters;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -37,7 +37,7 @@ namespace EP.API.Areas.Admin.Controllers
             _publicBlob = appSettings.PublicBlob;
         }
 
-        [HttpGet("ChildList/{id}")]
+        [HttpGet("ChildList")]
         public async Task<IEnumerable<Blob>> ChildList(string id)
         {
             return await _blobService.GetChildListAsync(id);
@@ -60,14 +60,14 @@ namespace EP.API.Areas.Admin.Controllers
             return File(fileStream, entity.ContentType);
         }
 
-        [HttpPost("{id}/Directory"), ValidateViewModel]
-        public async Task<IActionResult> PostDirectory(string id, [FromBody]DirectoryViewModel viewModel)
+        [HttpPost("Directory"), ValidateViewModel]
+        public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
         {
-            string physicalPath = await _blobService.GetPhysicalPath(id);
+            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
 
-            if (string.IsNullOrEmpty(physicalPath))
+            if (string.IsNullOrEmpty(parentPhysicalPath))
             {
-                ModelState.AddModelError(nameof(id), $"The {id} is invalid.");
+                ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
 
                 return BadRequest(new ApiError(ModelState));
             }
@@ -76,12 +76,12 @@ namespace EP.API.Areas.Admin.Controllers
             var entity = new Blob
             {
                 Name = directoryName,
-                PhysicalPath = Path.Combine(physicalPath, directoryName),
-                Parent = id,
+                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
+                Parent = viewModel.Parent,
                 CreatedOn = DateTime.UtcNow
             };
 
-            if (await _blobService.ExistBlob(id, directoryName) || Directory.Exists(entity.PhysicalPath))
+            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) || Directory.Exists(entity.PhysicalPath))
             {
                 ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
 
@@ -126,6 +126,34 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}/Directory"), ValidateViewModel]
         public async Task<IActionResult> PutDirectory(string id, [FromBody]DirectoryViewModel viewModel)
         {
+            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
+
+            if (string.IsNullOrEmpty(parentPhysicalPath))
+            {
+                ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
+
+                return BadRequest(new ApiError(ModelState));
+            }
+
+            string directoryName = viewModel.Name.Trim();
+            var entity = new Blob
+            {
+                Name = directoryName,
+                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
+                Parent = viewModel.Parent,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) || Directory.Exists(entity.PhysicalPath))
+            {
+                ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
+
+                return BadRequest(new ApiError(ModelState));
+            }
+
+            var oldEntity = await _blobService.UpdateAsync(entity);
+            Directory.Move(oldEntity.PhysicalPath, entity.PhysicalPath);
+
             return NoContent();
         }
 

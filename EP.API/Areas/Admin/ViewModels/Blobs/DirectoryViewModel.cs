@@ -6,5 +6,8 @@ namespace EP.API.Areas.Admin.ViewModels.Blobs
     {
         [Required]
         public string Name { get; set; }
+
+        [Required]
+        public string Parent { get; set; }
     }
 }

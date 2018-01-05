@@ -2,7 +2,6 @@
 using EP.Data.Entities.Blobs;
 using EP.Data.Extensions;
 using EP.Data.Repositories;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +90,11 @@ namespace EP.Services.Blobs
         public async Task<Blob> CreateAsync(Blob entity)
         {
             return await _blobs.CreateAsync(entity);
+        }
+
+        public async Task<Blob> UpdateAsync(Blob entity)
+        {
+            return await _blobs.UpdateAsync(entity);
         }
 
         public async Task<Blob> DeleteAsync(string id)
