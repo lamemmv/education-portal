@@ -24,7 +24,19 @@
     "files": {
         "deleteFile": "Delete file",
         "uploadAll": "Upload all",
-        "preview": "Preview"
+        "preview": "Preview",
+        "createFolder": "Create folder",
+        "selectFile": "Browse files",
+        "deleteFolder": "Delete folder",
+        "moveTo": "Move to",
+        "copyTo": "Copy to",
+        "rename": "Rename"
+    },
+    "folders": {
+        "create": "Create",
+        "close": "Close",
+        "name": "Name",
+        "enterName": "Enter folder name"
     },
     "delete": "Delete",
     "home": "Education Portal",

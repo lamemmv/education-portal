@@ -3,6 +3,14 @@
     text-decoration: none;
 }
 
-.ep-grid-tile__title{
+.ep-grid-tile__title {
     font-size: 0.75rem !important;
+}
+
+.ep-node-item {
+    margin: 10px 0;
+}
+
+.ep-node-item a {
+    text-decoration: none;
 }

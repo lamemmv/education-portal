@@ -9,6 +9,7 @@ import NewsReducer from '../components/news/newsReducer';
 import NewsCreateReducer from '../components/news/create/reducers';
 import notification from '../components/notify/notification.reducer';
 import breadcrumbs from '../components/breadcrumbs/reducers';
+import FolderReducers from '../components/folders/reducers';
 
 const rootReducer = combineReducers({
     posts: PostReducer,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
     news: NewsReducer,
     newsCreate: NewsCreateReducer,
     notification,
-    breadcrumbs
+    breadcrumbs,
+    folders: FolderReducers
 });
 
 export default rootReducer;

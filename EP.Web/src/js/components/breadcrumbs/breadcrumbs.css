@@ -12,82 +12,10 @@
     font-size: 20px;
 }
 
-.breadcrumb {
-    text-align: center;
-    display: block;
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); */
-    overflow: hidden;
-    counter-reset: flag;
-    margin: 56px -8px 0 -8px;
-    background: var(--breadcrumb-theme-2);
-    border-bottom: solid 1px #ddd;
-    border-top: solid 1px #ddd;
+.ep-bc-item {
+    font-size: 0.85em;
 }
 
-.breadcrumb__step {
-    text-decoration: none;
-    outline: none;
-    display: block;
-    float: left;
-    font-size: 12px;
-    line-height: 36px;
-    position: relative;
-    background: var(--breadcrumb-theme-2);
-    color: var(--box-theme-3);
-    transition: background 0.5s;
+.ep-bc-item::before {
+    margin-right: 10px;
 }
-
-.breadcrumb__step:first-child {
-    padding-left: 46px;
-    border-radius: 5px 0 0 5px;
-}
-
-.breadcrumb__step:first-child::before {
-    left: 14px;
-}
-
-.breadcrumb__step:last-child {
-    border-radius: 0 5px 5px 0;
-    padding-right: 20px;
-}
-
-.breadcrumb__step:last-child::after {
-    content: none;
-}
-
-.breadcrumb__step::after {
-    content: "\e315";
-    transition: background 0.5s;
-    width: 36px;
-    font-family: "Material Icons";
-    padding: 0 10px 0 10px;
-    font-size: 20px;
-    vertical-align: bottom;
-}
-
-/* .breadcrumb__step--active {
-    color: var(--breadcrumb-theme-2);
-    background: var(--breadcrumb-theme-1);
-} */
-
-.breadcrumb__step--active::before {
-    color: var(--breadcrumb-theme-1);
-}
-
-/* .breadcrumb__step--active::after {
-    background: var(--breadcrumb-theme-1);
-} */
-
-/* .breadcrumb__step:hover {
-    color: var(--breadcrumb-theme-2);
-    background: var(--breadcrumb-theme-3);
-} */
-
-.breadcrumb__step:hover::before {
-    color: var(--breadcrumb-theme-1);
-}
-
-/* .breadcrumb__step:hover::after {
-    color: var(--breadcrumb-theme-1);
-    background: var(--breadcrumb-theme-3);
-} */

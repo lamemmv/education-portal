@@ -4,6 +4,10 @@ import {
     GET_FILES_FAILURE
 } from './types';
 
+let isfile = (node) => {
+    return node.contentType && node.virtualPath;
+}
+
 const INITIAL_STATE = {
     fileState: {
         files: [],
@@ -15,7 +19,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function(state = INITIAL_STATE, action) {
+export default function (state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES: // start fetching files and set loading = true
@@ -38,11 +42,20 @@ export default function(state = INITIAL_STATE, action) {
                 }
                 showPagination = true;
             }
+
+            let files = [];
+            if (action.payload) {
+                action.payload.map((node) => {
+                    files.push(Object.assign({}, node, {
+                        nodeType: !isfile(node) ? 1 : 2 // 1: folder, 2: file
+                    }));
+                })
+            }
             return {
                 ...state,
                 fileState: {
                     currentPage: action.payload.page,
-                    files: action.payload.items ? action.payload.items : [],
+                    files: files,
                     pages: pages,
                     showPagination: showPagination,
                     error: null,
@@ -50,7 +63,9 @@ export default function(state = INITIAL_STATE, action) {
                 }
             };
         case GET_FILES_FAILURE: // return error and make loading = false
-            error = action.payload || { message: action.payload.message }; //2nd one is network or server down errors
+            error = action.payload || {
+                message: action.payload.message
+            }; //2nd one is network or server down errors
             return {
                 ...state,
                 fileState: {

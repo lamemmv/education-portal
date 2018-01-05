@@ -11,13 +11,11 @@ const paths = {
     DIST: path.resolve(__dirname, 'dist'),
     SRC: path.resolve(__dirname, 'src'), // source folder path 
     JS: path.resolve(__dirname, 'src/js'),
-    // JS: path.resolve(__dirname, 'src/js/components/redux'),
 };
 
 module.exports = {
     entry: {
         app: path.join(paths.JS, 'index.jsx')
-            // app: path.join(paths.JS, 'app.jsx')
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -63,61 +61,6 @@ module.exports = {
                     use: ['css-loader']
                 }),
             },
-            // Loader configurations for semantic-ui-less
-            // {
-            //     // Load .less files from semantic-ui-less module folder
-            //     test: /\.less$/i,
-            //     include: /[/\\]node_modules[/\\]semantic-ui-less[/\\]/,
-            //     use: ExtractTextPlugin.extract({
-            //         use: [
-            //             // Set importLoaders to 2, because there are two more loaders in the chain (postcss-loader
-            //             // and semantic-ui-less-module-loader), which shall be used when loading @import resources
-            //             // in CSS files:
-            //             {
-            //                 loader: 'css-loader',
-            //                 options: {
-            //                     importLoaders: 2,
-            //                     sourceMap: true,
-            //                     minimize: true
-            //                 }
-            //             },
-            //             { loader: 'postcss-loader', options: { sourceMap: true } },
-            //             {
-            //                 loader: 'semantic-ui-less-module-loader',
-            //                 options: {
-            //                     siteFolder: path.resolve(paths.SRC, 'semantic-ui-theme/site'),
-            //                     themeConfigPath: path.resolve(paths.SRC, 'semantic-ui-theme/theme.config'),
-            //                 }
-            //             }
-            //         ]
-            //     })
-            // },
-            // for .less files:
-            // {
-            //     test: /\.less$/,
-            //     use: ExtractTextPlugin.extract({
-            //         fallback: 'style-loader',
-            //         use: [
-            //             { loader: 'css-loader' },
-            //             { loader: 'less-loader' }
-            //         ]
-            //     }),
-            //     exclude: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
-            // },
-            // for semantic-ui-less files:
-            // {
-            //     test: /\.less$/,
-            //     use: ExtractTextPlugin.extract({
-            //         fallback: 'style-loader',
-            //         use: [
-            //             { loader: 'css-loader' },
-            //             {
-            //                 loader: 'semantic-ui-less-module-loader'
-            //             }
-            //         ]
-            //     }),
-            //     include: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
-            // },
             // File loader for image assets 
             // We'll add only image extensions, but you can things like svgs, fonts and videos
             {
@@ -134,41 +77,13 @@ module.exports = {
                 test: /\.json$/,
                 loader: 'json-loader'
             },
-            // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            // {
-            //     test: /\.tsx?$/,
-            //     loader: "awesome-typescript-loader"
-            // },
 
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             {
                 enforce: "pre",
                 test: /\.js$/,
                 loader: "source-map-loader"
-            }
-            // loader for static assets
-            // {
-            //     test: /\.(png|jpg|jpeg|gif|svg)$/,
-            //     use: {
-            //         loader: 'url-loader',
-            //         options: {
-            //             limit: 10240,
-            //             absolute: true,
-            //             name: 'images/[path][name]-[hash:7].[ext]'
-            //         }
-            //     },
-            //     include: [path.join(__dirname, 'src'), /[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
-            // }, {
-            //     test: /\.(woff|woff2|ttf|svg|eot)$/,
-            //     use: {
-            //         loader: 'url-loader',
-            //         options: {
-            //             limit: 10240,
-            //             name: 'fonts/[name]-[hash:7].[ext]'
-            //         }
-            //     },
-            //     include: [path.join(__dirname, 'src'), /[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
-            // }
+            },
         ],
     },
     // Enable importing JS files without specifying their's extenstion 

@@ -10,7 +10,7 @@ import {
 
 class DeleteModal extends Component {
     componentDidMount() {
-        this.dialog = new MDCDialog(this.deleteDialog);
+        this.dialog = null; //new MDCDialog(this.deleteDialog);
     }
 
     componentWillReceiveProps(props) {

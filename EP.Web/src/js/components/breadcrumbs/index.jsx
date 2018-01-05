@@ -10,23 +10,23 @@ class EPBreadcrumbs extends Component {
         const breadcrumbsLength = items.length;
         return (
             <HashRouter>
-                <div class="breadcrumb">
+                <ol class="container breadcrumb">
                     {
                         items.map((item, i) => {
                             return (
                                 (breadcrumbsLength == (i + 1)) ?
-                                    (<span class="breadcrumb__step breadcrumb__step--active">
+                                    (<li class="breadcrumb-item ep-bc-item active">
                                         <i class='material-icons ep-icon'>{item.icon}</i>
                                         <Text id={item.name}></Text>
-                                    </span>)
-                                    : (<Link class="breadcrumb__step breadcrumb__step" to={item.path}>
+                                    </li>)
+                                    : (<li class="breadcrumb-item ep-bc-item"><Link to={item.path}>
                                         <i class='material-icons ep-icon'>{item.icon}</i>
                                         <Text id={item.name}></Text>
-                                    </Link>)
+                                    </Link></li>)
                             );
                         })
                     }
-                </div>
+                </ol>
             </HashRouter>
         );
     };

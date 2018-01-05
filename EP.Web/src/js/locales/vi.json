@@ -24,7 +24,19 @@
     "files": {
         "deleteFile": "Xóa tài liệu",
         "uploadAll": "Upload tất cả",
-        "preview": "Xem"
+        "preview": "Xem",
+        "createFolder": "Tạo thư mục",
+        "selectFile": "Chọn tài liệu",
+        "deleteFolder": "Xóa thư mục",
+        "moveTo": "Di chuyển",
+        "copyTo": "Sao chép",
+        "rename": "Sửa tên"
+    },
+    "folders": {
+        "create": "Tạo",
+        "close": "Đóng",
+        "name": "Tên",
+        "enterName": "Nhập tên thư mục"
     },
     "delete": "Xóa",
     "home": "Education Portal",

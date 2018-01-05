@@ -24,7 +24,7 @@ class RouterContainer extends Component {
       case pathname == '/files':
         store.dispatch(BreadcrumbsAction.gotoFiles());
         break;
-      case /\/file\/(?!create|list).*/.test(pathname):
+      case /\/files\/(?!create|list).*/.test(pathname):
         store.dispatch(BreadcrumbsAction.gotoFilePreview(pathname));
         break;
       case pathname == '/news':

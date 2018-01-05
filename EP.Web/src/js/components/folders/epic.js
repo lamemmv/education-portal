@@ -9,7 +9,8 @@ import {
 import {
     GET_FOLDERS,
     GET_FOLDER_BYID,
-    CREATE_FOLDER
+    CREATE_FOLDER,
+    ASK_TO_SHOW_CREATE_FOLDER_DIALOG
 } from './types';
 
 import {
@@ -18,7 +19,9 @@ import {
     getFolderByIdSuccess,
     getFolderByIdFailure,
     createFolderSuccess,
-    createFolderFailure
+    createFolderFailure,
+    showCreateFolderDialog,
+    closeCreateFolderDialog
 } from './actions';
 
 import API from '../api';
@@ -37,7 +40,7 @@ const getFolderByIdEpic = (action$, store) =>
         Observable.fromPromise(API.getFolderById(action.payload))
         .map(response => getFolderByIdSuccess(response.data))
         .catch(error => Observable.of(getFolderByIdFailure(error)))
-    )
+    );
 
 const createFolderEpic = (action$, store) =>
     action$.ofType(CREATE_FOLDER)
@@ -45,9 +48,14 @@ const createFolderEpic = (action$, store) =>
         Observable.fromPromise(API.createFolder(action.payload))
         .map(response => createFolderSuccess(response.data))
         .catch(error => Observable.of(createFolderFailure(error)))
-    )
+    );
+
+const askForShowingCreateFolderEpic = action$ =>
+    action$.ofType(ASK_TO_SHOW_CREATE_FOLDER_DIALOG)
+    .map(action => showCreateFolderDialog(action.payload));
 
 const epics = [
+    askForShowingCreateFolderEpic,
     getFolderByIdEpic,
     getFoldersEpic,
     createFolderEpic

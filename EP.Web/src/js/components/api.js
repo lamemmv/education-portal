@@ -39,11 +39,12 @@ const API = {
 
     getFiles(page) {
         let params = {
-            page: page ? page : 1,
-            size: PageSetting.getPageSize()
+            // page: page ? page : 1,
+            // size: PageSetting.getPageSize()
+            id: null
         };
-        let url = `${baseUri}admin/blobManager`;
-        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+        let url = `${baseUri}admin/blobManager/childList`;
+        //url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
 
         return axios({
             method: 'get',

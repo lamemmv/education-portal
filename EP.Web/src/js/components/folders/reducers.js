@@ -8,7 +8,9 @@ import {
     GET_FOLDER_BYID_FAILURE,
     CREATE_FOLDER,
     CREATE_FOLDER_SUCCESS,
-    CREATE_FOLDER_FAILURE
+    CREATE_FOLDER_FAILURE,
+    SHOW_CREATE_FOLDER_DIALOG,
+    CLOSE_CREATE_FOLDER_DIALOG
 } from './types';
 
 const initialState = {
@@ -43,6 +45,28 @@ export default handleActions({
             items: [],
             page: action.payload.page,
             error: error,
+            loading: false
+        });
+    },
+    [GET_FOLDERS_SUCCESS]: (state, action) => {
+        return Object.assign({}, state, {
+            items: action.payload.items ? action.payload.items : [],
+            page: action.payload.page,
+            error: null,
+            loading: false
+        });
+    },
+    [SHOW_CREATE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showDialog: true,
+            error: null,
+            loading: false
+        });
+    },
+    [CLOSE_CREATE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showDialog: false,
+            error: null,
             loading: false
         });
     },
