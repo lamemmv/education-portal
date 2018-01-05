@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expressmapper" Version="1.9.1" />
-    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.1.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.2.0" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.0.0" />
     <PackageReference Include="LightInject.Microsoft.DependencyInjection" Version="2.0.5" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />

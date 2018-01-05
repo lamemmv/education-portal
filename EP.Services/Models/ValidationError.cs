@@ -1,4 +1,4 @@
-﻿namespace EP.API.ViewModels.Errors
+﻿namespace EP.Services.Models
 {
     public sealed class ValidationError
     {

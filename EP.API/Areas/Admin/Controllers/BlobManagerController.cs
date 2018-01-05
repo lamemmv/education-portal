@@ -1,29 +1,23 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
+using EP.API.Extensions;
 using EP.API.Filters;
-using EP.API.ViewModels.Errors;
 using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Services.Blobs;
-using EP.Services.Constants;
-using EP.Services.Logs;
+using EP.Services.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
     public class BlobManagerController : AdminController
     {
         private readonly IBlobService _blobService;
-        private readonly IActivityLogService _activityLogService;
 
-        public BlobManagerController(
-            IBlobService blobService,
-            IActivityLogService activityLogService)
+        public BlobManagerController(IBlobService blobService)
         {
             _blobService = blobService;
-            _activityLogService = activityLogService;
         }
 
         [HttpGet("ChildList")]
@@ -39,9 +33,7 @@ namespace EP.API.Areas.Admin.Controllers
 
             if (!_blobService.IsFile(entity))
             {
-                ModelState.AddModelError(nameof(id), $"The {id} is not a file.");
-
-                return BadRequest(new ApiError(ModelState));
+                return BadRequest(ApiResponse.BadRequest(nameof(id), $"The {id} is not a file."));
             }
 
             Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
@@ -52,34 +44,9 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("Directory"), ValidateViewModel]
         public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
         {
-            var parentEntity = await _blobService.GetByIdAsync(viewModel.Parent);
+            var response = await _blobService.CreateDirectoryAsync(viewModel.Parent, viewModel.Name);
 
-            if (parentEntity == null)
-            {
-                ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
-
-                return BadRequest(new ApiError(ModelState));
-            }
-
-            string directoryName = viewModel.Name.Trim();
-
-            if (await _blobService.IsExistence(viewModel.Parent, directoryName))
-            {
-                ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
-
-                return BadRequest(new ApiError(ModelState));
-            }
-
-            var entity = new Blob
-            {
-                Name = directoryName,
-                Parent = viewModel.Parent,
-                CreatedOn = DateTime.UtcNow
-            };
-
-            await _blobService.CreateAsync(entity);
-
-            return Created(nameof(Directory), entity.Id);
+            return response.ToActionResult();
         }
 
         //[HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
@@ -114,63 +81,17 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("Directory/{id}"), ValidateViewModel]
         public async Task<IActionResult> PutDirectory(string id, [FromBody]DirectoryViewModel viewModel)
         {
-            var parentEntity = await _blobService.GetByIdAsync(viewModel.Parent);
+            var response = await _blobService.UpdateDirectoryAsync(id, viewModel.Parent, viewModel.Name);
 
-            if (parentEntity == null)
-            {
-                ModelState.AddModelError(nameof(viewModel.Parent), $"The {viewModel.Parent} is invalid.");
-
-                return BadRequest(new ApiError(ModelState));
-            }
-
-            string directoryName = viewModel.Name.Trim();
-
-            if (await _blobService.IsExistence(viewModel.Parent, directoryName))
-            {
-                ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
-
-                return BadRequest(new ApiError(ModelState));
-            }
-
-            var entity = new Blob
-            {
-                Id = id,
-                Name = directoryName,
-                Parent = viewModel.Parent
-            };
-
-            await _blobService.UpdateAsync(entity);
-
-            return NoContent();
+            return response.ToActionResult();
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
-            if (await _blobService.HasChildren(id))
-            {
-                ModelState.AddModelError(nameof(id), $"The {id} has sub directories or files.");
+            var response = await _blobService.DeleteAsync(id);
 
-                return BadRequest(new ApiError(ModelState));
-            }
-
-            var entity = await _blobService.DeleteAsync(id);
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            if (_blobService.IsFile(entity) &&
-                System.IO.File.Exists(entity.PhysicalPath))
-            {
-                System.IO.File.Delete(entity.PhysicalPath);
-            }
-
-            var activityLog = GetDeletedActivityLog(entity.GetType(), entity);
-            await _activityLogService.CreateAsync(SystemKeyword.DeleteBlob, activityLog);
-
-            return NoContent();
+            return response.ToActionResult();
         }
 
         // private Blob BuildBlob(IFormFile file, int randomSize = 7)

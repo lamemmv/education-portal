@@ -1,10 +1,10 @@
-﻿using EP.API.ViewModels.Errors;
+﻿using EP.Services.Enums;
+using EP.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 using System;
-using System.Net;
 
 namespace EP.API.Filters
 {
@@ -20,7 +20,7 @@ namespace EP.API.Filters
         public void OnException(ExceptionContext context)
         {
             string errorMessage;
-            HttpStatusCode httpStatusCode;
+            ApiStatusCode statusCode;
 
             Exception exception = context.Exception;
             Type exceptionType = exception.GetType();
@@ -28,29 +28,29 @@ namespace EP.API.Filters
             if (exceptionType == typeof(UnauthorizedAccessException))
             {
                 errorMessage = "Unauthorized Access.";
-                httpStatusCode = HttpStatusCode.Unauthorized;
+                statusCode = ApiStatusCode.Unauthorized;
             }
             else if (exceptionType == typeof(TimeoutException) &&
                 exception.Source.StartsWith("MongoDB", StringComparison.OrdinalIgnoreCase))
             {
                 errorMessage = "Server is unavailable.";
-                httpStatusCode = HttpStatusCode.ServiceUnavailable;
+                statusCode = ApiStatusCode.ServiceUnavailable;
             }
             else
             {
                 errorMessage = "An unhandled error occurred.";
-                httpStatusCode = HttpStatusCode.InternalServerError;
+                statusCode = ApiStatusCode.InternalServerError;
             }
 
             HttpContext httpContext = context.HttpContext;
             WriteLog(httpContext, exception);
 
             HttpResponse response = httpContext.Response;
-            response.StatusCode = (int)httpStatusCode;
+            response.StatusCode = (int)statusCode;
             response.ContentType = "application/json";
 
             context.ExceptionHandled = true;
-            context.Result = new JsonResult(new ApiError(httpStatusCode, errorMessage));
+            context.Result = new JsonResult(ApiResponse.ServerError(statusCode, errorMessage));
         }
 
         private void WriteLog(HttpContext httpContext, Exception exception)
