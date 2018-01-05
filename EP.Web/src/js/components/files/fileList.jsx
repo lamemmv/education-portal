@@ -5,23 +5,30 @@ import { Localizer, Text } from 'preact-i18n';
 import API from '../api';
 
 import {
-    getFiles,
-    getFilesSuccess,
-    getFilesFailure
+    getFiles
 } from './fileActions';
 
 import { askForDeleting } from './delete/actions';
+import { askToShowCreateFolderDialog } from '../folders/actions';
 
 import Uploader from './upload/container';
 import Pagination from './pagination/container';
 import DeleteFile from './delete/container';
 import NotificationContainer from '../notify/notification.container';
+import CreateFolder from '../folders/create/container';
 import * as styles from './styles.css';
+import folderIcon from '../../../assets/images/folder_icon_green.png';
 
 class FileList extends Component {
-
+    componentWillReceiveProps(nextProps) {
+        //this.initialize();
+    }
 
     componentWillMount() {
+        this.init();
+    }
+
+    init = () => {
         if (!this.props.fileState.files) {
             this.props.fileState.files = [];
         }
@@ -36,6 +43,32 @@ class FileList extends Component {
         );
     }
 
+    renderNode = (node) => {
+        const imageTypes = ['image/gif', "image/jpeg", "image/png"];
+        let nodeItem = (
+            <div class='card clearfix'>
+                {
+                    imageTypes.indexOf(node.contentType) < 0 ?
+                        <img class="img-fluid card-img-top"
+                            src={require('../../../assets/images/480px-Icons8_flat_folder.png')} />
+                        :
+                        <img class="img-fluid card-img-top"
+                            src={API.getServerDomain() + node.virtualPath} />
+                }
+                <div class='card-block'>
+                    <h4 class='card-title'>{node.name}</h4>
+                </div>
+            </div>);
+
+        if (node.nodeType == 1) { // folder
+            return (
+                <div class="col-3 ep-node-item"><Link to={`/files/${node.id}`}>{nodeItem}</Link></div>
+            );
+        } else {
+            return (nodeItem);
+        }
+    }
+
     render() {
         const {
             files,
@@ -43,47 +76,62 @@ class FileList extends Component {
             pages,
             showPagination
         } = this.props.fileState;
-        const { askForDeleting } = this.props;
+        const { askToShowCreateFolderDialog } = this.props;
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
-            <section class='ep-container'>
-                <NotificationContainer />
-                <Uploader />
-                <div class="mdc-grid-list mdc-grid-list--with-icon-align-start">
-                    <ul class="mdc-grid-list__tiles">
-                        {files.map((file) => {
-                            return (
-                                <li class="mdc-grid-tile">
-                                    <Link to={`file/${file.id}`}>
-                                        <div class="mdc-grid-tile__primary">
-                                            {imageTypes.indexOf(file.contentType) < 0 ?
-                                                <img class="mdc-grid-tile__primary-content"
-                                                    src={require('../../../assets/images/image.png')} /> :
-                                                <img class="mdc-grid-tile__primary-content"
-                                                    src={API.getServerDomain() + file.virtualPath} />
-                                            }
-
-                                        </div>
-                                    </Link>
-                                    <span class="mdc-grid-tile__secondary">
-                                        <Localizer>
-                                            <i class="mdc-grid-tile__icon material-icons"
-                                                title={<Text id='files.deleteFile'></Text>}
-                                                onClick={() => askForDeleting(file.id)}>clear</i>
-                                        </Localizer>
-                                        <Link to={`file/${file.id}`}>
-                                            <span class="mdc-grid-tile__title ep-grid-tile__title">{file.fileName}</span>
-                                        </Link>
-                                    </span>
-
-                                </li>
-                            )
+            <section class='container'>
+                <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+                        <ul class="navbar-nav text-md-center nav-justified w-100">
+                            <li class="nav-item active">
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                    onClick={() => askToShowCreateFolderDialog()}>
+                                    <i class='material-icons'>add</i>
+                                    <Text id='files.createFolder'></Text>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                    <i class='material-icons'>add_to_queue</i>
+                                    <Text id='files.selectFile'></Text>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                    <i class='material-icons'>arrow_forward</i>
+                                    <Text id='files.moveTo'></Text>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                    <i class='material-icons'>content_copy</i>
+                                    <Text id='files.copyTo'></Text>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                    <i class='material-icons'>mode_edit</i>
+                                    <Text id='files.rename'></Text>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                {/* <NotificationContainer />
+                <Uploader /> */}
+                <div class='row'>
+                    {
+                        files.map((node) => {
+                            return this.renderNode(node)
                         })
-                        }
-                    </ul>
+                    }
                 </div>
-                <DeleteFile />
-                {this.renderTableFooter(pages, currentPage, showPagination)}
+                {/* <DeleteFile />
+                {this.renderTableFooter(pages, currentPage, showPagination)} */}
+                <CreateFolder />
             </section>
         );
     };
@@ -102,6 +150,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         askForDeleting: (id) => {
             dispatch(askForDeleting(id));
+        },
+        askToShowCreateFolderDialog: () => {
+            dispatch(askToShowCreateFolderDialog());
         }
     }
 }

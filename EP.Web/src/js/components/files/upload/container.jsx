@@ -51,7 +51,7 @@ class Upload extends Component {
             <div>
                 <div style={file_input_div}>
                     <div style={{ float: 'left', marginTop: '10px' }}>
-                        <label class="mdc-button mdc-button--raised" style={epButton} >
+                        {/* <label class="mdc-button mdc-button--raised" style={epButton} >
                             <i class="material-icons mdc-button__icon" style={{
                                 position: 'absolute',
                                 right: '2px'
@@ -65,6 +65,10 @@ class Upload extends Component {
                                 ref={input => {
                                     fileInput = input;
                                 }} />
+                        </label> */}
+                        <label class="custom-file">
+                            <input type="file" id="file" class="custom-file-input" />
+                            <span class="custom-file-control"></span>
                         </label>
                     </div>
                 </div>
