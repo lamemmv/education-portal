@@ -1,20 +1,20 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
-using EP.API.Filters;
 using EP.API.ViewModels.Errors;
 using EP.Data.Entities.Blobs;
-using EP.Services;
 using EP.Services.Blobs;
 using EP.Services.Constants;
 using EP.Services.Logs;
 using EP.Services.Utilities;
+using EP.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System;
+using EP.API.Filters;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -60,65 +60,38 @@ namespace EP.API.Areas.Admin.Controllers
             return File(fileStream, entity.ContentType);
         }
 
-        [HttpPost("Directory"), ValidateViewModel]
-        public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
+        [HttpPost("{id}/Directory"), ValidateViewModel]
+        public async Task<IActionResult> PostDirectory(string id, [FromBody]DirectoryViewModel viewModel)
         {
-            string parentPhysicalPath = await _blobService.GetPhysicalPath(viewModel.Parent);
+            string physicalPath = await _blobService.GetPhysicalPath(id);
 
-            if (string.IsNullOrEmpty(parentPhysicalPath))
+            if (string.IsNullOrEmpty(physicalPath))
             {
-                var parentName = nameof(viewModel.Parent);
-                ModelState.AddModelError(parentName, $"The {parentName} field is invalid.");
+                ModelState.AddModelError(nameof(id), $"The {id} is invalid.");
 
                 return BadRequest(new ApiError(ModelState));
             }
 
             string directoryName = viewModel.Name.Trim();
-            var blob = new Blob
+            var entity = new Blob
             {
                 Name = directoryName,
-                PhysicalPath = Path.Combine(parentPhysicalPath, directoryName),
-                Parent = viewModel.Parent,
+                PhysicalPath = Path.Combine(physicalPath, directoryName),
+                Parent = id,
                 CreatedOn = DateTime.UtcNow
             };
 
-            if (await _blobService.ExistBlob(viewModel.Parent, directoryName) ||
-                Directory.Exists(blob.PhysicalPath))
+            if (await _blobService.ExistBlob(id, directoryName) || Directory.Exists(entity.PhysicalPath))
             {
                 ModelState.AddModelError(nameof(viewModel.Name), $"{directoryName} is existed.");
 
                 return BadRequest(new ApiError(ModelState));
             }
 
-            Directory.CreateDirectory(blob.PhysicalPath);
-            await _blobService.CreateAsync(blob);
+            Directory.CreateDirectory(entity.PhysicalPath);
+            await _blobService.CreateAsync(entity);
 
-            return Created(nameof(Directory), blob.Id);
-
-            // if (files == null || files.Length == 0)
-            // {
-            //     ModelState.AddModelError(nameof(files), "Files should not be empty.");
-
-            //     return BadRequest(new ApiError(ModelState));
-            // }
-
-            // Blob entity;
-            // IList<string> ids = new List<string>();
-
-            // foreach (var file in files)
-            // {
-            //     entity = BuildBlob(file);
-            //     var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
-
-            //     await Task.WhenAll(
-            //         _blobService.CreateAsync(entity),
-            //         file.SaveAsAsync(entity.PhysicalPath),
-            //         _activityLogService.CreateAsync(SystemKeyword.CreateBlob, activityLog));
-
-            //     ids.Add(entity.Id);
-            // }
-
-            // return Created(nameof(Post), ids);
+            return Created(nameof(Directory), entity.Id);
         }
 
         //[HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
@@ -149,6 +122,12 @@ namespace EP.API.Areas.Admin.Controllers
 
         //    return Created(nameof(Post), ids);
         //}
+
+        [HttpPut("{id}/Directory"), ValidateViewModel]
+        public async Task<IActionResult> PutDirectory(string id, [FromBody]DirectoryViewModel viewModel)
+        {
+            return NoContent();
+        }
 
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
