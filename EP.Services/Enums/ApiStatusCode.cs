@@ -14,6 +14,9 @@ namespace EP.Services.Enums
         InternalServerError = HttpStatusCode.InternalServerError,
         ServiceUnavailable = HttpStatusCode.ServiceUnavailable,
         // Blob.
-        Blob_RequiredName = 1001,
+        Blob_InvalidParent = 1001,
+        Blob_DuplicatedName,
+        Blob_HasChildren,
+        Blob_SystemDirectory,
     }
 }

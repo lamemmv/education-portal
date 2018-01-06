@@ -1,6 +1,7 @@
 ﻿using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Services.Models;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -15,10 +16,12 @@ namespace EP.Services.Blobs
 
         bool IsFile(Blob entity);
 
-        Task<ApiResponse> CreateDirectoryAsync(string parent, string name);
+        Task<ApiServerResult> CreateDirectoryAsync(string name, string parent);
 
-        Task<ApiResponse> UpdateDirectoryAsync(string id, string parent, string name);
+        Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files);
 
-        Task<ApiResponse> DeleteAsync(string id);
+        Task<ApiServerResult> UpdateDirectoryAsync(string id, string name, string parent);
+
+        Task<ApiServerResult> DeleteAsync(string id);
     }
 }

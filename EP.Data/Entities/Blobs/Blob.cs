@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace EP.Data.Entities.Blobs
 {
@@ -20,5 +21,8 @@ namespace EP.Data.Entities.Blobs
 
         [BsonIgnoreIfNull]
         public string Parent { get; set; }
+
+        [BsonIgnoreIfNull]
+        public IList<string> Ancestors { get; set; }
     }
 }

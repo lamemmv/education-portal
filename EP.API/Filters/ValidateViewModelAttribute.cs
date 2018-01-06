@@ -1,5 +1,4 @@
-﻿using EP.Services.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EP.API.Filters
@@ -12,7 +11,7 @@ namespace EP.API.Filters
 
             if (!modelState.IsValid)
             {
-                context.Result = new BadRequestObjectResult(ApiResponse.BadRequest(context.ModelState));
+                context.Result = new BadRequestObjectResult(context.ModelState);
                 return;
             }
 

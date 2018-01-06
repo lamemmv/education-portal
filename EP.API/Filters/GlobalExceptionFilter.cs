@@ -50,7 +50,7 @@ namespace EP.API.Filters
             response.ContentType = "application/json";
 
             context.ExceptionHandled = true;
-            context.Result = new JsonResult(ApiResponse.ServerError(statusCode, errorMessage));
+            context.Result = new JsonResult(ApiServerResult.ServerError(statusCode, errorMessage));
         }
 
         private void WriteLog(HttpContext httpContext, Exception exception)

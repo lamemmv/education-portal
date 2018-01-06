@@ -4,8 +4,11 @@ using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Enums;
 using EP.Services.Models;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -57,98 +60,124 @@ namespace EP.Services.Blobs
                 !string.IsNullOrEmpty(entity.VirtualPath);
         }
 
-        public async Task<ApiResponse> CreateDirectoryAsync(string parent, string name)
+        public async Task<ApiServerResult> CreateDirectoryAsync(string name, string parent)
         {
-            var response = await ValidateDirectory(parent, name);
+            var response = await ValidateDirectory(name, parent);
 
-            if (response.StatusCode != (int)ApiStatusCode.OK)
+            if (!response.IsOK())
             {
                 return response;
             }
 
+            var parentEntity = (Blob)response.Result;
+            var ancestors = parentEntity.Ancestors ?? new List<string>();
+            ancestors.Add(parent);
+
             var entity = new Blob
             {
-                Name = name.Trim(),
+                Name = name,
                 Parent = parent,
+                Ancestors = ancestors,
                 CreatedOn = DateTime.UtcNow
             };
 
             await _blobs.CreateAsync(entity);
 
-            return ApiResponse.Created(entity.Id);
+            return ApiServerResult.Created(entity.Id);
         }
 
-        public async Task<ApiResponse> UpdateDirectoryAsync(string id, string parent, string name)
+        public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files)
         {
-            var response = await ValidateDirectory(parent, name);
 
-            if (response.StatusCode != (int)ApiStatusCode.OK)
+
+            //Blob entity;
+            //IList<string> ids = new List<string>();
+
+            //foreach (var file in files)
+            //{
+            //    entity = BuildFileEntity(file);
+            //    var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
+
+            //    await Task.WhenAll(
+            //        _blobService.CreateAsync(entity),
+            //        file.SaveAsAsync(entity.PhysicalPath),
+            //        _activityLogService.CreateAsync(SystemKeyword.CreateBlob, activityLog));
+
+            //    ids.Add(entity.Id);
+            //}
+
+            //return ApiResponse.Created(string.Join(',', ids));
+            return null;
+        }
+
+        public async Task<ApiServerResult> UpdateDirectoryAsync(string id, string name, string parent)
+        {
+            var response = await ValidateDirectory(name, parent);
+
+            if (!response.IsOK())
             {
                 return response;
             }
 
             var update = Builders<Blob>.Update
-                .Set(e => e.Parent, parent)
-                .Set(e => e.Name, name.Trim())
+                .Set(e => e.Name, name)
                 .CurrentDate(e => e.UpdatedOn);
 
             var result = await _blobs.UpdatePartiallyAsync(id, update);
 
-            return result ? ApiResponse.NoContent() : ApiResponse.NotFound();
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        public async Task<ApiResponse> DeleteAsync(string id)
+        public async Task<ApiServerResult> DeleteAsync(string id)
         {
             var entity = await GetByIdAsync(id);
 
             if (entity == null)
             {
-                return ApiResponse.NotFound();
+                return ApiServerResult.NotFound();
             }
 
             if (IsFile(entity))
             {
-                if (System.IO.File.Exists(entity.PhysicalPath))
+                if (File.Exists(entity.PhysicalPath))
                 {
-                    System.IO.File.Delete(entity.PhysicalPath);
+                    File.Delete(entity.PhysicalPath);
                 }
             }
             else
             {
                 if (await HasChildren(id))
                 {
-                    return ApiResponse.BadRequest(nameof(id), $"The {id} has sub directories or files.");
+                    return ApiServerResult.ServerError(ApiStatusCode.Blob_HasChildren, $"The {id} has sub directories or files.");
                 }
 
                 // System Directory.
                 if (string.IsNullOrEmpty(entity.Parent))
                 {
-                    return ApiResponse.BadRequest(nameof(id), $"The {id} is system directory.");
+                    return ApiServerResult.ServerError(ApiStatusCode.Blob_SystemDirectory, $"The {id} is system directory.");
                 }
             }
 
             var result = await _blobs.DeleteAsync(id);
 
-            return result ? ApiResponse.NoContent() : ApiResponse.NotFound();
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        private async Task<ApiResponse> ValidateDirectory(string parent, string name)
+        private async Task<ApiServerResult> ValidateDirectory(string name, string parent)
         {
+            if (await IsExistence(parent, name))
+            {
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"{name} is existed.");
+            }
+
             var parentEntity = await GetByIdAsync(parent);
 
             if (parentEntity == null)
             {
-                return ApiResponse.BadRequest(nameof(parent), $"The {parent} is invalid.");
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, $"The {parent} is invalid.");
             }
 
-            string directoryName = name.Trim();
-
-            if (await IsExistence(parent, directoryName))
-            {
-                return ApiResponse.BadRequest(nameof(name), $"{directoryName} is existed.");
-            }
-
-            return ApiResponse.OK();
+            return ApiServerResult.OK(parentEntity);
         }
 
         private async Task<bool> IsExistence(string parent, string name)
@@ -167,5 +196,60 @@ namespace EP.Services.Blobs
 
             return await _blobs.CountAsync(filter) > 0;
         }
+
+        //private Blob BuildFileEntity(IFormFile file, string parentPhysicalPath)
+        //{
+        //    string contentType = file.ContentType;
+        //    string firstMimeType = GetFirstMimeType(contentType);
+        //    string publicBlobPath = GetPublicBlobPath(parentPhysicalPath, firstMimeType);
+
+        //    string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
+        //    string name = Path.GetFileNameWithoutExtension(fileName);
+        //    string extension = Path.GetExtension(fileName);
+        //    string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
+
+        //    return new Blob
+        //    {
+        //        Name = newFileName,
+        //        FileExtension = extension.ToLowerInvariant(),
+        //        ContentType = contentType,
+        //        VirtualPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+        //            $"{_publicBlob}/{newFileName}" :
+        //            $"{_publicBlob}/{firstMimeType}/{newFileName}",
+        //        PhysicalPath = Path.Combine(publicBlobPath, newFileName),
+        //        CreatedOn = DateTime.UtcNow
+        //    };
+        //}
+
+        //private static string GetFirstMimeType(string contentType)
+        //{
+        //    if (string.IsNullOrWhiteSpace(contentType))
+        //    {
+        //        return null;
+        //    }
+
+        //    var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        //    if (types.Length == 0 || string.IsNullOrWhiteSpace(types[0]))
+        //    {
+        //        return null;
+        //    }
+
+        //    return types[0];
+        //}
+
+        //private static string GetPublicBlobPath(string parentPhysicalPath, string firstMimeType)
+        //{
+        //    string publicBlobPath = string.IsNullOrWhiteSpace(firstMimeType) ?
+        //        Path.Combine(webRootPath, publicBlob) :
+        //        Path.Combine(webRootPath, publicBlob, firstMimeType);
+
+        //    if (!Directory.Exists(publicBlobPath))
+        //    {
+        //        Directory.CreateDirectory(publicBlobPath);
+        //    }
+
+        //    return publicBlobPath;
+        //}
     }
 }
