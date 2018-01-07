@@ -6,7 +6,6 @@ using EP.Services.Enums;
 using EP.Services.Models;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,6 +14,8 @@ namespace EP.Services.Blobs
 {
     public sealed class BlobService : IBlobService
     {
+        private const string InvalidParentField = "The Parent field is invalid.";
+
         private readonly IRepository<Blob> _blobs;
 
         public BlobService(MongoDbContext dbContext)
@@ -60,26 +61,23 @@ namespace EP.Services.Blobs
                 !string.IsNullOrEmpty(entity.VirtualPath);
         }
 
-        public async Task<ApiServerResult> CreateDirectoryAsync(string name, string parent)
+        public async Task<ApiServerResult> CreateDirectoryAsync(Blob entity)
         {
-            var response = await ValidateDirectory(name, parent);
-
-            if (!response.IsOK())
+            if (await IsExistence(entity.Parent, entity.Name))
             {
-                return response;
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} is existed.");
             }
 
-            var parentEntity = (Blob)response.Result;
-            var ancestors = parentEntity.Ancestors ?? new List<string>();
-            ancestors.Add(parent);
+            var parentEntity = await GetByIdAsync(entity.Parent);
 
-            var entity = new Blob
+            if (parentEntity == null)
             {
-                Name = name,
-                Parent = parent,
-                Ancestors = ancestors,
-                CreatedOn = DateTime.UtcNow
-            };
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
+            }
+
+            var ancestors = parentEntity.Ancestors ?? new List<string>();
+            ancestors.Add(entity.Parent);
+            entity.Ancestors = ancestors;
 
             await _blobs.CreateAsync(entity);
 
@@ -88,7 +86,12 @@ namespace EP.Services.Blobs
 
         public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files)
         {
+            //var parentEntity = await GetByIdAsync(parent);
 
+            //if (parentEntity == null)
+            //{
+            //    return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
+            //}
 
             //Blob entity;
             //IList<string> ids = new List<string>();
@@ -106,24 +109,23 @@ namespace EP.Services.Blobs
             //    ids.Add(entity.Id);
             //}
 
-            //return ApiResponse.Created(string.Join(',', ids));
-            return null;
+            ////return ApiResponse.Created(string.Join(',', ids));
+            //return null;
+            throw new System.NotImplementedException();
         }
 
-        public async Task<ApiServerResult> UpdateDirectoryAsync(string id, string name, string parent)
+        public async Task<ApiServerResult> UpdateDirectoryAsync(Blob entity)
         {
-            var response = await ValidateDirectory(name, parent);
-
-            if (!response.IsOK())
+            if (await IsExistence(entity.Parent, entity.Name))
             {
-                return response;
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} is existed.");
             }
 
             var update = Builders<Blob>.Update
-                .Set(e => e.Name, name)
+                .Set(e => e.Name, entity.Name)
                 .CurrentDate(e => e.UpdatedOn);
 
-            var result = await _blobs.UpdatePartiallyAsync(id, update);
+            var result = await _blobs.UpdatePartiallyAsync(entity.Id, update);
 
             return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
@@ -161,23 +163,6 @@ namespace EP.Services.Blobs
             var result = await _blobs.DeleteAsync(id);
 
             return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
-        }
-
-        private async Task<ApiServerResult> ValidateDirectory(string name, string parent)
-        {
-            if (await IsExistence(parent, name))
-            {
-                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"{name} is existed.");
-            }
-
-            var parentEntity = await GetByIdAsync(parent);
-
-            if (parentEntity == null)
-            {
-                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, $"The {parent} is invalid.");
-            }
-
-            return ApiServerResult.OK(parentEntity);
         }
 
         private async Task<bool> IsExistence(string parent, string name)

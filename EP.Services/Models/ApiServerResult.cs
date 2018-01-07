@@ -4,20 +4,15 @@ namespace EP.Services.Models
 {
     public sealed class ApiServerResult
     {
-        private ApiServerResult(ApiStatusCode statusCode, string message = null, object result = null)
+        private ApiServerResult(ApiStatusCode statusCode, string message = null)
         {
             StatusCode = (int)statusCode;
             Message = message;
-            Result = result;
         }
 
         public int StatusCode { get; }
 
         public string Message { get; }
-
-        public object Result { get; }
-
-        public bool IsOK() => StatusCode == (int)ApiStatusCode.OK;
 
         public bool IsCreated() => StatusCode == (int)ApiStatusCode.Created;
 
@@ -25,14 +20,9 @@ namespace EP.Services.Models
 
         public bool IsNotFound() => StatusCode == (int)ApiStatusCode.NotFound;
 
-        public static ApiServerResult OK(object result = null)
-        {
-            return new ApiServerResult(ApiStatusCode.OK, null, result);
-        }
-
         public static ApiServerResult Created(string id)
         {
-            return new ApiServerResult(ApiStatusCode.Created, null, id);
+            return new ApiServerResult(ApiStatusCode.Created, id);
         }
 
         public static ApiServerResult NoContent()

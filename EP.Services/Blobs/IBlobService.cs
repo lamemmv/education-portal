@@ -16,11 +16,11 @@ namespace EP.Services.Blobs
 
         bool IsFile(Blob entity);
 
-        Task<ApiServerResult> CreateDirectoryAsync(string name, string parent);
+        Task<ApiServerResult> CreateDirectoryAsync(Blob entity);
 
         Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files);
 
-        Task<ApiServerResult> UpdateDirectoryAsync(string id, string name, string parent);
+        Task<ApiServerResult> UpdateDirectoryAsync(Blob entity);
 
         Task<ApiServerResult> DeleteAsync(string id);
     }
