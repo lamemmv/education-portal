@@ -5,7 +5,6 @@ namespace EP.API.Areas.Admin.ViewModels.Blobs
 {
     public sealed class FileViewModel
     {
-        [Required]
         public IFormFile[] Files { get; set; }
 
         [Required]

@@ -1,5 +1,7 @@
-﻿using EP.API.Areas.Admin.ViewModels.Emails;
+﻿using EP.API.Areas.Admin.ViewModels.Blobs;
+using EP.API.Areas.Admin.ViewModels.Emails;
 using EP.API.Areas.Admin.ViewModels.News;
+using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.News;
 using EP.Services.Extensions;
@@ -12,13 +14,14 @@ namespace EP.API.Infrastructure
     {
         public static void RegisterMapping()
         {
-            EmailsMapping();
+            EmailMapping();
+            BlobMapping();
             NewsMapping();
 
             Mapper.Compile();
         }
 
-        private static void EmailsMapping()
+        private static void EmailMapping()
         {
             Mapper.Register<EmailAccountViewModel, EmailAccount>()
                 .Member(dest => dest.Email, src => src.Email.Trim())
@@ -26,6 +29,13 @@ namespace EP.API.Infrastructure
                 .Member(dest => dest.Host, src => src.Host.Trim())
                 .Member(dest => dest.UserName, src => src.UserName.Trim())
                 .Member(dest => dest.Host, src => src.Password.Trim());
+        }
+
+        private static void BlobMapping()
+        {
+            Mapper.Register<DirectoryViewModel, Blob>()
+                .Member(dest => dest.Name, src => src.Name.Trim())
+                .Member(dest => dest.Parent, src => src.Parent.Trim());
         }
 
         private static void NewsMapping()
