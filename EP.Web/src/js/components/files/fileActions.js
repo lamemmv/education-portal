@@ -4,10 +4,10 @@ import {
     GET_FILES_FAILURE
 } from './types';
 
-export function getFiles(page) {
+export function getFiles(filter) {
     return {
         type: GET_FILES,
-        payload: page
+        payload: filter
     };
 }
 

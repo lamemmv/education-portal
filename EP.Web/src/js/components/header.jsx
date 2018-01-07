@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import { Link, HashRouter } from 'react-router-dom';
 import { Localizer, Text } from 'preact-i18n';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/logo1.png';
 import linkedin from '../../assets/images/in-128-2.png';
 import twitter from '../../assets/images/twitter-128.png';
 import facebook from '../../assets/images/facebook-128.png';
@@ -66,13 +66,14 @@ class EPHeader extends Component {
                     </nav>
                     <nav class="navbar navbar-expand-md navbar-light ep-navbar" data-toggle="affix">
                         <Link to="/" class="navbar-brand ep-navbar-brand">
-                            <Text id='home'></Text>
+                            <img src={logo} width={80}></img>
+                            {/* <span><Text id='home'></Text></span> */}
                         </Link>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarCollapse">
-                            <ul class="navbar-nav ml-auto">
+                            <ul class="navbar-nav text-md-center nav-justified w-100">
                                 <li class="nav-item active">
                                     <Link to="/" class='nav-link ep-nav-link'>
                                         <Text id='header.about'></Text>

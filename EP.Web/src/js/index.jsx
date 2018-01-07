@@ -6,9 +6,7 @@ import { IntlProvider } from 'preact-i18n';
 
 import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-
-// import Popper from 'popper.js/dist/umd/popper.js';
-// window.Popper = Popper;
+import 'toastr/build/toastr.min.css';
 import 'bootstrap';
 import 'bootstrap-material-design/dist/css/bootstrap-material-design.min.css';
 

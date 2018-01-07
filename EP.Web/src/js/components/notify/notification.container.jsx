@@ -1,43 +1,42 @@
 import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { bindActionCreators } from 'redux';
+let classNames = require('classnames');
+import toastr from 'toastr';
 import { addNotification } from './notification.actions';
-//import { MDCSnackbar, MDCSnackbarFoundation } from '@material/snackbar';
 
 class NotificationContainer extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
-    componentWillReceiveProps(newProps) {
-        const { message, level, title } = newProps.notification;
-        const snackbar = new MDCSnackbar(this.notificationSystem);
-        let snackBarInfo = {
-            message: message,
-            actionText: 'Close',
-            actionHandler: function () {
-              console.log('my cool function');
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.notification.message) {
+            switch (nextProps.notification.level) {
+                case 'success':
+                    toastr.success(nextProps.notification.message);
+                    break;
+                case 'error':
+                    toastr.error(nextProps.notification.message);
+                    break;
+                default:
+                    toastr.info(nextProps.notification.message);
+                    break;
             }
-        };
-        snackbar.show(snackBarInfo);
+        }
     }
-
     render() {
         const { message, level, title } = this.props.notification;
         return (
-            <div
-                ref={input => {
-                    this.notificationSystem = input;
-                }}
-                class="mdc-snackbar"
-                aria-live="assertive"
-                aria-atomic="true"
-                aria-hidden="true">
-                <div class="mdc-snackbar__text">{message}</div>
-                <div class="mdc-snackbar__action-wrapper">
-                    <button type="button" class="mdc-snackbar__action-button">Close</button>
-                </div>
+            <div>
+                {/* {
+                    message ? (<div id='ep-notification'
+                        className={classNames('alert', {
+                            'alert-success': level == 'success',
+                            'alert-danger': level == 'error',
+                            'alert-info': level == 'info'
+                        })}
+                        role="alert">
+                        {message}
+                    </div>) : null
+                } */}
             </div>
         );
     }

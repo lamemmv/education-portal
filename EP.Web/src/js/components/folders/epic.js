@@ -10,6 +10,7 @@ import {
     GET_FOLDERS,
     GET_FOLDER_BYID,
     CREATE_FOLDER,
+    CREATE_FOLDER_SUCCESS,
     ASK_TO_SHOW_CREATE_FOLDER_DIALOG
 } from './types';
 
@@ -23,6 +24,11 @@ import {
     showCreateFolderDialog,
     closeCreateFolderDialog
 } from './actions';
+
+import { getFiles } from '../files/fileActions';
+import {
+    addNotification
+} from '../notify/notification.actions';
 
 import API from '../api';
 
@@ -45,8 +51,8 @@ const getFolderByIdEpic = (action$, store) =>
 const createFolderEpic = (action$, store) =>
     action$.ofType(CREATE_FOLDER)
     .mergeMap((action) =>
-        Observable.fromPromise(API.createFolder(action.payload))
-        .map(response => createFolderSuccess(response.data))
+        Observable.fromPromise(API.createFolder(action.payload.request))
+        .map(response => createFolderSuccess(action.payload))
         .catch(error => Observable.of(createFolderFailure(error)))
     );
 
@@ -54,11 +60,25 @@ const askForShowingCreateFolderEpic = action$ =>
     action$.ofType(ASK_TO_SHOW_CREATE_FOLDER_DIALOG)
     .map(action => showCreateFolderDialog(action.payload));
 
+const createFolderSuccessEpic = action$ =>
+    action$.ofType(CREATE_FOLDER_SUCCESS)
+    .flatMap(action => {
+        return action.payload.action ?
+            Observable.concat(
+                Observable.of(action.payload.action({
+                    page: 1,
+                    folderId: action.payload.request.parent
+                })),
+                Observable.of(addNotification('Saved', 'success', 'Create folder'))) :
+            Observable.of(addNotification('Saved', 'success', 'Create folder'))
+    });
+
 const epics = [
     askForShowingCreateFolderEpic,
     getFolderByIdEpic,
     getFoldersEpic,
-    createFolderEpic
+    createFolderEpic,
+    createFolderSuccessEpic
 ];
 
 const foldersEpic = combineEpics(...Object.values(epics));

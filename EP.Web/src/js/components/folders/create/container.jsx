@@ -9,10 +9,6 @@ import * as FolderActions from '../actions';
 
 class CreateFolder extends Component {
 
-    componentWillMount() {
-
-    }
-
     componentWillReceiveProps(nextProps) {
         if (nextProps.folders.showDialog) {
             $(this.createFolderDialog).modal({ backdrop: 'static' });
@@ -22,6 +18,10 @@ class CreateFolder extends Component {
     }
 
     render() {
+        const { folderId } = this.props.folders;
+        let folderName = null;
+        const { createFolder } = this.props.actions;
+        const { callbackAction } = this.props;
         return (
             <div class="modal fade"
                 id="createFolderModal"
@@ -41,18 +41,35 @@ class CreateFolder extends Component {
                                 <div class="form-group">
                                     <label for="folder-name" class="form-control-label"><Text id='folders.name'></Text></label>
                                     <Localizer>
-                                        <input
-                                            type="text"
+                                        <input type="text"
                                             class="form-control"
-                                            placeholder={<Text id='folders.enterName'></Text>} id="folder-name" />
+                                            placeholder={<Text id='folders.enterName'></Text>}
+                                            id="folder-name"
+                                            ref={input => {
+                                                folderName = input;
+                                            }
+                                            } />
                                     </Localizer>
-
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal"><Text id='folders.close'></Text></button>
-                            <button type="button" class="btn btn-primary"><Text id='folders.create'></Text></button>
+                            <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                                <Text id='folders.close'></Text>
+                            </button>
+                            <button type="button"
+                                class="btn btn-primary"
+                                onClick={() => createFolder({
+                                    request: {
+                                        name: folderName.value,
+                                        parent: folderId
+                                    }, 
+                                    action: callbackAction
+                                })}>
+                                <Text id='folders.create'></Text>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -9,30 +9,38 @@ import {
 } from './fileActions';
 
 import { askForDeleting } from './delete/actions';
-import { askToShowCreateFolderDialog } from '../folders/actions';
-import { hitToBrowseFile } from './upload/actions';
 
-import Uploader from './upload/container';
+import FileMenu from './menu/container';
 import Pagination from './pagination/container';
 import DeleteFile from './delete/container';
 import NotificationContainer from '../notify/notification.container';
-import CreateFolder from '../folders/create/container';
 import * as styles from './styles.css';
-import folderIcon from '../../../assets/images/folder_icon_green.png';
 
 class FileList extends Component {
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps, prevProps) {
+        if (nextProps.match.params) {
+            if (nextProps.match.params.id != this.props.match.params.id) {
+                this.init(nextProps.match.params.id);
+            }
+        }
     }
 
     componentWillMount() {
-        this.init();
+        if (this.props.match.params.id != null) {
+            this.init(this.props.match.params.id);
+        } else {
+            this.init();
+        }
     }
 
-    init = () => {
+    init = (folderId) => {
         if (!this.props.fileState.files) {
             this.props.fileState.files = [];
         }
-        this.props.getFiles(this.props.fileState.currentPage);
+        this.props.getFiles({
+            page: this.props.fileState.currentPage,
+            folderId: folderId
+        });
     }
 
     renderTableFooter(pages, currentPage, showPagination) {
@@ -62,7 +70,7 @@ class FileList extends Component {
 
         if (node.nodeType == 1) { // folder
             return (
-                <div class="col-3 ep-node-item"><Link to={`/files/${node.id}`}>{nodeItem}</Link></div>
+                <div class="col-2 ep-node-item"><Link to={`/files/${node.id}`}>{nodeItem}</Link></div>
             );
         } else {
             return (nodeItem);
@@ -77,54 +85,11 @@ class FileList extends Component {
             showPagination
         } = this.props.fileState;
 
-        const { askToShowCreateFolderDialog,
-            hitToBrowseFile
-        } = this.props;
-
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
-                <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class='collapse navbar-collapse' id='navbarSupportedContent'>
-                        <ul class="navbar-nav text-md-center nav-justified w-100">
-                            <li class="nav-item active">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => askToShowCreateFolderDialog()}>
-                                    <i class='material-icons'>add</i>
-                                    <Text id='files.createFolder'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => hitToBrowseFile()}>
-                                    <i class='material-icons'>add_to_queue</i>
-                                    <Text id='files.selectFile'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
-                                    <i class='material-icons'>arrow_forward</i>
-                                    <Text id='files.moveTo'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
-                                    <i class='material-icons'>content_copy</i>
-                                    <Text id='files.copyTo'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
-                                    <i class='material-icons'>mode_edit</i>
-                                    <Text id='files.rename'></Text>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <NotificationContainer />
+                {this.props.match.params.id ? <FileMenu params={this.props.match.params} /> : null}
                 <div class='row'>
                     {
                         files.map((node) => {
@@ -132,8 +97,6 @@ class FileList extends Component {
                         })
                     }
                 </div>
-                <CreateFolder />
-                <Uploader />
             </section>
         );
     };
@@ -147,17 +110,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getFiles: (page) => {
-            dispatch(getFiles(page));
+        getFiles: (filter) => {
+            dispatch(getFiles(filter));
         },
         askForDeleting: (id) => {
             dispatch(askForDeleting(id));
-        },
-        askToShowCreateFolderDialog: () => {
-            dispatch(askToShowCreateFolderDialog());
-        },
-        hitToBrowseFile: () => {
-            dispatch(hitToBrowseFile());
         }
     }
 }

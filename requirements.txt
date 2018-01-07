@@ -1,0 +1,15 @@
+ + phụ huynh:
+    - xem thông tin học sinh
+	- kiểm tra học phí
+	- đóng học phí
+	- góp ý
+	- đăng ký học (gồm phiếu download về or nộp trực tiếp)
+	
+  + thong bao:
+    - 
+	
+Thông báo, tin tức
+Hình ảnh trung tâm
+Tài liệu giảng dạy
+Giới thiệu trung tâm
+Các nội qui, phương pháp, chế độ ưu đãi, học phí

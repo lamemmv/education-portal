@@ -59,6 +59,7 @@ export default handleActions({
     [SHOW_CREATE_FOLDER_DIALOG]: (state, action) => {
         return Object.assign({}, state, {
             showDialog: true,
+            folderId: action.payload,
             error: null,
             loading: false
         });
@@ -70,5 +71,18 @@ export default handleActions({
             loading: false
         });
     },
-
+    [CREATE_FOLDER_SUCCESS]: (state, action) => {
+        return Object.assign({}, state, {
+            showDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [CREATE_FOLDER_FAILURE]: (state, action) => {
+        return Object.assign({}, state, {
+            showDialog: false,
+            error: null,
+            loading: false
+        });
+    },
 }, initialState);

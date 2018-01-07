@@ -1,7 +1,7 @@
 :root {
     --breadcrumb-theme-1: #8BC34A;
     --breadcrumb-theme-2: #fff;
-    --breadcrumb-theme-3: #d80d52;
+    --breadcrumb-theme-3: #4CAF50;
     --breadcrumb-theme-4: #9d0f3e;
 }
 
@@ -18,4 +18,8 @@
 
 .ep-bc-item::before {
     margin-right: 10px;
+}
+
+.ep-bc-item a {
+    color: var(--breadcrumb-theme-3);
 }

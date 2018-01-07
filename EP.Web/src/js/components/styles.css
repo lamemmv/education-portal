@@ -69,6 +69,26 @@
     text-transform: capitalize;
 }
 
+.carousel-item {
+    background-color: var(--box-theme-3);
+}
+
+.carousel-caption p {
+    color: #fff;
+}
+
+.carousel-caption h1 {
+    color: #fff;
+}
+
+.carousel-caption p a {
+    color: #003731 !important;
+}
+
+.container.marketing h2 {
+    color: var(--box-theme-3);
+}
+
 
 /* navbar collapsing */
 

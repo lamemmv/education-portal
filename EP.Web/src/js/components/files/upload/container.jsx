@@ -16,83 +16,114 @@ class Upload extends Component {
         if (nextProps.uploadState.browseFile) {
             $('#file-input').trigger('click');
         }
+
+        if (nextProps.uploadState.files.length > 0) {
+            $(this.uploadFilesDialog).modal({ backdrop: 'static' });
+        }
     }
 
     componentWillMount() {
 
     }
 
-    selectFile(file) {
+    selectFile(files) {
         const { single } = this.props;
-        if (file) {
-            let reader = new FileReader();
-            reader.onloadend = () => {
-                file.url = reader.result;
-                this.props.selectFile({ file: file, single: single });
-            }
-            reader.readAsDataURL(file);
+        if (files) {
+            // Array.from(files).map((file)=>{
+            //     let reader = new FileReader();
+            //     reader.onloadend = () => {
+            //         file.url = reader.result;
+            //         this.props.selectFile({ file: file, single: single });
+            //     }
+            //     reader.readAsDataURL(file);
+            // });  
+
+            this.props.selectFile({ files: files, single: single });
         }
     }
 
     render() {
         let fileInput = null;
-        const uid = 'testinput';
         const { removeFile, selectFile, uploadFile, callbackAction } = this.props;
         const { files, browseFile } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
-            <div>
-                <label class="custom-file">
-                    <input type="file" id="file-input"
-                        style={{ display: 'none' }}
-                        class="custom-file-input"
-                        onChange={() => {
-                            this.selectFile(fileInput.files[0]);
-                        }}
-                        ref={input => {
-                            fileInput = input;
-                        }} />
-                    <span class="custom-file-control"></span>
-                </label>
-                <ul class='list-group'>
-                    {files.map(file => {
-                        return (
-                            <li class="list-group-item">
-                                <i class="material-icons" aria-hidden="true">insert_drive_file</i>
-                                <span>
-                                    {file.name}
-                                    {/* <span>
-                                        {file.lastModifiedDate.toString()}
-                                    </span> */}
-                                </span>
-                                <Localizer>
-                                    <button type="button"
-                                        class="btn btn-danger bmd-btn-fab bmd-btn-fab-sm"
-                                        onClick={() => removeFile(file)}
-                                        title={<Text id='delete'></Text>}
-                                        style={{
-                                            width: 25,
-                                            height: 25,
-                                            minWidth: 25,
-                                            marginLeft: 50
-                                        }}>
-                                        <i class="material-icons" style={{
-                                            position: 'relative',
-                                            left: 6,
-                                            fontSize: 12
-                                        }}>clear</i>
-                                    </button>
-                                </Localizer>
-                            </li>
-                        )
-                    })}
-                </ul>
-                {files.length > 0 ? (<button type="button"
-                    class="btn btn-raised btn-primary"
-                    onClick={() => uploadFile({ files: files, callbackAction: callbackAction })}
-                    disabled={files.length == 0}>
-                    <Text id='files.uploadAll'></Text>
-                </button>) : null}
+            <div class="modal fade"
+                id="uploadFileModal"
+                tabindex="-1"
+                role="dialog"
+                aria-hidden="true"
+                ref={dialog => {
+                    this.uploadFilesDialog = dialog;
+                }}>
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <label class="custom-file">
+                                    <input type="file" id="file-input" multiple
+                                        style={{ display: 'none' }}
+                                        class="custom-file-input"
+                                        onChange={() => {
+                                            this.selectFile(fileInput.files);
+                                        }}
+                                        ref={input => {
+                                            fileInput = input;
+                                        }} />
+                                    <span class="custom-file-control"></span>
+                                </label>
+                                <ul class='list-group'>
+                                    {files.map(file => {
+                                        return (
+                                            <li class="list-group-item">
+                                                <i class="material-icons" aria-hidden="true">insert_drive_file</i>
+                                                <span>
+                                                    {file.name}
+                                                    {/* <span>
+                                                {file.lastModifiedDate.toString()}
+                                            </span> */}
+                                                </span>
+                                                <Localizer>
+                                                    <button type="button"
+                                                        class="btn btn-danger bmd-btn-fab bmd-btn-fab-sm"
+                                                        onClick={() => removeFile(file)}
+                                                        title={<Text id='delete'></Text>}
+                                                        style={{
+                                                            width: 25,
+                                                            height: 25,
+                                                            minWidth: 25,
+                                                            marginLeft: 50
+                                                        }}>
+                                                        <i class="material-icons" style={{
+                                                            position: 'relative',
+                                                            left: 6,
+                                                            fontSize: 12
+                                                        }}>clear</i>
+                                                    </button>
+                                                </Localizer>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                                <Text id='folders.close'></Text>
+                            </button>
+                            {files.length > 0 ? (<button type="button"
+                                class="btn btn-raised btn-primary"
+                                onClick={() => uploadFile({ files: files, callbackAction: callbackAction })}
+                                disabled={files.length == 0}>
+                                <Text id='files.uploadAll'></Text>
+                            </button>) : null}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     };

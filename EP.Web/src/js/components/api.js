@@ -8,7 +8,7 @@ const API = {
     getBaseUri() {
         return baseUri;
     },
-    
+
     getServerDomain() {
         return serverDomain;
     },
@@ -37,14 +37,19 @@ const API = {
         });
     },
 
-    getFiles(page) {
+    getFiles(filter) {
         let params = {
-            // page: page ? page : 1,
-            // size: PageSetting.getPageSize()
-            id: null
+            page: filter.page ? filter.page : 1,
+            size: filter.size ? filter.size : PageSetting.getPageSize()
         };
+        if (filter.folderId) {
+            params = Object.assign({}, params, {
+                id: filter.folderId
+            })
+        }
+
         let url = `${baseUri}admin/blobManager/childList`;
-        //url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
 
         return axios({
             method: 'get',
@@ -116,7 +121,7 @@ const API = {
     },
 
     createFolder(request) {
-        let url = `${baseUri}admin/folders`;
+        let url = `${baseUri}admin/BlobManager/Directory`;
         return axios({
             method: 'post',
             url: url,

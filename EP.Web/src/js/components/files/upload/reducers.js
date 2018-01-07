@@ -20,14 +20,15 @@ export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
         case SELECTED_FILE:
             let files = state.uploadState.files.slice();
+            const _files = Array.from(action.payload.files);
             if (action.payload.single) {
                 if (files.length == 0) {
-                    files.push(action.payload.file);
+                    files = files.concat(_files);
                 } else {
-                    files[0] = action.payload.file;
+                    files = _files;
                 }
             } else {
-                files.push(action.payload.file);
+                files = files.concat(_files);
             }
 
             return {
