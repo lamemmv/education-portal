@@ -33,9 +33,7 @@ namespace EP.Services.Blobs
             var projection = Builders<Blob>.Projection
                 .Include(e => e.Id)
                 .Include(e => e.Name)
-                .Include(e => e.ContentType)
-                .Include(e => e.Parent)
-                .Include(e => e.Ancestors);
+                .Include(e => e.ContentType);
 
             return await _blobs.GetPagedListAsync(filter, projection: projection, skip: page, take: size);
         }

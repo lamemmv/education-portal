@@ -27,6 +27,19 @@ namespace EP.API.Areas.Admin.Controllers
             return await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
         }
 
+        [HttpGet("Folder/{id}")]
+        public async Task<Blob> GetFolder(string id)
+        {
+            var entity = await _blobService.GetByIdAsync(id);
+
+            if (_blobService.IsFile(entity))
+            {
+                return null;
+            }
+
+            return entity;
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
