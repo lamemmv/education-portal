@@ -23,22 +23,20 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
         {
+            Blob blob = null;
             var entity = await _blobService.GetByIdAsync(viewModel.Id);
 
-            if (_blobService.IsFile(entity))
+            if (entity != null)
             {
-                Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
-
-                return File(fileStream, entity.ContentType);
+                blob = new Blob
+                {
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    Parent = entity.Parent,
+                    Ancestors = entity.Ancestors
+                };
             }
 
-            var blob = new Blob
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Parent = entity.Parent,
-                Ancestors = entity.Ancestors
-            };
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
             return Ok(new { blob, childList });
