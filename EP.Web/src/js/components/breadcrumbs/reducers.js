@@ -70,7 +70,7 @@ let mapIcon = (name) => {
         case 'home':
             return 'home';
         default:
-            return 'event_note';
+            return 'folder_open';
     }
 }
 

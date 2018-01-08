@@ -148,6 +148,21 @@ const API = {
             }
         });
     },
+
+    deleteFolder(id) {
+        let body = new FormData();
+        body.append("id", id);
+        let url = `${baseUri}admin/BlobManager`;
+        return axios({
+            method: 'delete',
+            url: url,
+            data: body,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
 }
 
 export default API;

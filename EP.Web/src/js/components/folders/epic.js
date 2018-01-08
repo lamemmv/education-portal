@@ -51,7 +51,9 @@ import {
 
 import API from '../api';
 import Service from '../errorHandler';
-import { ASK_FOR_DELETING_FILE } from '../files/types';
+import {
+    ASK_FOR_DELETING_FILE
+} from '../files/types';
 
 const getFoldersEpic = (action$, store) =>
     action$.ofType(GET_FOLDERS)
@@ -105,31 +107,38 @@ const askForShowingUpdateFolderEpic = action$ =>
 const updateFolderEpic = (action$, store) =>
     action$.ofType(UPDATE_FOLDER)
     .mergeMap((action) =>
-        Observable.fromPromise(API.updateFolder(action.payload.request))
+        Observable.fromPromise(API.updateFolder(action.payload))
         .map(response => updateFolderSuccess(action.payload))
         .catch(error => Observable.of(updateFolderFailure(error)))
     );
 
 const updateFolderSuccessEpic = action$ =>
     action$.ofType(UPDATE_FOLDER_SUCCESS)
-    .flatMap(action => {
-        return action.payload.action ?
-            Observable.concat(
-                Observable.of(action.payload.action({
-                    page: 1,
-                    folderId: action.payload.request.parent
-                })),
-                Observable.of(addNotification('Succeed', 'success', 'Create folder'))) :
-            Observable.of(addNotification('Succeed', 'success', 'Create folder'))
-    });
+    .flatMap(action => Observable.of(addNotification('Succeed', 'success', 'Update folder')));
 
 const updateFolderFailEpic = action$ =>
     action$.ofType(UPDATE_FOLDER_FAILURE)
-    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Create folder'));
+    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Update folder'));
 
 const askToDeleteFolderEpic = action$ =>
     action$.ofType(ASK_TO_SHOW_DELETE_FOLDER_DIALOG)
     .map(action => showDeleteFolderDialog(action.payload));
+
+const deleteFolderEpic = (action$, store) =>
+    action$.ofType(DELETE_FOLDER)
+    .mergeMap((action) =>
+        Observable.fromPromise(API.deleteFolder(action.payload.id))
+        .map(response => deleteFolderSuccess(action.payload))
+        .catch(error => Observable.of(deleteFolderFailure(error)))
+    );
+
+const deleteFolderSuccessEpic = action$ =>
+    action$.ofType(DELETE_FOLDER_SUCCESS)
+    .flatMap(action => Observable.of(addNotification('Succeed', 'success', 'Delete folder')));
+
+const deleteFolderFailEpic = action$ =>
+    action$.ofType(DELETE_FOLDER_FAILURE)
+    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Delete folder'));
 
 const epics = [
     getFolderByIdEpic,
@@ -143,6 +152,9 @@ const epics = [
     updateFolderSuccessEpic,
     updateFolderFailEpic,
     askToDeleteFolderEpic,
+    deleteFolderEpic,
+    deleteFolderSuccessEpic,
+    deleteFolderFailEpic
 ];
 
 const foldersEpic = combineEpics(...Object.values(epics));

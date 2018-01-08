@@ -8,6 +8,9 @@ import {
 import * as FolderActions from '../actions';
 
 class UpdateFolder extends Component {
+    constructor(props, context) {
+        super(props, context);
+    }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.folders.showUpdateFolderDialog) {
@@ -21,13 +24,16 @@ class UpdateFolder extends Component {
         $(this.updateFolderDialog).on('shown.bs.modal', function () {
             $('#folder-name').focus()
         });
+
+        if (nextProps.folders.redirectTo) {
+            this.context.router.history.push(nextProps.folders.redirectTo);
+        }
     }
 
     render() {
         const { id, parent } = this.props.folders.request;
         let folderName = null;
         const { updateFolder } = this.props.actions;
-        const { callbackAction } = this.props;
         return (
             <div class="modal fade"
                 id="updateFolderModal"
@@ -68,12 +74,9 @@ class UpdateFolder extends Component {
                             <button type="button"
                                 class="btn btn-primary"
                                 onClick={() => updateFolder({
-                                    request: {
-                                        name: folderName.value,
-                                        id: id,
-                                        parent: parent
-                                    },
-                                    action: callbackAction
+                                    name: folderName.value,
+                                    id: id,
+                                    parent: parent
                                 })}>
                                 <Text id='folders.update'></Text>
                             </button>

@@ -10,6 +10,8 @@ import {
     CREATE_FOLDER_FAILURE,
     UPDATE_FOLDER_SUCCESS,
     UPDATE_FOLDER_FAILURE,
+    DELETE_FOLDER_SUCCESS,
+    DELETE_FOLDER_FAILURE,
     SHOW_CREATE_FOLDER_DIALOG,
     CLOSE_CREATE_FOLDER_DIALOG,
     SHOW_UPDATE_FOLDER_DIALOG,
@@ -109,6 +111,7 @@ export default handleActions({
     [UPDATE_FOLDER_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
             showUpdateFolderDialog: false,
+            redirectTo: `/files/${action.payload.parent}`,
             error: null,
             loading: false
         });
@@ -123,12 +126,27 @@ export default handleActions({
     [SHOW_DELETE_FOLDER_DIALOG]: (state, action) => {
         return Object.assign({}, state, {
             showDeleteFolderDialog: true,
-            folderId: action.payload,
+            request: action.payload,
             error: null,
             loading: false
         });
     },
     [CLOSE_DELETE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showDeleteFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [DELETE_FOLDER_SUCCESS]: (state, action) => {
+        return Object.assign({}, state, {
+            redirectTo: `/files/${action.payload.parent}`,
+            showDeleteFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [DELETE_FOLDER_FAILURE]: (state, action) => {
         return Object.assign({}, state, {
             showDeleteFolderDialog: false,
             error: null,

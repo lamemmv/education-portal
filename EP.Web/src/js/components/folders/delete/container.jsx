@@ -4,23 +4,32 @@ import { Localizer, Text } from 'preact-i18n';
 import {
     bindActionCreators
 } from 'redux';
-
+import question from '../../../../assets/images/orange-question-mark-icon.png';
 import * as FolderActions from '../actions';
 
 class DeleteFolder extends Component {
+
+    constructor(props, context) {
+        super(props, context);
+    }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.folders.showDeleteFolderDialog) {
             $(this.deleteFolderDialog).modal({ backdrop: 'static' });
         } else {
-            $(this.deleteFolderDialog).modal('hide');
+            if (this.deleteFolderDialog.className.indexOf('show') >= 0) {
+                $(this.deleteFolderDialog).modal('hide');
+            }
+        }
+
+        if (nextProps.folders.redirectTo){
+            this.context.router.history.push(nextProps.folders.redirectTo);
         }
     }
 
     render() {
-        const { folderId } = this.props.folders;
+        const { id, parent } = this.props.folders.request;
         const { deleteFolder } = this.props.actions;
-        const { callbackAction } = this.props;
         return (
             <div class="modal fade"
                 id="deleteFolderModal"
@@ -36,8 +45,8 @@ class DeleteFolder extends Component {
                         <div class="modal-header">
                         </div>
                         <div class="modal-body">
-                            <i class='material-icons'>warning</i>
-                            <p><Text id='message.askToDeleteFolder'></Text></p>
+                            <img src={question} height={50} />
+                            <span><Text id='messages.askToDeleteFolder'></Text></span>
                         </div>
                         <div class="modal-footer">
                             <button type="button"
@@ -48,10 +57,8 @@ class DeleteFolder extends Component {
                             <button type="button"
                                 class="btn btn-primary"
                                 onClick={() => deleteFolder({
-                                    request: {
-                                        id: folderId
-                                    },
-                                    action: callbackAction
+                                    id: id,
+                                    parent: parent
                                 })}>
                                 <Text id='ok'></Text>
                             </button>

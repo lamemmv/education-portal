@@ -55,7 +55,7 @@ class FileMenu extends Component {
                             </li>
                             <li class="nav-item">
                                 <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => askToShowDeleteFolderDialog(params.id)}>
+                                    onClick={() => askToShowDeleteFolderDialog(params)}>
                                     <i class='material-icons'>delete</i>
                                     <Text id='files.deleteFolder'></Text>
                                 </button>
@@ -77,8 +77,8 @@ class FileMenu extends Component {
                     </div>
                 </nav>
                 <CreateFolder callbackAction={getFiles} />
-                <UpdateFolder callbackAction={getFiles} />
-                <DeleteFolder callbackAction={getFiles} />
+                <UpdateFolder />
+                <DeleteFolder />
                 <Uploader />
             </div>
         );
