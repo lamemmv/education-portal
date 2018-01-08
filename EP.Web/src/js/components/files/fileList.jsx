@@ -58,8 +58,21 @@ class FileList extends Component {
             <div class='card clearfix'>
                 {
                     imageTypes.indexOf(node.contentType) < 0 ?
-                        <img class="img-fluid card-img-top"
+                        <div><img class="img-fluid card-img-top"
                             src={require('../../../assets/images/480px-Icons8_flat_folder.png')} />
+                            {/* <input type='checkbox' class='selection' /> */}
+                            <form><span class="bmd-form-group is-filled">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" />
+                                        <span class="checkbox-decorator">
+                                            <span class="check"></span>
+                                            <div class="ripple-container"></div>
+                                        </span>
+                                    </label>
+                                </div>
+                            </span></form>
+                        </div>
                         :
                         <img class="img-fluid card-img-top"
                             src={API.getServerDomain() + node.virtualPath} />
@@ -71,7 +84,9 @@ class FileList extends Component {
 
         if (node.nodeType == 1) { // folder
             return (
-                <div class="col-2 ep-node-item"><Link to={`/files/${node.id}`}>{nodeItem}</Link></div>
+                <div class="col-2 ep-node-item">
+                    <Link to={`/files/${node.id}`}>{nodeItem}</Link>
+                </div>
             );
         } else {
             return (nodeItem);
@@ -80,7 +95,7 @@ class FileList extends Component {
 
     render() {
         const {
-            files,
+                    files,
             currentPage,
             pages,
             showPagination,

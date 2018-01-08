@@ -9,6 +9,7 @@ import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 import 'toastr/build/toastr.min.css';
 import 'bootstrap';
 import 'bootstrap-material-design/dist/css/bootstrap-material-design.min.css';
+import 'bootstrap-material-design/dist/js/bootstrap-material-design.min';
 
 import definition from './locales/vi.json';
 import App from './components/App.jsx';

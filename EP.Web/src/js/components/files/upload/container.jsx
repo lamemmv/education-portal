@@ -84,9 +84,6 @@ class Upload extends Component {
                                                     <i class="material-icons" aria-hidden="true">insert_drive_file</i>
                                                     <span>
                                                         {file.name}
-                                                        {/* <span>
-                                                {file.lastModifiedDate.toString()}
-                                            </span> */}
                                                     </span>
                                                     <Localizer>
                                                         <button type="button"
