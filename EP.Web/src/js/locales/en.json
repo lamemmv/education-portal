@@ -36,7 +36,8 @@
         "create": "Create",
         "close": "Close",
         "name": "Name",
-        "enterName": "Enter folder name"
+        "enterName": "Enter folder name",
+        "update": "Update"
     },
     "delete": "Delete",
     "home": "Education Portal",
@@ -44,5 +45,14 @@
     "signup": "Sign Up",
     "teaching-methods-and-programs": "Teaching methods & programs",
     "fee-policy": "Fee policy",
-    "search": "Search"
+    "search": "Search",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "errors": {
+        "1001": "Invalid parent folder",
+        "1002": "Folder with same name is existed"
+    },
+    "messages": {
+        "askToDeleteFolder": "Are you sure you want to delete this folder?"
+    }
 }

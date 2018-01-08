@@ -18,7 +18,9 @@ class Upload extends Component {
         }
 
         if (nextProps.uploadState.files.length > 0) {
-            $(this.uploadFilesDialog).modal({ backdrop: 'static' });
+            if (this.uploadFilesDialog.className.indexOf('show') < 0) {
+                $(this.uploadFilesDialog).modal({ backdrop: 'static' });
+            }
         }
     }
 
@@ -77,32 +79,34 @@ class Upload extends Component {
                                 <ul class='list-group'>
                                     {files.map(file => {
                                         return (
-                                            <li class="list-group-item">
-                                                <i class="material-icons" aria-hidden="true">insert_drive_file</i>
-                                                <span>
-                                                    {file.name}
-                                                    {/* <span>
+                                            <li class="list-group-item ep-list-group-item row">
+                                                <div class='col-12'>
+                                                    <i class="material-icons" aria-hidden="true">insert_drive_file</i>
+                                                    <span>
+                                                        {file.name}
+                                                        {/* <span>
                                                 {file.lastModifiedDate.toString()}
                                             </span> */}
-                                                </span>
-                                                <Localizer>
-                                                    <button type="button"
-                                                        class="btn btn-danger bmd-btn-fab bmd-btn-fab-sm"
-                                                        onClick={() => removeFile(file)}
-                                                        title={<Text id='delete'></Text>}
-                                                        style={{
-                                                            width: 25,
-                                                            height: 25,
-                                                            minWidth: 25,
-                                                            marginLeft: 50
-                                                        }}>
-                                                        <i class="material-icons" style={{
-                                                            position: 'relative',
-                                                            left: 6,
-                                                            fontSize: 12
-                                                        }}>clear</i>
-                                                    </button>
-                                                </Localizer>
+                                                    </span>
+                                                    <Localizer>
+                                                        <button type="button"
+                                                            class="btn btn-danger bmd-btn-fab bmd-btn-fab-sm float-right"
+                                                            onClick={() => removeFile(file)}
+                                                            title={<Text id='delete'></Text>}
+                                                            style={{
+                                                                width: 25,
+                                                                height: 25,
+                                                                minWidth: 25,
+                                                                marginLeft: 50
+                                                            }}>
+                                                            <i class="material-icons" style={{
+                                                                position: 'relative',
+                                                                left: 6,
+                                                                fontSize: 12
+                                                            }}>clear</i>
+                                                        </button>
+                                                    </Localizer>
+                                                </div>
                                             </li>
                                         )
                                     })}

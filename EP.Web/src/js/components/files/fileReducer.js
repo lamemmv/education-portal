@@ -35,17 +35,18 @@ export default function(state = INITIAL_STATE, action) {
             };
         case GET_FILES_SUCCESS: // return list of files and make loading = false
             let pages = [],
-                showPagination = false;
-            if (action.payload.totalPages > 1) {
-                for (let i = 0; i < action.payload.totalPages; i++) {
+                showPagination = false, 
+                children = action.payload.response.childList;
+            if (children.totalPages > 1) {
+                for (let i = 0; i < children.totalPages; i++) {
                     pages.push(i + 1);
                 }
                 showPagination = true;
             }
 
             let files = [];
-            if (action.payload.items) {
-                action.payload.items.map((node) => {
+            if (children.items) {
+                children.items.map((node) => {
                     files.push(Object.assign({}, node, {
                         nodeType: !isfile(node) ? 1 : 2 // 1: folder, 2: file
                     }));
@@ -54,8 +55,9 @@ export default function(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 fileState: {
-                    currentPage: action.payload.page,
+                    currentPage: children.page,
                     files: files,
+                    blob: action.payload.response.blob,
                     pages: pages,
                     showPagination: showPagination,
                     error: null,

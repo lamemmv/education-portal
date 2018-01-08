@@ -6,7 +6,8 @@ class EPFooter extends Component {
     render() {
         return (
             < HashRouter >
-                <footer class="page-footer example">
+                <footer class='container'>
+                    <hr/>
                     <div class="container">
                         <div class="row">
                             <div class="col l6 s12">

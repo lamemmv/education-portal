@@ -6,18 +6,24 @@ import {
     GET_FOLDER_BYID,
     GET_FOLDER_BYID_SUCCESS,
     GET_FOLDER_BYID_FAILURE,
-    CREATE_FOLDER,
     CREATE_FOLDER_SUCCESS,
     CREATE_FOLDER_FAILURE,
+    UPDATE_FOLDER_SUCCESS,
+    UPDATE_FOLDER_FAILURE,
     SHOW_CREATE_FOLDER_DIALOG,
-    CLOSE_CREATE_FOLDER_DIALOG
+    CLOSE_CREATE_FOLDER_DIALOG,
+    SHOW_UPDATE_FOLDER_DIALOG,
+    CLOSE_UPDATE_FOLDER_DIALOG,
+    SHOW_DELETE_FOLDER_DIALOG,
+    CLOSE_DELETE_FOLDER_DIALOG
 } from './types';
 
 const initialState = {
     items: [],
     page: 1,
     loading: false,
-    error: null
+    error: null,
+    request: {}
 };
 
 export default handleActions({
@@ -58,7 +64,7 @@ export default handleActions({
     },
     [SHOW_CREATE_FOLDER_DIALOG]: (state, action) => {
         return Object.assign({}, state, {
-            showDialog: true,
+            showCreateFolderDialog: true,
             folderId: action.payload,
             error: null,
             loading: false
@@ -66,21 +72,65 @@ export default handleActions({
     },
     [CLOSE_CREATE_FOLDER_DIALOG]: (state, action) => {
         return Object.assign({}, state, {
-            showDialog: false,
+            showCreateFolderDialog: false,
             error: null,
             loading: false
         });
     },
     [CREATE_FOLDER_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
-            showDialog: false,
+            showCreateFolderDialog: false,
             error: null,
             loading: false
         });
     },
     [CREATE_FOLDER_FAILURE]: (state, action) => {
         return Object.assign({}, state, {
-            showDialog: false,
+            showCreateFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [SHOW_UPDATE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showUpdateFolderDialog: true,
+            request: action.payload,
+            error: null,
+            loading: false
+        });
+    },
+    [CLOSE_UPDATE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showUpdateFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [UPDATE_FOLDER_SUCCESS]: (state, action) => {
+        return Object.assign({}, state, {
+            showUpdateFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [UPDATE_FOLDER_FAILURE]: (state, action) => {
+        return Object.assign({}, state, {
+            showUpdateFolderDialog: false,
+            error: null,
+            loading: false
+        });
+    },
+    [SHOW_DELETE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showDeleteFolderDialog: true,
+            folderId: action.payload,
+            error: null,
+            loading: false
+        });
+    },
+    [CLOSE_DELETE_FOLDER_DIALOG]: (state, action) => {
+        return Object.assign({}, state, {
+            showDeleteFolderDialog: false,
             error: null,
             loading: false
         });

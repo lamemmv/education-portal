@@ -12,9 +12,11 @@ import {
     GOTO_FILES,
     HANDLE_FILES_ROUTE,
     GOTO_NEWS_CREATE,
-    HANDLE_NEWS_CREATE_ROUTE,   
+    HANDLE_NEWS_CREATE_ROUTE,
     GOTO_FILE_PREVIEW,
-    HANDLE_FILE_PREVIEW_ROUTE 
+    HANDLE_FILE_PREVIEW_ROUTE,
+    UPDATE_FILES_BREADCRUMB,
+    EPIC_END
 } from './types';
 
 
@@ -30,4 +32,5 @@ export const gotoHome = createAction(GOTO_HOME);
 export const handleHomeRoute = createAction(HANDLE_HOME_ROUTE);
 export const gotoFilePreview = createAction(GOTO_FILE_PREVIEW);
 export const handleFilePreviewRoute = createAction(HANDLE_FILE_PREVIEW_ROUTE);
-
+export const updateFileBreadcrumb = createAction(UPDATE_FILES_BREADCRUMB);
+export const epicEnd = createAction(EPIC_END);

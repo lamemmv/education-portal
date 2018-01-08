@@ -48,7 +48,7 @@ const API = {
             })
         }
 
-        let url = `${baseUri}admin/blobManager/childList`;
+        let url = `${baseUri}admin/blobManager`;
         url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
 
         return axios({
@@ -121,11 +121,27 @@ const API = {
     },
 
     createFolder(request) {
-        let url = `${baseUri}admin/BlobManager/Directory`;
+        let url = `${baseUri}admin/BlobManager/Folder`;
         return axios({
             method: 'post',
             url: url,
             data: request,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
+
+    updateFolder(request) {
+        let url = `${baseUri}admin/BlobManager/Folder/${request.id}`;
+        return axios({
+            method: 'put',
+            url: url,
+            data: {
+                parent: request.parent,
+                name: request.name
+            },
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

@@ -9,7 +9,8 @@ import {
     HANDLE_FILES_ROUTE,
     HANDLE_NEWS_CREATE_ROUTE,
     HANDLE_NEWS_DETAIL_ROUTE,
-    HANDLE_FILE_PREVIEW_ROUTE
+    HANDLE_FILE_PREVIEW_ROUTE,
+    UPDATE_FILES_BREADCRUMB
 } from './types';
 
 const initialState = {
@@ -51,10 +52,8 @@ let mapResources = (name) => {
             return 'news.createNews';
         case 'detailNews':
             return 'news.detail';
-        case 'filePreview':
-            return 'files.preview';
         default:
-            return 'home';
+            return name;
     }
 }
 
@@ -68,10 +67,10 @@ let mapIcon = (name) => {
             return 'playlist_add';
         case 'detailNews':
             return 'details';
-        case 'filePreview':
-            return 'find_in_page';
-        default:
+        case 'home':
             return 'home';
+        default:
+            return 'event_note';
     }
 }
 
@@ -168,6 +167,38 @@ export default handleActions({
                     id: 'filePreview',
                     path: action.payload.path
                 }
+            ]),
+            error: null,
+            loading: false
+        });
+    },
+    [UPDATE_FILES_BREADCRUMB]: (state, action) => {
+        let parents = action.payload.blob.ancestors;
+        let folders = [];
+        if (parents) {
+            parents.map((folder) => {
+                folders.push({
+                    id: folder.name,
+                    path: `/files/${folder.id}`
+                });
+            });
+        }
+
+        folders.push({
+            id: action.payload.blob.name,
+            path: `/files/${action.payload.blob.id}`
+        });
+
+        return Object.assign({}, state, {
+            items: getBreadcrumbs([{
+                    id: 'home',
+                    path: '/'
+                },
+                {
+                    id: 'files',
+                    path: '/files'
+                },
+                ...folders
             ]),
             error: null,
             loading: false

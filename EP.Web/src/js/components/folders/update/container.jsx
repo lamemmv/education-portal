@@ -7,36 +7,36 @@ import {
 
 import * as FolderActions from '../actions';
 
-class CreateFolder extends Component {
+class UpdateFolder extends Component {
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.folders.showCreateFolderDialog) {
-            $(this.createFolderDialog).modal({ backdrop: 'static' });
+        if (nextProps.folders.showUpdateFolderDialog) {
+            $(this.updateFolderDialog).modal({ backdrop: 'static' });
         } else {
-            if (this.createFolderDialog.className.indexOf('show') >= 0) {
-                $(this.createFolderDialog).modal('hide');
+            if (this.updateFolderDialog.className.indexOf('show') >= 0) {
+                $(this.updateFolderDialog).modal('hide');
             }
         }
 
-        $(this.createFolderDialog).on('shown.bs.modal', function() {
+        $(this.updateFolderDialog).on('shown.bs.modal', function () {
             $('#folder-name').focus()
         });
     }
 
     render() {
-        const { folderId } = this.props.folders;
+        const { id, parent } = this.props.folders.request;
         let folderName = null;
-        const { createFolder } = this.props.actions;
+        const { updateFolder } = this.props.actions;
         const { callbackAction } = this.props;
         return (
             <div class="modal fade"
-                id="createFolderModal"
+                id="updateFolderModal"
                 tabindex="-1"
                 role="dialog"
-                aria-labelledby="exampleModalLabel"
+                aria-labelledby="updateFolderDialog"
                 aria-hidden="true"
                 ref={dialog => {
-                    this.createFolderDialog = dialog;
+                    this.updateFolderDialog = dialog;
                 }}>
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -67,14 +67,15 @@ class CreateFolder extends Component {
                             </button>
                             <button type="button"
                                 class="btn btn-primary"
-                                onClick={() => createFolder({
+                                onClick={() => updateFolder({
                                     request: {
                                         name: folderName.value,
-                                        parent: folderId
+                                        id: id,
+                                        parent: parent
                                     },
                                     action: callbackAction
                                 })}>
-                                <Text id='folders.create'></Text>
+                                <Text id='folders.update'></Text>
                             </button>
                         </div>
                     </div>
@@ -96,4 +97,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateFolder);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateFolder);

@@ -17,7 +17,8 @@ import {
     ASK_FOR_DELETING_FILE,
     DELETE_FILE,
     DELETE_FILE_SUCCESS,
-    HIT_TO_BROWSE_FILE
+    HIT_TO_BROWSE_FILE,
+    GET_FILES_SUCCESS
 } from './types';
 import {
     getFiles,
@@ -39,15 +40,31 @@ import {
     addNotification
 } from '../notify/notification.actions';
 
+import {
+    updateFileBreadcrumb,
+    epicEnd
+} from '../breadcrumbs/actions';
+
 import API from '../api';
 
 const fetchFilesEpic = action$ =>
     action$.ofType(GET_FILES)
     .mergeMap(action =>
         Observable.fromPromise(API.getFiles(action.payload))
-        .map(response => getFilesSuccess(response.data))
+        .map(response => getFilesSuccess({
+            request: action.payload,
+            response: response.data
+        }))
         .catch(error => Observable.of(getFilesFailure(error)))
     );
+
+const fetchFilesSuccessEpic = action$ =>
+    action$.ofType(GET_FILES_SUCCESS)
+    .flatMap(action => {
+        return action.payload.request.folderId ?
+            Observable.of(updateFileBreadcrumb(action.payload.response)) :
+            Observable.of(epicEnd())
+    });
 
 const uploadFilesEpic = action$ =>
     action$.ofType(UPLOAD_FILE)
@@ -102,6 +119,7 @@ const deleteFileSuccessEpic = action$ =>
 
 const epics = [
     fetchFilesEpic,
+    fetchFilesSuccessEpic,
     uploadFilesEpic,
     uploadFileSuccessEpic,
     browseFileEpic,

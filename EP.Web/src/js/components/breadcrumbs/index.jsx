@@ -17,11 +17,11 @@ class EPBreadcrumbs extends Component {
                                 (breadcrumbsLength == (i + 1)) ?
                                     (<li class="breadcrumb-item ep-bc-item active">
                                         <i class='material-icons ep-icon'>{item.icon}</i>
-                                        <Text id={item.name}></Text>
+                                        <Text id={item.name}>{item.name}</Text>
                                     </li>)
                                     : (<li class="breadcrumb-item ep-bc-item"><Link to={item.path}>
                                         <i class='material-icons ep-icon'>{item.icon}</i>
-                                        <Text id={item.name}></Text>
+                                        <Text id={item.name}>{item.name}</Text>
                                     </Link></li>)
                             );
                         })

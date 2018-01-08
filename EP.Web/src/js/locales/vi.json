@@ -36,7 +36,8 @@
         "create": "Tạo",
         "close": "Đóng",
         "name": "Tên",
-        "enterName": "Nhập tên thư mục"
+        "enterName": "Nhập tên thư mục",
+        "update": "Cập nhật"
     },
     "delete": "Xóa",
     "home": "Trí Nhân",
@@ -44,5 +45,14 @@
     "signup": "Đăng ký",
     "teaching-methods-and-programs": "Phương pháp & chương trình dạy",
     "fee-policy": "Qui định học phí",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "cancel": "Bỏ qua",
+    "ok": "Đồng ý",
+    "errors": {
+        "1001": "Thư mục cha không hợp lệ",
+        "1002": "Thư mục bị trùng trên"
+    },
+    "messages": {
+        "askToDeleteFolder": "Bạn có chắc muốn xóa thư mục này không?"
+    }
 }

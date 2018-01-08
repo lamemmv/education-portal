@@ -17,6 +17,7 @@ import NotificationContainer from '../notify/notification.container';
 import * as styles from './styles.css';
 
 class FileList extends Component {
+
     componentWillReceiveProps(nextProps, prevProps) {
         if (nextProps.match.params) {
             if (nextProps.match.params.id != this.props.match.params.id) {
@@ -82,14 +83,15 @@ class FileList extends Component {
             files,
             currentPage,
             pages,
-            showPagination
+            showPagination,
+            blob
         } = this.props.fileState;
 
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
                 <NotificationContainer />
-                {this.props.match.params.id ? <FileMenu params={this.props.match.params} /> : null}
+                {this.props.match.params.id ? <FileMenu params={blob} /> : null}
                 <div class='row'>
                     {
                         files.map((node) => {

@@ -160,7 +160,6 @@ class EPActivities extends Component {
                             data-holder-rendered="true" />
                     </div>
                 </div>
-                <hr class="featurette-divider" />
             </div>
         );
     }

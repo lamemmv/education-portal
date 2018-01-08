@@ -9,16 +9,25 @@ import {
 import { Text } from 'preact-i18n';
 let classNames = require('classnames');
 
-import { askToShowCreateFolderDialog } from '../../folders/actions';
+import {
+    askToShowCreateFolderDialog,
+    askToShowUpdateFolderDialog,
+    askToShowDeleteFolderDialog
+} from '../../folders/actions';
+
 import { hitToBrowseFile } from '../upload/actions';
 import { getFiles } from '../fileActions';
 
 import Uploader from '../upload/container';
 import CreateFolder from '../../folders/create/container';
+import UpdateFolder from '../../folders/update/container';
+import DeleteFolder from '../../folders/delete/container';
 
 class FileMenu extends Component {
     render() {
         const { askToShowCreateFolderDialog,
+            askToShowUpdateFolderDialog,
+            askToShowDeleteFolderDialog,
             hitToBrowseFile,
             params
         } = this.props;
@@ -45,9 +54,10 @@ class FileMenu extends Component {
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
-                                    <i class='material-icons'>arrow_forward</i>
-                                    <Text id='files.moveTo'></Text>
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                    onClick={() => askToShowDeleteFolderDialog(params.id)}>
+                                    <i class='material-icons'>delete</i>
+                                    <Text id='files.deleteFolder'></Text>
                                 </button>
                             </li>
                             <li class="nav-item">
@@ -57,7 +67,8 @@ class FileMenu extends Component {
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                    onClick={() => askToShowUpdateFolderDialog(params)}>
                                     <i class='material-icons'>mode_edit</i>
                                     <Text id='files.rename'></Text>
                                 </button>
@@ -66,6 +77,8 @@ class FileMenu extends Component {
                     </div>
                 </nav>
                 <CreateFolder callbackAction={getFiles} />
+                <UpdateFolder callbackAction={getFiles} />
+                <DeleteFolder callbackAction={getFiles} />
                 <Uploader />
             </div>
         );
@@ -82,6 +95,12 @@ const mapDispatchToProps = (dispatch) => {
     return {
         askToShowCreateFolderDialog: (folderId) => {
             dispatch(askToShowCreateFolderDialog(folderId));
+        },
+        askToShowUpdateFolderDialog: (folderId) => {
+            dispatch(askToShowUpdateFolderDialog(folderId));
+        },
+        askToShowDeleteFolderDialog: (folderId) => {
+            dispatch(askToShowDeleteFolderDialog(folderId));
         },
         hitToBrowseFile: () => {
             dispatch(hitToBrowseFile());
