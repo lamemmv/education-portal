@@ -2,7 +2,6 @@
 using EP.API.Extensions;
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
-using EP.Data.Paginations;
 using EP.Services.Blobs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -21,40 +20,28 @@ namespace EP.API.Areas.Admin.Controllers
             _blobService = blobService;
         }
 
-        [HttpGet("ChildList")]
-        public async Task<IPagedList<Blob>> ChildList(BlobSearchViewModel viewModel)
+        [HttpGet]
+        public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
         {
-            return await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
-        }
-
-        [HttpGet("Folder/{id}")]
-        public async Task<Blob> GetFolder(string id)
-        {
-            var entity = await _blobService.GetByIdAsync(id);
+            var entity = await _blobService.GetByIdAsync(viewModel.Id);
 
             if (_blobService.IsFile(entity))
             {
-                return null;
+                Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
+
+                return File(fileStream, entity.ContentType);
             }
 
-            return entity;
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
-        {
-            var entity = await _blobService.GetByIdAsync(id);
-
-            if (!_blobService.IsFile(entity))
+            var blob = new Blob
             {
-                ModelState.AddModelError(nameof(id), $"The {id} is not a file.");
+                Id = entity.Id,
+                Name = entity.Name,
+                Parent = entity.Parent,
+                Ancestors = entity.Ancestors
+            };
+            var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
-                return BadRequest(ModelState);
-            }
-
-            Stream fileStream = new FileStream(entity.PhysicalPath, FileMode.Open);
-
-            return File(fileStream, entity.ContentType);
+            return Ok(new { blob, childList });
         }
 
         [HttpPost("Folder"), ValidateViewModel]
