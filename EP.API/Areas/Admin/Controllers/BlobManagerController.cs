@@ -5,8 +5,8 @@ using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -51,7 +51,7 @@ namespace EP.API.Areas.Admin.Controllers
 
             var response = await _blobService.CreateFileAsync(viewModel.Parent.Trim(), viewModel.Files);
 
-            return response.ToActionResult();
+            return Ok();//response.ToActionResult();
         }
 
         [HttpPut("Folder/{id}"), ValidateViewModel]

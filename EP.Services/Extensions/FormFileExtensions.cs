@@ -1,30 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Threading.Tasks;
 using System.Threading;
-using System;
-using System.Linq;
+using System.Threading.Tasks;
 
-namespace EP.API.Extensions
+namespace EP.Services.Extensions
 {
     public static class FormFileExtensions
     {
-        public static bool IsAcceptableContentType(this IFormFile formFile)
-        {
-            var acceptableTypes = new[]
-            {
-                "image/gif",
-                "image/png",
-                "image/jpeg",
-                "application/octet-stream",
-                "application/pdf"
-            };
-
-            var contentType = formFile.ContentType.ToLowerInvariant();
-
-            return acceptableTypes.Contains(contentType);
-        }
-
         public async static Task SaveAsAsync(
             this IFormFile formFile,
             string physicalPath,
@@ -35,6 +17,7 @@ namespace EP.API.Extensions
             using (Stream fileStream = new FileStream(physicalPath, FileMode.Create))
             {
                 Stream inputStream = formFile.OpenReadStream();
+
                 await inputStream.CopyToAsync(fileStream, DefaultBufferSize, cancellationToken);
             }
         }

@@ -18,5 +18,6 @@ namespace EP.Services.Enums
         Blob_DuplicatedName,
         Blob_HasChildren,
         Blob_SystemDirectory,
+        Blob_InvalidMIMEType,
     }
 }

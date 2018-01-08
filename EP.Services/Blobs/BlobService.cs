@@ -3,12 +3,15 @@ using EP.Data.Entities.Blobs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Enums;
+using EP.Services.Extensions;
 using EP.Services.Models;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -16,6 +19,14 @@ namespace EP.Services.Blobs
     public sealed class BlobService : IBlobService
     {
         private const string InvalidParentField = "The Parent field is invalid.";
+        private readonly static IDictionary<string, string> AcceptableTypes = new Dictionary<string, string>
+        {
+            { "image/gif", "image" },
+            { "image/png", "image" },
+            { "image/jpeg", "image" },
+            { "application/octet-stream", "application" },
+            { "application/pdf", "application" }
+        };
 
         private readonly IRepository<Blob> _blobs;
 
@@ -45,7 +56,7 @@ namespace EP.Services.Blobs
                 .Include(e => e.Name)
                 .Include(e => e.Parent)
                 .Include(e => e.Ancestors);
-            
+
             return await _blobs.GetByIdAsync(id, projection);
         }
 
@@ -96,43 +107,96 @@ namespace EP.Services.Blobs
             return ApiServerResult.Created(entity.Id);
         }
 
-        public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files)
+        public async Task<IEnumerable<ApiServerResult>> CreateFileAsync(string parent, IFormFile[] files)
         {
+            IList<ApiServerResult> results = new List<ApiServerResult>();
             var parentEntity = await GetByIdAsync(parent);
 
             if (parentEntity == null)
             {
-                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
+                results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField));
+                return results;
             }
 
-            if (string.IsNullOrEmpty(parentEntity.PhysicalPath))
+            string rootVirtualPath = parentEntity.VirtualPath;
+            string rootPhysicalPath = parentEntity.PhysicalPath;
+
+            if (string.IsNullOrEmpty(rootVirtualPath) || string.IsNullOrEmpty(rootPhysicalPath))
             {
-                
+                var ancestorId = parentEntity.Ancestors?.FirstOrDefault()?.Id;
+                var ancestor = await GetByIdAsync(ancestorId);
+
+                rootVirtualPath = ancestor?.VirtualPath;
+                rootPhysicalPath = ancestor?.PhysicalPath;
             }
 
-            // if (parentEntity.Ancestors.Count == 1)
-            // {
-            // }
+            if (string.IsNullOrEmpty(rootVirtualPath) || string.IsNullOrEmpty(rootPhysicalPath))
+            {
+                results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField));
+                return results;
+            }
 
-            //Blob entity;
-            //IList<string> ids = new List<string>();
+            Blob entity;
+            string firstMimeType, folderPhysicalPath;
+            var contentTypeGroups = files.ToLookup(kvp => kvp.ContentType, kvp => kvp);
 
-            //foreach (var file in files)
-            //{
-            //    entity = BuildFileEntity(file);
-            //    var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
+            foreach (var group in contentTypeGroups)
+            {
+                if (!AcceptableTypes.TryGetValue(group.Key, out firstMimeType))
+                {
+                    results.Add(ApiServerResult.ServerError
+                        (ApiStatusCode.Blob_InvalidMIMEType, $"The MIME type {group.Key} is not valid."));
+                }
+                else
+                {
+                    foreach (var file in group)
+                    {
+                        string fileName =
+                            ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
 
-            //    await Task.WhenAll(
-            //        _blobService.CreateAsync(entity),
-            //        file.SaveAsAsync(entity.PhysicalPath),
-            //        _activityLogService.CreateAsync(SystemKeyword.CreateBlob, activityLog));
+                        if (await IsExistence(parent, fileName))
+                        {
+                            results.Add(ApiServerResult.ServerError
+                                (ApiStatusCode.Blob_DuplicatedName, $"The {fileName} is existed."));
+                        }
+                        else
+                        {
+                            folderPhysicalPath = Path.Combine(rootPhysicalPath, firstMimeType);
 
-            //    ids.Add(entity.Id);
-            //}
+                            if (!Directory.Exists(folderPhysicalPath))
+                            {
+                                Directory.CreateDirectory(folderPhysicalPath);
+                            }
 
-            ////return ApiResponse.Created(string.Join(',', ids));
-            //return null;
-            throw new System.NotImplementedException();
+                            entity = new Blob
+                            {
+                                Name = fileName,
+                                FileExtension = Path.GetExtension(fileName).ToLowerInvariant(),
+                                ContentType = file.ContentType,
+                                VirtualPath = $"{rootVirtualPath}/{firstMimeType}/{fileName}",
+                                PhysicalPath = Path.Combine(folderPhysicalPath, fileName),
+                                Parent = parent,
+                                Ancestors = parentEntity.Ancestors,
+                                CreatedOn = DateTime.UtcNow
+                            };
+
+                            if (File.Exists(entity.PhysicalPath))
+                            {
+                                results.Add(ApiServerResult.ServerError
+                                    (ApiStatusCode.Blob_DuplicatedName, $"The {fileName} is existed."));
+                            }
+                            else
+                            {
+                                await Task.WhenAll(_blobs.CreateAsync(entity), file.SaveAsAsync(entity.PhysicalPath));
+
+                                results.Add(ApiServerResult.Created(entity.Id));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return results;
         }
 
         public async Task<ApiServerResult> UpdateFolderAsync(Blob entity)
@@ -199,60 +263,5 @@ namespace EP.Services.Blobs
 
             return await _blobs.CountAsync(filter) > 0;
         }
-
-        //private Blob BuildFileEntity(IFormFile file, string parentPhysicalPath)
-        //{
-        //    string contentType = file.ContentType;
-        //    string firstMimeType = GetFirstMimeType(contentType);
-        //    string publicBlobPath = GetPublicBlobPath(parentPhysicalPath, firstMimeType);
-
-        //    string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
-        //    string name = Path.GetFileNameWithoutExtension(fileName);
-        //    string extension = Path.GetExtension(fileName);
-        //    string newFileName = $"{name}_{RandomUtils.Numberic(randomSize)}{extension}";
-
-        //    return new Blob
-        //    {
-        //        Name = newFileName,
-        //        FileExtension = extension.ToLowerInvariant(),
-        //        ContentType = contentType,
-        //        VirtualPath = string.IsNullOrWhiteSpace(firstMimeType) ?
-        //            $"{_publicBlob}/{newFileName}" :
-        //            $"{_publicBlob}/{firstMimeType}/{newFileName}",
-        //        PhysicalPath = Path.Combine(publicBlobPath, newFileName),
-        //        CreatedOn = DateTime.UtcNow
-        //    };
-        //}
-
-        //private static string GetFirstMimeType(string contentType)
-        //{
-        //    if (string.IsNullOrWhiteSpace(contentType))
-        //    {
-        //        return null;
-        //    }
-
-        //    var types = contentType.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-        //    if (types.Length == 0 || string.IsNullOrWhiteSpace(types[0]))
-        //    {
-        //        return null;
-        //    }
-
-        //    return types[0];
-        //}
-
-        //private static string GetPublicBlobPath(string parentPhysicalPath, string firstMimeType)
-        //{
-        //    string publicBlobPath = string.IsNullOrWhiteSpace(firstMimeType) ?
-        //        Path.Combine(webRootPath, publicBlob) :
-        //        Path.Combine(webRootPath, publicBlob, firstMimeType);
-
-        //    if (!Directory.Exists(publicBlobPath))
-        //    {
-        //        Directory.CreateDirectory(publicBlobPath);
-        //    }
-
-        //    return publicBlobPath;
-        //}
     }
 }
