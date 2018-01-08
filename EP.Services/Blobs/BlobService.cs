@@ -78,7 +78,7 @@ namespace EP.Services.Blobs
                 return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
             }
 
-            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? Enumerable.Empty<BlobAncestor>());
+            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? new List<BlobAncestor>());
             ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
             entity.Ancestors = ancestors;
 

@@ -8,8 +8,8 @@ namespace EP.Data.Entities.Blobs
 
         public BlobAncestor(string id, string name)
         {
-            Id = Id;
-            Name = Name;
+            Id = id;
+            Name = name;
         }
 
         public string Id { get; set; }
