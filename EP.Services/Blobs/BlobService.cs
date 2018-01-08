@@ -38,6 +38,17 @@ namespace EP.Services.Blobs
             return await _blobs.GetPagedListAsync(filter, projection: projection, skip: page, take: size);
         }
 
+        public async Task<Blob> GetBlobForChildListAsync(string id)
+        {
+            var projection = Builders<Blob>.Projection
+                .Include(e => e.Id)
+                .Include(e => e.Name)
+                .Include(e => e.Parent)
+                .Include(e => e.Ancestors);
+            
+            return await _blobs.GetByIdAsync(id, projection);
+        }
+
         public async Task<Blob> GetByIdAsync(string id)
         {
             return await _blobs.GetByIdAsync(id);
@@ -87,14 +98,17 @@ namespace EP.Services.Blobs
 
         public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files)
         {
-            // var parentEntity = await GetByIdAsync(parent);
+            var parentEntity = await GetByIdAsync(parent);
 
-            // if (parentEntity == null)
-            // {
-            //     return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
-            // }
+            if (parentEntity == null)
+            {
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
+            }
 
-            // string ancestor = parentEntity.Ancestors.FirstOrDefault();
+            if (string.IsNullOrEmpty(parentEntity.PhysicalPath))
+            {
+                
+            }
 
             // if (parentEntity.Ancestors.Count == 1)
             // {

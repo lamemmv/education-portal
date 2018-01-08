@@ -5,7 +5,6 @@ using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using System.Threading.Tasks;
 using System;
 
@@ -21,25 +20,12 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
+        public async Task<dynamic> Get(BlobSearchViewModel viewModel)
         {
-            Blob blob = null;
-            var entity = await _blobService.GetByIdAsync(viewModel.Id);
-
-            if (entity != null)
-            {
-                blob = new Blob
-                {
-                    Id = entity.Id,
-                    Name = entity.Name,
-                    Parent = entity.Parent,
-                    Ancestors = entity.Ancestors
-                };
-            }
-
+            var blob = await _blobService.GetBlobForChildListAsync(viewModel.Id);
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
-            return Ok(new { blob, childList });
+            return new { blob, childList };
         }
 
         [HttpPost("Folder"), ValidateViewModel]
