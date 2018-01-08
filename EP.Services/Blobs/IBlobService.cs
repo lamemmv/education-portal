@@ -11,6 +11,8 @@ namespace EP.Services.Blobs
     {
         Task<IPagedList<Blob>> GetChildListAsync(string id, int? page, int? size);
 
+        Task<Blob> GetBlobForChildListAsync(string id);
+
         Task<Blob> GetByIdAsync(string id);
 
         Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id);
