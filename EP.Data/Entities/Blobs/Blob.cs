@@ -23,6 +23,6 @@ namespace EP.Data.Entities.Blobs
         public string Parent { get; set; }
 
         [BsonIgnoreIfNull]
-        public IList<string> Ancestors { get; set; }
+        public IEnumerable<BlobAncestor> Ancestors { get; set; }
     }
 }

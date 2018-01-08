@@ -33,7 +33,7 @@ namespace EP.API.Infrastructure
 
         private static void BlobMapping()
         {
-            Mapper.Register<DirectoryViewModel, Blob>()
+            Mapper.Register<FolderViewModel, Blob>()
                 .Member(dest => dest.Name, src => src.Name.Trim())
                 .Member(dest => dest.Parent, src => src.Parent.Trim());
         }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EP.Services.Blobs
@@ -32,7 +33,9 @@ namespace EP.Services.Blobs
             var projection = Builders<Blob>.Projection
                 .Include(e => e.Id)
                 .Include(e => e.Name)
-                .Include(e => e.ContentType);
+                .Include(e => e.ContentType)
+                .Include(e => e.Parent)
+                .Include(e => e.Ancestors);
 
             return await _blobs.GetPagedListAsync(filter, projection: projection, skip: page, take: size);
         }
@@ -61,7 +64,7 @@ namespace EP.Services.Blobs
                 !string.IsNullOrEmpty(entity.VirtualPath);
         }
 
-        public async Task<ApiServerResult> CreateDirectoryAsync(Blob entity)
+        public async Task<ApiServerResult> CreateFolderAsync(Blob entity)
         {
             if (await IsExistence(entity.Parent, entity.Name))
             {
@@ -75,8 +78,8 @@ namespace EP.Services.Blobs
                 return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
             }
 
-            var ancestors = parentEntity.Ancestors ?? new List<string>();
-            ancestors.Add(entity.Parent);
+            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? Enumerable.Empty<BlobAncestor>());
+            ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
             entity.Ancestors = ancestors;
 
             await _blobs.CreateAsync(entity);
@@ -86,12 +89,18 @@ namespace EP.Services.Blobs
 
         public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile[] files)
         {
-            //var parentEntity = await GetByIdAsync(parent);
+            // var parentEntity = await GetByIdAsync(parent);
 
-            //if (parentEntity == null)
-            //{
-            //    return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
-            //}
+            // if (parentEntity == null)
+            // {
+            //     return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
+            // }
+
+            // string ancestor = parentEntity.Ancestors.FirstOrDefault();
+
+            // if (parentEntity.Ancestors.Count == 1)
+            // {
+            // }
 
             //Blob entity;
             //IList<string> ids = new List<string>();
@@ -114,7 +123,7 @@ namespace EP.Services.Blobs
             throw new System.NotImplementedException();
         }
 
-        public async Task<ApiServerResult> UpdateDirectoryAsync(Blob entity)
+        public async Task<ApiServerResult> UpdateFolderAsync(Blob entity)
         {
             if (await IsExistence(entity.Parent, entity.Name))
             {
@@ -139,12 +148,9 @@ namespace EP.Services.Blobs
                 return ApiServerResult.NotFound();
             }
 
-            if (IsFile(entity))
+            if (IsFile(entity) && File.Exists(entity.PhysicalPath))
             {
-                if (File.Exists(entity.PhysicalPath))
-                {
-                    File.Delete(entity.PhysicalPath);
-                }
+                File.Delete(entity.PhysicalPath);
             }
             else
             {

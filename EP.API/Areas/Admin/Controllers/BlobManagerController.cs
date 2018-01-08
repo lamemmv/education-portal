@@ -6,9 +6,9 @@ using EP.Data.Paginations;
 using EP.Services.Blobs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.IO;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -44,13 +44,13 @@ namespace EP.API.Areas.Admin.Controllers
             return File(fileStream, entity.ContentType);
         }
 
-        [HttpPost("Directory"), ValidateViewModel]
-        public async Task<IActionResult> PostDirectory([FromBody]DirectoryViewModel viewModel)
+        [HttpPost("Folder"), ValidateViewModel]
+        public async Task<IActionResult> PostFolder([FromBody]FolderViewModel viewModel)
         {
-            var entity = viewModel.Map<DirectoryViewModel, Blob>();
+            var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.CreatedOn = DateTime.UtcNow;
 
-            var response = await _blobService.CreateDirectoryAsync(entity);
+            var response = await _blobService.CreateFolderAsync(entity);
 
             return response.ToActionResult();
         }
@@ -70,13 +70,13 @@ namespace EP.API.Areas.Admin.Controllers
             return response.ToActionResult();
         }
 
-        [HttpPut("Directory/{id}"), ValidateViewModel]
-        public async Task<IActionResult> PutDirectory(string id, [FromBody]DirectoryViewModel viewModel)
+        [HttpPut("Folder/{id}"), ValidateViewModel]
+        public async Task<IActionResult> PutFolder(string id, [FromBody]FolderViewModel viewModel)
         {
-            var entity = viewModel.Map<DirectoryViewModel, Blob>();
+            var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.Id = id;
 
-            var response = await _blobService.UpdateDirectoryAsync(entity);
+            var response = await _blobService.UpdateFolderAsync(entity);
 
             return response.ToActionResult();
         }

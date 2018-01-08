@@ -13,7 +13,6 @@ namespace EP.API.Extensions
         {
             var acceptableTypes = new[]
             {
-                "text/plain",
                 "image/gif",
                 "image/png",
                 "image/jpeg",

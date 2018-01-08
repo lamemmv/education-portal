@@ -30,7 +30,7 @@ namespace EP.Data.Repositories
             filter = filter ?? Builders<TEntity>.Filter.Empty;
             var options = new FindOptions<TEntity, TEntity>
             {
-                Sort = sort ?? Builders<TEntity>.Sort.Descending(e => e.Id),
+                Sort = sort,
                 Projection = projection
             };
 
