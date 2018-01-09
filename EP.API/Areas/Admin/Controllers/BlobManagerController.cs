@@ -66,11 +66,18 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string[] ids)
         {
-            var response = await _blobService.DeleteAsync(id);
+            if (ids == null || ids.Length == 0)
+            {
+                ModelState.AddModelError(nameof(ids), "Ids should not be empty.");
 
-            return response.ToActionResult();
+                return BadRequest(ModelState);
+            }
+
+            var results = await _blobService.DeleteAsync(ids);
+
+            return Ok(results);
         }
     }
 }

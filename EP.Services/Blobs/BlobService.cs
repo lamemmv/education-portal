@@ -7,12 +7,12 @@ using EP.Services.Extensions;
 using EP.Services.Models;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Services.Blobs
 {
@@ -74,14 +74,6 @@ namespace EP.Services.Blobs
             var entity = await _blobs.GetByIdAsync(id, projection);
 
             return new EmbeddedBlob { Id = entity.Id, VirtualPath = entity.VirtualPath };
-        }
-
-        public bool IsFile(Blob entity)
-        {
-            return entity != null &&
-                !string.IsNullOrEmpty(entity.FileExtension) &&
-                !string.IsNullOrEmpty(entity.ContentType) &&
-                !string.IsNullOrEmpty(entity.VirtualPath);
         }
 
         public async Task<ApiServerResult> CreateFolderAsync(Blob entity)
@@ -218,16 +210,28 @@ namespace EP.Services.Blobs
             return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        public async Task<ApiServerResult> DeleteAsync(string id)
+        public async Task<IEnumerable<BlobDeleteResult>> DeleteAsync(string[] ids)
+        {
+            IList<BlobDeleteResult> results = new List<BlobDeleteResult>();
+
+            foreach (var id in ids)
+            {
+                results.Add(await DeleteAsync(id));
+            }
+
+            return results;
+        }
+
+        public async Task<BlobDeleteResult> DeleteAsync(string id)
         {
             var entity = await GetByIdAsync(id);
 
             if (entity == null)
             {
-                return ApiServerResult.NotFound();
+                return new BlobDeleteResult(id, ApiStatusCode.NotFound);
             }
 
-            if (IsFile(entity) && File.Exists(entity.PhysicalPath))
+            if (entity.IsFile() && File.Exists(entity.PhysicalPath))
             {
                 File.Delete(entity.PhysicalPath);
             }
@@ -235,19 +239,19 @@ namespace EP.Services.Blobs
             {
                 if (await HasChildren(id))
                 {
-                    return ApiServerResult.ServerError(ApiStatusCode.Blob_HasChildren, $"The {id} has sub directories or files.");
+                    return new BlobDeleteResult(id, ApiStatusCode.Blob_HasChildren, "Folder is not empty.");
                 }
 
                 // System Directory.
                 if (string.IsNullOrEmpty(entity.Parent))
                 {
-                    return ApiServerResult.ServerError(ApiStatusCode.Blob_SystemDirectory, $"The {id} is system directory.");
+                    return new BlobDeleteResult(id, ApiStatusCode.Blob_SystemDirectory, "System folder could not be deleted.");
                 }
             }
 
             var result = await _blobs.DeleteAsync(id);
 
-            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
+            return result ? new BlobDeleteResult(id) : new BlobDeleteResult(id, ApiStatusCode.NotFound);
         }
 
         private async Task<bool> IsExistence(string parent, string name)

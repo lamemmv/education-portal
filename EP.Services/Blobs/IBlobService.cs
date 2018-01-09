@@ -17,14 +17,14 @@ namespace EP.Services.Blobs
 
         Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id);
 
-        bool IsFile(Blob entity);
-
         Task<ApiServerResult> CreateFolderAsync(Blob entity);
 
         Task<IEnumerable<ApiServerResult>> CreateFileAsync(string parent, IFormFile[] files);
 
         Task<ApiServerResult> UpdateFolderAsync(Blob entity);
 
-        Task<ApiServerResult> DeleteAsync(string id);
+        Task<IEnumerable<BlobDeleteResult>> DeleteAsync(string[] ids);
+
+        Task<BlobDeleteResult> DeleteAsync(string id);
     }
 }
