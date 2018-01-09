@@ -210,9 +210,9 @@ namespace EP.Services.Blobs
             return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        public async Task<IEnumerable<BlobDeleteResult>> DeleteAsync(string[] ids)
+        public async Task<IEnumerable<ApiServerResult>> DeleteAsync(string[] ids)
         {
-            IList<BlobDeleteResult> results = new List<BlobDeleteResult>();
+            IList<ApiServerResult> results = new List<ApiServerResult>();
 
             foreach (var id in ids)
             {
@@ -222,13 +222,13 @@ namespace EP.Services.Blobs
             return results;
         }
 
-        public async Task<BlobDeleteResult> DeleteAsync(string id)
+        public async Task<ApiServerResult> DeleteAsync(string id)
         {
             var entity = await GetByIdAsync(id);
 
             if (entity == null)
             {
-                return new BlobDeleteResult(id, ApiStatusCode.NotFound);
+                return new ApiServerResult(ApiStatusCode.NotFound, id);
             }
 
             if (entity.IsFile() && File.Exists(entity.PhysicalPath))
@@ -239,19 +239,19 @@ namespace EP.Services.Blobs
             {
                 if (await HasChildren(id))
                 {
-                    return new BlobDeleteResult(id, ApiStatusCode.Blob_HasChildren, "Folder is not empty.");
+                    return new ApiServerResult(ApiStatusCode.Blob_HasChildren, id, "Folder is not empty.");
                 }
 
                 // System Directory.
                 if (string.IsNullOrEmpty(entity.Parent))
                 {
-                    return new BlobDeleteResult(id, ApiStatusCode.Blob_SystemDirectory, "System folder could not be deleted.");
+                    return new ApiServerResult(ApiStatusCode.Blob_SystemDirectory, id, "System folder could not be deleted.");
                 }
             }
 
             var result = await _blobs.DeleteAsync(id);
 
-            return result ? new BlobDeleteResult(id) : new BlobDeleteResult(id, ApiStatusCode.NotFound);
+            return result ? new ApiServerResult(id: id) : new ApiServerResult(ApiStatusCode.NotFound, id);
         }
 
         private async Task<bool> IsExistence(string parent, string name)

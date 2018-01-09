@@ -23,8 +23,8 @@ namespace EP.Services.Blobs
 
         Task<ApiServerResult> UpdateFolderAsync(Blob entity);
 
-        Task<IEnumerable<BlobDeleteResult>> DeleteAsync(string[] ids);
+        Task<IEnumerable<ApiServerResult>> DeleteAsync(string[] ids);
 
-        Task<BlobDeleteResult> DeleteAsync(string id);
+        Task<ApiServerResult> DeleteAsync(string id);
     }
 }

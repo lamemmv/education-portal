@@ -4,40 +4,42 @@ namespace EP.Services.Models
 {
     public sealed class ApiServerResult
     {
-        private ApiServerResult(ApiStatusCode statusCode, string message = null)
+        public ApiServerResult(
+            ApiStatusCode statusCode = ApiStatusCode.OK,
+            string id = null,
+            string message = null)
         {
             StatusCode = (int)statusCode;
+            Id = id;
             Message = message;
         }
 
         public int StatusCode { get; }
 
+        public string Id { get; }
+
         public string Message { get; }
 
-        public bool IsCreated() => StatusCode == (int)ApiStatusCode.Created;
+        public bool IsCreated()
+            => StatusCode == (int)ApiStatusCode.Created;
 
-        public bool IsNoContent() => StatusCode == (int)ApiStatusCode.NoContent;
+        public bool IsNoContent()
+            => StatusCode == (int)ApiStatusCode.NoContent;
 
-        public bool IsNotFound() => StatusCode == (int)ApiStatusCode.NotFound;
+        public bool IsNotFound()
+            => StatusCode == (int)ApiStatusCode.NotFound;
 
         public static ApiServerResult Created(string id)
-        {
-            return new ApiServerResult(ApiStatusCode.Created, id);
-        }
+            => new ApiServerResult(ApiStatusCode.Created, id);
 
         public static ApiServerResult NoContent()
-        {
-            return new ApiServerResult(ApiStatusCode.NoContent);
-        }
+            => new ApiServerResult(ApiStatusCode.NoContent);
 
         public static ApiServerResult NotFound()
-        {
-            return new ApiServerResult(ApiStatusCode.NotFound);
-        }
+            => new ApiServerResult(ApiStatusCode.NotFound);
+
 
         public static ApiServerResult ServerError(ApiStatusCode statusCode, string message)
-        {
-            return new ApiServerResult(statusCode, message);
-        }
+            => new ApiServerResult(statusCode, message);
     }
 }

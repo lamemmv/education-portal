@@ -20,7 +20,7 @@ namespace EP.API.Extensions
             if (response.IsNotFound())
             {
                 return new NotFoundResult();
-            }
+            }           
 
             return new BadRequestObjectResult(response);
         }
