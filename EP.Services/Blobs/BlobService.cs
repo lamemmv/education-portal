@@ -168,6 +168,9 @@ namespace EP.Services.Blobs
                                 Directory.CreateDirectory(folderPhysicalPath);
                             }
 
+                            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? new List<BlobAncestor>());
+                            ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
+
                             entity = new Blob
                             {
                                 Name = fileName,

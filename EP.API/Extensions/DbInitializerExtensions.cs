@@ -68,6 +68,7 @@ namespace EP.API.Extensions
                 blob = new Blob
                 {
                     Name = publicBlob,
+                    VirtualPath = publicBlob,
                     PhysicalPath = publicBlobPath,
                     CreatedOn = DateTime.UtcNow
                 };
