@@ -69,7 +69,10 @@ const fetchFilesSuccessEpic = action$ =>
 const uploadFilesEpic = action$ =>
     action$.ofType(UPLOAD_FILE)
     .mergeMap(action =>
-        Observable.fromPromise(API.uploadFiles(action.payload.files))
+        Observable.fromPromise(API.uploadFiles({
+            files: action.payload.files,
+            parent: action.payload.parent
+        }))
         .map(response => uploadFileSuccess({
             data: response.data,
             action: action.payload.callbackAction

@@ -1,7 +1,9 @@
 import {
     GET_FILES,
     GET_FILES_SUCCESS,
-    GET_FILES_FAILURE
+    GET_FILES_FAILURE,
+    SELECT_FOLDER,
+    DESELECT_FOLDER
 } from './types';
 
 let isfile = (node) => {
@@ -19,7 +21,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function(state = INITIAL_STATE, action) {
+export default function (state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES: // start fetching files and set loading = true
@@ -35,7 +37,7 @@ export default function(state = INITIAL_STATE, action) {
             };
         case GET_FILES_SUCCESS: // return list of files and make loading = false
             let pages = [],
-                showPagination = false, 
+                showPagination = false,
                 children = action.payload.response.childList;
             if (children.totalPages > 1) {
                 for (let i = 0; i < children.totalPages; i++) {
@@ -75,6 +77,40 @@ export default function(state = INITIAL_STATE, action) {
                     pages: [],
                     error: error,
                     loading: false
+                }
+            };
+        case SELECT_FOLDER:
+            let nodes = state.fileState.files.slice();
+            nodes.map((node) => {
+                if (node.id == action.payload.id) {
+                    node.selected = true;
+                }
+            });
+
+            return {
+                ...state,
+                fileState: {
+                    files: nodes,
+                    blob: state.fileState.blob,
+                    selectedNode: action.payload,
+                    error: null,
+                    loading: true
+                }
+            };
+        case DESELECT_FOLDER:
+            nodes = state.fileState.files.slice();
+            nodes.map((node) => {
+                if (node.id == action.payload.id) {
+                    node.selected = false;
+                }
+            });
+            return {
+                ...state,
+                fileState: {
+                    files: nodes,
+                    blob: state.fileState.blob,
+                    error: null,
+                    loading: true
                 }
             };
         default:

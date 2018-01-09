@@ -24,16 +24,13 @@ class UpdateFolder extends Component {
         $(this.updateFolderDialog).on('shown.bs.modal', function () {
             $('#folder-name').focus()
         });
-
-        if (nextProps.folders.redirectTo) {
-            this.context.router.history.push(nextProps.folders.redirectTo);
-        }
     }
 
     render() {
-        const { id, parent } = this.props.folders.request;
+        const { id, parent, name } = this.props.folders.request;
         let folderName = null;
         const { updateFolder } = this.props.actions;
+        const { callbackAction } = this.props;
         return (
             <div class="modal fade"
                 id="updateFolderModal"
@@ -55,6 +52,7 @@ class UpdateFolder extends Component {
                                     <Localizer>
                                         <input type="text"
                                             class="form-control"
+                                            value={name}
                                             placeholder={<Text id='folders.enterName'></Text>}
                                             id="folder-name"
                                             ref={input => {
@@ -74,9 +72,12 @@ class UpdateFolder extends Component {
                             <button type="button"
                                 class="btn btn-primary"
                                 onClick={() => updateFolder({
-                                    name: folderName.value,
-                                    id: id,
-                                    parent: parent
+                                    request: {
+                                        name: folderName.value,
+                                        id: id,
+                                        parent: parent
+                                    },
+                                    action: callbackAction
                                 })}>
                                 <Text id='folders.update'></Text>
                             </button>

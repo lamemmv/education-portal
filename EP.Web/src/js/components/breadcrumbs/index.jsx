@@ -10,7 +10,7 @@ class EPBreadcrumbs extends Component {
         const breadcrumbsLength = items.length;
         return (
             <HashRouter>
-                <ol class="container breadcrumb">
+                <ol class="container breadcrumb ep-breadcrumb">
                     {
                         items.map((item, i) => {
                             return (

@@ -1,5 +1,5 @@
 :root {
-    --breadcrumb-theme-1: #8BC34A;
+    --breadcrumb-theme-1: #3c571d;
     --breadcrumb-theme-2: #fff;
     --breadcrumb-theme-3: #4CAF50;
     --breadcrumb-theme-4: #9d0f3e;
@@ -12,14 +12,24 @@
     font-size: 20px;
 }
 
+.ep-breadcrumb {
+    background-color: var(--breadcrumb-theme-1) !important;
+    margin-bottom: 0 !important;
+}
+
 .ep-bc-item {
     font-size: 0.85em;
 }
 
+.ep-bc-item.active {
+    color: var(--breadcrumb-theme-2);
+}
+
 .ep-bc-item::before {
     margin-right: 10px;
+    color: var(--breadcrumb-theme-2) !important;
 }
 
 .ep-bc-item a {
-    color: var(--breadcrumb-theme-3);
+    color: var(--breadcrumb-theme-2);
 }

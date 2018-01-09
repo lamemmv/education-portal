@@ -111,7 +111,6 @@ export default handleActions({
     [UPDATE_FOLDER_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
             showUpdateFolderDialog: false,
-            redirectTo: `/files/${action.payload.parent}`,
             error: null,
             loading: false
         });
@@ -140,7 +139,6 @@ export default handleActions({
     },
     [DELETE_FOLDER_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
-            redirectTo: `/files/${action.payload.parent}`,
             showDeleteFolderDialog: false,
             error: null,
             loading: false

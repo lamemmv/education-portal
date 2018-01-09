@@ -31,14 +31,17 @@ class FileMenu extends Component {
             hitToBrowseFile,
             params
         } = this.props;
+
+        const { files, selectedNode } = this.props.fileState;
+
         return (
             <div>
-                <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3 ep-menu">
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class='collapse navbar-collapse' id='navbarSupportedContent'>
-                        <ul class="navbar-nav text-md-center nav-justified w-100">
+                        <ul class="navbar-nav w-100">
                             <li class="nav-item active">
                                 <button class="btn btn-primary nav-link ep-nav-link" type='button'
                                     onClick={() => askToShowCreateFolderDialog(params.id)}>
@@ -48,37 +51,52 @@ class FileMenu extends Component {
                             </li>
                             <li class="nav-item">
                                 <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => hitToBrowseFile()}>
+                                    onClick={() => hitToBrowseFile(params.id)}>
                                     <i class='material-icons'>add_to_queue</i>
                                     <Text id='files.selectFile'></Text>
                                 </button>
                             </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => askToShowDeleteFolderDialog(params)}>
-                                    <i class='material-icons'>delete</i>
-                                    <Text id='files.deleteFolder'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'>
-                                    <i class='material-icons'>content_copy</i>
-                                    <Text id='files.copyTo'></Text>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link ep-nav-link" type='button'
-                                    onClick={() => askToShowUpdateFolderDialog(params)}>
-                                    <i class='material-icons'>mode_edit</i>
-                                    <Text id='files.rename'></Text>
-                                </button>
-                            </li>
+                            {
+                                files.filter(node => node.selected == true).length >= 1 ? <li class="nav-item">
+                                    <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                        onClick={() => askToShowDeleteFolderDialog({
+                                            nodes: files,
+                                            parent: params.id
+                                        })}>
+                                        <i class='material-icons'>delete</i>
+                                        <Text id='files.deleteFolder'></Text>
+                                    </button>
+                                </li> : null
+                            }
+                            {
+                                files.filter(node => node.selected == true).length == 1 ?
+                                    <li class="nav-item">
+                                        <button class="btn btn-primary nav-link ep-nav-link" type='button'>
+                                            <i class='material-icons'>content_copy</i>
+                                            <Text id='files.copyTo'></Text>
+                                        </button>
+                                    </li> : null
+                            }
+                            {
+                                files.filter(node => node.selected == true).length == 1 ?
+                                    <li class="nav-item">
+                                        <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                            onClick={() => askToShowUpdateFolderDialog({
+                                                id: selectedNode.id,
+                                                name: selectedNode.name, 
+                                                parent: params.id
+                                            })}>
+                                            <i class='material-icons'>mode_edit</i>
+                                            <Text id='files.rename'></Text>
+                                        </button>
+                                    </li> : null
+                            }
                         </ul>
                     </div>
                 </nav>
                 <CreateFolder callbackAction={getFiles} />
-                <UpdateFolder />
-                <DeleteFolder />
+                <UpdateFolder callbackAction={getFiles} />
+                <DeleteFolder callbackAction={getFiles} />
                 <Uploader />
             </div>
         );
@@ -96,14 +114,14 @@ const mapDispatchToProps = (dispatch) => {
         askToShowCreateFolderDialog: (folderId) => {
             dispatch(askToShowCreateFolderDialog(folderId));
         },
-        askToShowUpdateFolderDialog: (folderId) => {
-            dispatch(askToShowUpdateFolderDialog(folderId));
+        askToShowUpdateFolderDialog: (request) => {
+            dispatch(askToShowUpdateFolderDialog(request));
         },
-        askToShowDeleteFolderDialog: (folderId) => {
-            dispatch(askToShowDeleteFolderDialog(folderId));
+        askToShowDeleteFolderDialog: (request) => {
+            dispatch(askToShowDeleteFolderDialog(request));
         },
-        hitToBrowseFile: () => {
-            dispatch(hitToBrowseFile());
+        hitToBrowseFile: (parent) => {
+            dispatch(hitToBrowseFile(parent));
         }
     }
 }

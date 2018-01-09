@@ -30,6 +30,7 @@ class Upload extends Component {
 
     selectFile(files) {
         const { single } = this.props;
+        const { parent } = this.props.uploadState;
         if (files) {
             // Array.from(files).map((file)=>{
             //     let reader = new FileReader();
@@ -40,14 +41,14 @@ class Upload extends Component {
             //     reader.readAsDataURL(file);
             // });  
 
-            this.props.selectFile({ files: files, single: single });
+            this.props.selectFile({ files: files, parent: parent, single: single });
         }
     }
 
     render() {
         let fileInput = null;
         const { removeFile, selectFile, uploadFile, callbackAction } = this.props;
-        const { files, browseFile } = this.props.uploadState;
+        const { files, browseFile, parent } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
             <div class="modal fade"
@@ -118,7 +119,11 @@ class Upload extends Component {
                             </button>
                             {files.length > 0 ? (<button type="button"
                                 class="btn btn-raised btn-primary"
-                                onClick={() => uploadFile({ files: files, callbackAction: callbackAction })}
+                                onClick={() => uploadFile({
+                                    files: files,
+                                    parent: parent,
+                                    callbackAction: callbackAction
+                                })}
                                 disabled={files.length == 0}>
                                 <Text id='files.uploadAll'></Text>
                             </button>) : null}

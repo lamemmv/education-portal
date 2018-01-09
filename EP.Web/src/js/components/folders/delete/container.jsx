@@ -21,15 +21,12 @@ class DeleteFolder extends Component {
                 $(this.deleteFolderDialog).modal('hide');
             }
         }
-
-        if (nextProps.folders.redirectTo){
-            this.context.router.history.push(nextProps.folders.redirectTo);
-        }
     }
 
     render() {
-        const { id, parent } = this.props.folders.request;
+        const { id, parent, nodes } = this.props.folders.request;
         const { deleteFolder } = this.props.actions;
+        const { callbackAction } = this.props;
         return (
             <div class="modal fade"
                 id="deleteFolderModal"
@@ -57,8 +54,12 @@ class DeleteFolder extends Component {
                             <button type="button"
                                 class="btn btn-primary"
                                 onClick={() => deleteFolder({
-                                    id: id,
-                                    parent: parent
+                                    request: {
+                                        id: id,
+                                        parent: parent,
+                                        nodes: nodes
+                                    },
+                                    action: callbackAction
                                 })}>
                                 <Text id='ok'></Text>
                             </button>

@@ -58,11 +58,12 @@ const API = {
         });
     },
 
-    uploadFiles(files) {
+    uploadFiles(request) {
         let body = new FormData();
-        files.map(file => {
+        request.files.map(file => {
             body.append("files", file);
         });
+        body.append("parent", request.parent);
 
         let headers = new Headers({
             'Access-Control-Allow-Origin': '*',
@@ -72,7 +73,7 @@ const API = {
         return axios({
             method: 'post',
             data: body,
-            url: `${baseUri}admin/blobManager`,
+            url: `${baseUri}admin/blobManager/File`,
             headers: headers
         });
     },
@@ -152,6 +153,28 @@ const API = {
     deleteFolder(id) {
         let body = new FormData();
         body.append("id", id);
+        let url = `${baseUri}admin/BlobManager`;
+        return axios({
+            method: 'delete',
+            url: url,
+            data: body,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
+
+    deleteFolders(nodes) {
+        let body = new FormData();
+        let ids = [];
+        nodes.map((node) => {
+            if (node.selected){
+                ids.push(node.id);
+            }            
+        });
+
+        body.append("ids", ids);
         let url = `${baseUri}admin/BlobManager`;
         return axios({
             method: 'delete',

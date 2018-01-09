@@ -2,21 +2,51 @@ import { h, Component } from "preact";
 import { Link } from 'react-router-dom';
 import { connect } from 'preact-redux';
 import { Localizer, Text } from 'preact-i18n';
+let classNames = require('classnames');
 import API from '../api';
 
 import {
-    getFiles
+    getFiles,
+    selectFolder,
+    deselectFolder
 } from './fileActions';
-
-import { askForDeleting } from './delete/actions';
 
 import FileMenu from './menu/container';
 import Pagination from './pagination/container';
-import DeleteFile from './delete/container';
-import NotificationContainer from '../notify/notification.container';
 import * as styles from './styles.css';
 
 class FileList extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            selected: false
+        };
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleInputClick = this.handleInputClick.bind(this);
+        this.triggerSelection = this.triggerSelection.bind(this);
+    }
+
+    handleInputChange(event, node) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const { selectFolder, deselectFolder } = this.props;
+        if (value) {
+            selectFolder(node);
+        } else {
+            deselectFolder(node);
+        }
+    }
+
+    handleInputClick(event) {
+        event.stopPropagation();
+    }
+
+    triggerSelection(event, node) {
+        event.stopPropagation();
+        $(`#${node.id}`).trigger('click');
+        event.preventDefault();
+    }
 
     componentWillReceiveProps(nextProps, prevProps) {
         if (nextProps.match.params) {
@@ -55,23 +85,21 @@ class FileList extends Component {
     renderNode = (node) => {
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         let nodeItem = (
-            <div class='card clearfix'>
+            <div className={classNames('card clearfix ep-card', { 'selected': node.selected })}>
                 {
                     imageTypes.indexOf(node.contentType) < 0 ?
                         <div><img class="img-fluid card-img-top"
                             src={require('../../../assets/images/480px-Icons8_flat_folder.png')} />
-                            {/* <input type='checkbox' class='selection' /> */}
-                            <form><span class="bmd-form-group is-filled">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" />
-                                        <span class="checkbox-decorator">
-                                            <span class="check"></span>
-                                            <div class="ripple-container"></div>
-                                        </span>
-                                    </label>
-                                </div>
-                            </span></form>
+                            <div class="ep-checkbox selection">
+                                <input id={node.id}
+                                    type="checkbox"
+                                    name='selectFolder'
+                                    checked={node.selected}
+                                    onChange={(event) => this.handleInputChange(event, node)}
+                                    onClick={this.handleInputClick} />
+                                <label for="selectFolder"
+                                    onClick={(event) => this.triggerSelection(event, node)}></label>
+                            </div>
                         </div>
                         :
                         <img class="img-fluid card-img-top"
@@ -95,7 +123,7 @@ class FileList extends Component {
 
     render() {
         const {
-                    files,
+            files,
             currentPage,
             pages,
             showPagination,
@@ -105,12 +133,11 @@ class FileList extends Component {
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
-                <NotificationContainer />
                 {this.props.match.params.id ? <FileMenu params={blob} /> : null}
                 <div class='row'>
                     {
                         files.map((node) => {
-                            return this.renderNode(node)
+                            return this.renderNode(node, selectFolder)
                         })
                     }
                 </div>
@@ -130,8 +157,11 @@ const mapDispatchToProps = (dispatch) => {
         getFiles: (filter) => {
             dispatch(getFiles(filter));
         },
-        askForDeleting: (id) => {
-            dispatch(askForDeleting(id));
+        selectFolder: (node) => {
+            dispatch(selectFolder(node));
+        },
+        deselectFolder: (node) => {
+            dispatch(deselectFolder(node));
         }
     }
 }

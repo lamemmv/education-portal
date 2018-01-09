@@ -35,6 +35,7 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 uploadState: {
                     files: files,
+                    parent: action.payload.parent,
                     loading: true,
                     error: null
                 }
@@ -83,6 +84,7 @@ export default function(state = INITIAL_STATE, action) {
                 ...state,
                 uploadState: {
                     files: [],
+                    parent: action.payload,
                     browseFile: true,
                     loading: true,
                     error: null
