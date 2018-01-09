@@ -83,7 +83,7 @@ class FileMenu extends Component {
                                         <button class="btn btn-primary nav-link ep-nav-link" type='button'
                                             onClick={() => askToShowUpdateFolderDialog({
                                                 id: selectedNode.id,
-                                                name: selectedNode.name, 
+                                                name: selectedNode.name,
                                                 parent: params.id
                                             })}>
                                             <i class='material-icons'>mode_edit</i>
@@ -97,7 +97,7 @@ class FileMenu extends Component {
                 <CreateFolder callbackAction={getFiles} />
                 <UpdateFolder callbackAction={getFiles} />
                 <DeleteFolder callbackAction={getFiles} />
-                <Uploader />
+                <Uploader callbackAction={getFiles} />
             </div>
         );
     }

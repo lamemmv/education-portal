@@ -75,7 +75,7 @@ const uploadFilesEpic = action$ =>
         }))
         .map(response => uploadFileSuccess({
             data: response.data,
-            action: action.payload.callbackAction
+            request: action.payload
         }))
         .catch(error => Observable.of(uploadFileFailure(error)))
     );
@@ -85,11 +85,17 @@ const uploadFileSuccessEpic = action$ =>
     .flatMap(action => {
         return action.payload.action ?
             Observable.concat(
-                Observable.of(getFiles(1)),
+                Observable.of(getFiles({
+                    page: 1,
+                    folderId: action.payload.request.parent
+                })),
                 Observable.of(action.payload.action(action.payload.data)),
                 Observable.of(addNotification('Uploaded', 'success', 'Upload files'))) :
             Observable.concat(
-                Observable.of(getFiles(1)),
+                Observable.of(getFiles({
+                    page: 1,
+                    folderId: action.payload.request.parent
+                })),
                 Observable.of(addNotification('Uploaded', 'success', 'Upload files')))
     });
 //.takeUntil(action$.ofType(LOGIN_ABORT));

@@ -7,7 +7,7 @@ import {
 } from './types';
 
 let isfile = (node) => {
-    return node.contentType && node.virtualPath;
+    return (node.contentType != null && node.contentType != '');
 }
 
 const INITIAL_STATE = {
@@ -21,7 +21,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function (state = INITIAL_STATE, action) {
+export default function(state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES: // start fetching files and set loading = true

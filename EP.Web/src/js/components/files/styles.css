@@ -31,6 +31,12 @@
     display: none;
 }
 
+.ep-card-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .ep-node-item:hover .card .selection {
     display: block;
 }

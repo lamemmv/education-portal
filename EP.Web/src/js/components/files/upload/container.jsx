@@ -21,11 +21,11 @@ class Upload extends Component {
             if (this.uploadFilesDialog.className.indexOf('show') < 0) {
                 $(this.uploadFilesDialog).modal({ backdrop: 'static' });
             }
+        } else {
+            if (this.uploadFilesDialog.className.indexOf('show') >= 0) {
+                $(this.uploadFilesDialog).modal('hide');
+            }
         }
-    }
-
-    componentWillMount() {
-
     }
 
     selectFile(files) {
@@ -122,7 +122,7 @@ class Upload extends Component {
                                 onClick={() => uploadFile({
                                     files: files,
                                     parent: parent,
-                                    callbackAction: callbackAction
+                                    action: callbackAction
                                 })}
                                 disabled={files.length == 0}>
                                 <Text id='files.uploadAll'></Text>

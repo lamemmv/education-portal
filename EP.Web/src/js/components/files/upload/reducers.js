@@ -53,6 +53,8 @@ export default function(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 uploadState: {
+                    response: action.payload,
+                    browseFile: true,
                     loading: false,
                     error: null,
                     files: []

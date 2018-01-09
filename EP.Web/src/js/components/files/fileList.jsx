@@ -14,6 +14,7 @@ import {
 import FileMenu from './menu/container';
 import Pagination from './pagination/container';
 import * as styles from './styles.css';
+import Utils from '../utils';
 
 class FileList extends Component {
 
@@ -83,11 +84,10 @@ class FileList extends Component {
     }
 
     renderNode = (node) => {
-        const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         let nodeItem = (
             <div className={classNames('card clearfix ep-card', { 'selected': node.selected })}>
                 {
-                    imageTypes.indexOf(node.contentType) < 0 ?
+                    node.nodeType == 1 ?
                         <div><img class="img-fluid card-img-top"
                             src={require('../../../assets/images/480px-Icons8_flat_folder.png')} />
                             <div class="ep-checkbox selection">
@@ -102,23 +102,22 @@ class FileList extends Component {
                             </div>
                         </div>
                         :
-                        <img class="img-fluid card-img-top"
-                            src={API.getServerDomain() + node.virtualPath} />
+                        <img class="img-fluid card-img-top" width={30}
+                            src={Utils.getIcon(node)} />
                 }
                 <div class='card-block'>
-                    <h4 class='card-title'>{node.name}</h4>
+                    <div class='card-text ep-card-text'>{node.name}</div>
                 </div>
             </div>);
 
-        if (node.nodeType == 1) { // folder
-            return (
-                <div class="col-2 ep-node-item">
+        return (
+            <div class="col-2 ep-node-item" title={node.name}>
+                {node.nodeType == 1 ?
                     <Link to={`/files/${node.id}`}>{nodeItem}</Link>
-                </div>
-            );
-        } else {
-            return (nodeItem);
-        }
+                    : nodeItem
+                }
+            </div>
+        );
     }
 
     render() {
