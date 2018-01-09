@@ -19,14 +19,6 @@ namespace EP.Services.Blobs
     public sealed class BlobService : IBlobService
     {
         private const string InvalidParentField = "The Parent field is invalid.";
-        private readonly static IDictionary<string, string> AcceptableTypes = new Dictionary<string, string>
-        {
-            { "image/gif", "image" },
-            { "image/png", "image" },
-            { "image/jpeg", "image" },
-            { "application/octet-stream", "application" },
-            { "application/pdf", "application" }
-        };
 
         private readonly IRepository<Blob> _blobs;
 
@@ -80,7 +72,7 @@ namespace EP.Services.Blobs
         {
             if (await IsExistence(entity.Parent, entity.Name))
             {
-                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} is existed.");
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} was existed.");
             }
 
             var parentEntity = await GetByIdAsync(entity.Parent);
@@ -102,18 +94,43 @@ namespace EP.Services.Blobs
         public async Task<IEnumerable<ApiServerResult>> CreateFileAsync(string parent, IFormFile[] files)
         {
             IList<ApiServerResult> results = new List<ApiServerResult>();
+
+            foreach (var file in files)
+            {
+                results.Add(await CreateFileAsync(parent, file));
+            }
+
+            return results;
+        }
+
+        public async Task<ApiServerResult> CreateFileAsync(string parent, IFormFile file)
+        {
+            var type = file.GetTypeFromContentType();
+
+            if (string.IsNullOrEmpty(type))
+            {
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidMIMEType, "The MIME type is not valid.");
+            }
+
+            var fileName =
+                ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
+
+            if (await IsExistence(parent, fileName))
+            {
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {fileName} was existed.");
+            }
+
             var parentEntity = await GetByIdAsync(parent);
 
             if (parentEntity == null)
             {
-                results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField));
-                return results;
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
             }
 
-            string rootVirtualPath = parentEntity.VirtualPath;
-            string rootPhysicalPath = parentEntity.PhysicalPath;
+            var rootVirtualPath = parentEntity.VirtualPath;
+            var rootPhysicalPath = parentEntity.PhysicalPath;
 
-            if (string.IsNullOrEmpty(rootVirtualPath) || string.IsNullOrEmpty(rootPhysicalPath))
+            if (string.IsNullOrEmpty(rootPhysicalPath))
             {
                 var ancestorId = parentEntity.Ancestors?.FirstOrDefault()?.Id;
                 var ancestor = await GetByIdAsync(ancestorId);
@@ -122,83 +139,53 @@ namespace EP.Services.Blobs
                 rootPhysicalPath = ancestor?.PhysicalPath;
             }
 
-            if (string.IsNullOrEmpty(rootVirtualPath) || string.IsNullOrEmpty(rootPhysicalPath))
+            if (string.IsNullOrEmpty(rootPhysicalPath))
             {
-                results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField));
-                return results;
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidParent, InvalidParentField);
             }
 
-            Blob entity;
-            string firstMimeType, folderPhysicalPath;
-            var contentTypeGroups = files.ToLookup(kvp => kvp.ContentType, kvp => kvp);
+            var folderPhysicalPath = Path.Combine(rootPhysicalPath, type);
 
-            foreach (var group in contentTypeGroups)
+            if (!Directory.Exists(folderPhysicalPath))
             {
-                if (!AcceptableTypes.TryGetValue(group.Key, out firstMimeType))
-                {
-                    results.Add(ApiServerResult.ServerError
-                        (ApiStatusCode.Blob_InvalidMIMEType, $"The MIME type {group.Key} is not valid."));
-                }
-                else
-                {
-                    foreach (var file in group)
-                    {
-                        string fileName =
-                            ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
-
-                        if (await IsExistence(parent, fileName))
-                        {
-                            results.Add(ApiServerResult.ServerError
-                                (ApiStatusCode.Blob_DuplicatedName, $"The {fileName} is existed."));
-                        }
-                        else
-                        {
-                            folderPhysicalPath = Path.Combine(rootPhysicalPath, firstMimeType);
-
-                            if (!Directory.Exists(folderPhysicalPath))
-                            {
-                                Directory.CreateDirectory(folderPhysicalPath);
-                            }
-
-                            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? new List<BlobAncestor>());
-                            ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
-
-                            entity = new Blob
-                            {
-                                Name = fileName,
-                                FileExtension = Path.GetExtension(fileName).ToLowerInvariant(),
-                                ContentType = file.ContentType,
-                                VirtualPath = $"{rootVirtualPath}/{firstMimeType}/{fileName}",
-                                PhysicalPath = Path.Combine(folderPhysicalPath, fileName),
-                                Parent = parent,
-                                Ancestors = parentEntity.Ancestors,
-                                CreatedOn = DateTime.UtcNow
-                            };
-
-                            if (File.Exists(entity.PhysicalPath))
-                            {
-                                results.Add(ApiServerResult.ServerError
-                                    (ApiStatusCode.Blob_DuplicatedName, $"The {fileName} is existed."));
-                            }
-                            else
-                            {
-                                await Task.WhenAll(_blobs.CreateAsync(entity), file.SaveAsAsync(entity.PhysicalPath));
-
-                                results.Add(ApiServerResult.Created(entity.Id));
-                            }
-                        }
-                    }
-                }
+                Directory.CreateDirectory(folderPhysicalPath);
             }
 
-            return results;
+            var filePhysicalPath = Path.Combine(folderPhysicalPath, fileName);
+
+            if (File.Exists(filePhysicalPath))
+            {
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {fileName} was existed.");
+            }
+
+            var fileVirtualPath = string.IsNullOrEmpty(rootVirtualPath) ?
+                null :
+                $"{rootVirtualPath}/{type}/{fileName}";
+            var ancestors = new List<BlobAncestor>(parentEntity.Ancestors ?? new List<BlobAncestor>());
+            ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
+
+            var entity = new Blob
+            {
+                Name = fileName,
+                FileExtension = Path.GetExtension(fileName).ToLowerInvariant(),
+                ContentType = file.ContentType,
+                VirtualPath = fileVirtualPath,
+                PhysicalPath = filePhysicalPath,
+                Parent = parent,
+                Ancestors = ancestors,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            await Task.WhenAll(_blobs.CreateAsync(entity), file.SaveAsAsync(entity.PhysicalPath));
+
+            return ApiServerResult.Created(entity.Id);
         }
 
         public async Task<ApiServerResult> UpdateFolderAsync(Blob entity)
         {
             if (await IsExistence(entity.Parent, entity.Name))
             {
-                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} is existed.");
+                return ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {entity.Name} was existed.");
             }
 
             var update = Builders<Blob>.Update

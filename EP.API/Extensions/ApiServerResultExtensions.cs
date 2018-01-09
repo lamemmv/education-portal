@@ -9,7 +9,7 @@ namespace EP.API.Extensions
         {
             if (response.IsCreated())
             {
-                return new CreatedResult(string.Empty, response.Message);
+                return new CreatedResult(string.Empty, response.Id);
             }
 
             if (response.IsNoContent())

@@ -40,6 +40,6 @@ namespace EP.Services.Models
 
 
         public static ApiServerResult ServerError(ApiStatusCode statusCode, string message)
-            => new ApiServerResult(statusCode, message);
+            => new ApiServerResult(statusCode, message: message);
     }
 }
