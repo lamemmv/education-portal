@@ -7,9 +7,9 @@ namespace EP.Services.Blobs
         public static bool IsFile(this Blob entity)
         {
             return entity != null &&
-                !string.IsNullOrEmpty(entity.FileExtension) &&
+                !string.IsNullOrEmpty(entity.RandomName) &&
                 !string.IsNullOrEmpty(entity.ContentType) &&
-                !string.IsNullOrEmpty(entity.VirtualPath);
+                !string.IsNullOrEmpty(entity.PhysicalPath);
         }
     }
 }

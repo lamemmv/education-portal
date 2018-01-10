@@ -5,6 +5,7 @@ using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using System.Threading.Tasks;
 using System;
 
@@ -26,6 +27,23 @@ namespace EP.API.Areas.Admin.Controllers
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
             return new { blob, childList };
+        }
+
+        [HttpGet("File/{id}")]
+        public async Task<IActionResult> Download(string id)
+        {
+            var entity = await _blobService.GetByIdAsync(id);
+
+            if (!entity.IsFile())
+            {
+                ModelState.AddModelError(nameof(id), $"The {id} is not a file.");
+
+                return BadRequest(ModelState);
+            }
+
+            Stream stream = new FileStream(entity.PhysicalPath, FileMode.Open, FileAccess.Read);
+            
+            return File(stream, entity.ContentType, entity.Name);
         }
 
         [HttpPost("Folder"), ValidateViewModel]

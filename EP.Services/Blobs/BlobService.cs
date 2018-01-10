@@ -5,6 +5,7 @@ using EP.Data.Repositories;
 using EP.Services.Enums;
 using EP.Services.Extensions;
 using EP.Services.Models;
+using EP.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -128,13 +129,14 @@ namespace EP.Services.Blobs
 
             IList<ApiServerResult> results = new List<ApiServerResult>();
             Blob entity;
-            string type, fileName, folderPhysicalPath, filePhysicalPath, fileVirtualPath;
+            string subType, fileName, randomName,
+                folderPhysicalPath, filePhysicalPath, fileVirtualPath;
 
             foreach (var file in files)
             {
-                type = file.GetTypeFromContentType();
+                subType = file.GetSubTypeFromContentType();
 
-                if (string.IsNullOrEmpty(type))
+                if (string.IsNullOrEmpty(subType))
                 {
                     results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_InvalidMIMEType, "The MIME type is not valid."));
                     continue;
@@ -142,35 +144,27 @@ namespace EP.Services.Blobs
 
                 fileName =
                     ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.ToString().Trim('"');
+                randomName = GetRandomFileName(fileName);
 
-                if (await IsExistence(parent, fileName))
-                {
-                    results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {fileName} was existed."));
-                    continue;
-                }
+                folderPhysicalPath = Path.Combine(rootPhysicalPath, subType);
+                CreateDirectoryIfNotExist(folderPhysicalPath);
 
-                folderPhysicalPath = Path.Combine(rootPhysicalPath, type);
-
-                if (!Directory.Exists(folderPhysicalPath))
-                {
-                    Directory.CreateDirectory(folderPhysicalPath);
-                }
-
-                filePhysicalPath = Path.Combine(folderPhysicalPath, fileName);
+                filePhysicalPath = Path.Combine(folderPhysicalPath, randomName);
 
                 if (File.Exists(filePhysicalPath))
                 {
-                    results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {fileName} was existed."));
+                    results.Add(ApiServerResult.ServerError(ApiStatusCode.Blob_DuplicatedName, $"The {randomName} was existed."));
                     continue;
                 }
 
                 fileVirtualPath = string.IsNullOrEmpty(rootVirtualPath) ?
                     null :
-                    $"{rootVirtualPath}/{type}/{fileName}";
+                    $"{rootVirtualPath}/{subType}/{randomName}";
 
                 entity = new Blob
                 {
                     Name = fileName,
+                    RandomName = randomName,
                     FileExtension = Path.GetExtension(fileName).ToLowerInvariant(),
                     ContentType = file.ContentType,
                     VirtualPath = fileVirtualPath,
@@ -263,6 +257,22 @@ namespace EP.Services.Blobs
             var filter = Builders<Blob>.Filter.Eq(e => e.Parent, id);
 
             return await _blobs.CountAsync(filter) > 0;
+        }
+
+        private static string GetRandomFileName(string fileName, int size = 8)
+        {
+            string name = Path.GetFileNameWithoutExtension(fileName);
+            string ext = Path.GetExtension(fileName);
+
+            return $"{name}_{RandomUtils.Numberic(size)}{ext}";
+        }
+
+        private static void CreateDirectoryIfNotExist(string name)
+        {
+            if (!Directory.Exists(name))
+            {
+                Directory.CreateDirectory(name);
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ namespace EP.Data.Entities.Blobs
     {
         public string Name { get; set; }
 
+        public string RandomName { get; set; }
+
         [BsonIgnoreIfNull]
         public string FileExtension { get; set; }
 

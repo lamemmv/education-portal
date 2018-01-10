@@ -1,16 +1,41 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Threading;
 
 namespace EP.Services.Extensions
 {
     public static class FormFileExtensions
     {
-        public static string GetTypeFromContentType(this IFormFile formFile)
+        public static string GetSubTypeFromContentType(this IFormFile formFile)
         {
-            return GetAcceptableTypes(formFile.ContentType);
+            string contentTypeLower = formFile.ContentType ?? formFile.ContentType.ToLowerInvariant();
+
+            switch (contentTypeLower)
+            {
+                case "image/gif":
+                case "image/png":
+                case "image/jpeg":
+                case "application/zip":
+                case "application/pdf":
+                case "application/msword":
+                    return GetSubType(contentTypeLower);
+
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                    return "msword";
+
+                case "application/vnd.ms-excel":
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                    return "msexcel";
+
+                case "application/vnd.ms-powerpoint":
+                case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+                case "application/vnd.openxmlformats-officedocument.presentationml.slideshow":
+                    return "mspowerpoint";
+
+                default:
+                    return null;
+            }
         }
 
         public async static Task SaveAsAsync(
@@ -28,24 +53,9 @@ namespace EP.Services.Extensions
             }
         }
 
-        private static string GetAcceptableTypes(string contentType)
+        private static string GetSubType(string contentType)
         {
-            string contentTypeLower = contentType ?? contentType.ToLowerInvariant();
-
-            switch (contentTypeLower)
-            {
-                case "image/gif":
-                case "image/png":
-                case "image/jpeg":
-                    return "image";
-
-                case "application/octet-stream":
-                case "application/pdf":
-                    return "application";
-
-                default:
-                    return null;
-            }
+            return contentType.Substring(contentType.IndexOf('/') + 1);
         }
     }
 }
