@@ -1,7 +1,8 @@
 using EP.API.Filters;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace EP.API.Extensions
 {
@@ -15,6 +16,15 @@ namespace EP.API.Extensions
                     opts.Filters.Add(typeof(GlobalExceptionFilter));
                 })
                 .AddApiExplorer()
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy("AdminAreas", policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        //policy.Requirements.Add(new MinimumAgeRequirement());
+                    });
+                })
                 .AddFormatterMappings()
                 .AddDataAnnotations()
                 .AddJsonFormatters(settings => 
