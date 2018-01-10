@@ -4,6 +4,7 @@ using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Enums;
 using EP.Services.Extensions;
+using EP.Services.Logs;
 using EP.Services.Models;
 using EP.Services.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -22,10 +23,14 @@ namespace EP.Services.Blobs
         private const string InvalidParentField = "The Parent field is invalid.";
 
         private readonly IRepository<Blob> _blobs;
+        private readonly IActivityLogService _activityLogService;
 
-        public BlobService(MongoDbContext dbContext)
+        public BlobService(
+            MongoDbContext dbContext,
+            IActivityLogService activityLogService)
         {
             _blobs = dbContext.Blobs;
+            _activityLogService = activityLogService;
         }
 
         public async Task<IPagedList<Blob>> GetChildListAsync(string id, int? page, int? size)

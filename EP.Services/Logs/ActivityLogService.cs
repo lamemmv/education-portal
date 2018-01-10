@@ -1,9 +1,11 @@
 ﻿using EP.Data.DbContext;
 using EP.Data.Entities.Logs;
+using EP.Data.Entities;
 using EP.Data.Paginations;
-using EP.Data.Repositories;
 using EP.Services.Caching;
+using EP.Services.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,16 +17,14 @@ namespace EP.Services.Logs
     {
         private const string EnabledActivityLogTypes = "Cache." + nameof(EnabledActivityLogTypes);
 
-        private readonly IRepository<ActivityLogType> _activityLogTypes;
-        private readonly IRepository<ActivityLog> _activityLogs;
+        private readonly MongoDbContext _dbContext;
         private readonly IMemoryCacheService _memoryCacheService;
 
         public ActivityLogService(
             MongoDbContext dbContext,
             IMemoryCacheService memoryCacheService)
         {
-            _activityLogTypes = dbContext.ActivityLogTypes;
-            _activityLogs = dbContext.ActivityLogs;
+            _dbContext = dbContext;
             _memoryCacheService = memoryCacheService;
         }
 
@@ -32,28 +32,28 @@ namespace EP.Services.Logs
 
         public async Task<IPagedList<ActivityLogType>> GetLogTypePagedListAsync(int? page, int? size)
         {
-            return await _activityLogTypes.GetPagedListAsync(skip: page, take: size);
+            return await _dbContext.ActivityLogTypes.GetPagedListAsync(skip: page, take: size);
         }
 
         public async Task<ActivityLogType> GetLogTypeByIdAsync(string id)
         {
-            return await _activityLogTypes.GetByIdAsync(id);
+            return await _dbContext.ActivityLogTypes.GetByIdAsync(id);
         }
 
-        public async Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled)
+        public async Task<ApiServerResult> UpdateLogTypeAsync(string id, bool enabled)
         {
             var update = Builders<ActivityLogType>.Update
                 .Set(e => e.Enabled, enabled)
                 .CurrentDate(e => e.UpdatedOn);
 
-            var oldEntity = await _activityLogTypes.UpdatePartiallyAsync(id, update, projection: null);
-
-            if (oldEntity != null)
+            if (!await _dbContext.ActivityLogTypes.UpdatePartiallyAsync(id, update))
             {
-                _memoryCacheService.Remove(EnabledActivityLogTypes);
+                return ApiServerResult.NotFound();
             }
 
-            return oldEntity;
+            _memoryCacheService.Remove(EnabledActivityLogTypes);
+
+            return ApiServerResult.NoContent();
         }
 
         #endregion
@@ -79,63 +79,87 @@ namespace EP.Services.Logs
                 filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip);
             }
 
-            return await _activityLogs.GetPagedListAsync(filter, skip: page, take: size);
+            return await _dbContext.ActivityLogs.GetPagedListAsync(filter, skip: page, take: size);
         }
 
         public async Task<ActivityLog> GetByIdAsync(string id)
         {
-            return await _activityLogs.GetByIdAsync(id);
+            return await _dbContext.ActivityLogs.GetByIdAsync(id);
         }
 
-        public async Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity)
+        public async Task<ActivityLog> CreateAsync(
+            string systemKeyword,
+            IEntity entity,
+            EmbeddedUser embeddedUser,
+            string ip = null)
         {
-            var shortActivityLogType = await GetEnabledShortActivityLogTypes(systemKeyword);
+            var embeddedActivityLogType = await GetEnabledEmbeddedActivityLogTypes(systemKeyword);
 
-            if (shortActivityLogType == null)
+            if (embeddedActivityLogType == null)
             {
                 return null;
             }
 
-            entity.ActivityLogType = shortActivityLogType;
+            var log = new ActivityLog
+            {
+                EntityName = entity.GetType().FullName,
+                LogValue = ObjectToJson(entity),
+                IP = ip,
+                ActivityLogType = embeddedActivityLogType,
+                Creator = embeddedUser,
+                CreatedOn = DateTime.UtcNow
+            };
 
-            return await _activityLogs.CreateAsync(entity);
+            return await _dbContext.ActivityLogs.CreateAsync(log);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<ApiServerResult> DeleteAsync(string id)
         {
-            return await _activityLogs.DeleteAsync(id);
+            var result = await _dbContext.ActivityLogs.DeleteAsync(id);
+
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        public async Task<bool> DeleteAsync(IEnumerable<string> ids)
+        public async Task<ApiServerResult> DeleteAsync(IEnumerable<string> ids)
         {
             var filter = Builders<ActivityLog>.Filter.In(e => e.Id, ids);
+            var result = await _dbContext.ActivityLogs.DeleteAsync(filter);
 
-            return await _activityLogs.DeleteAsync(filter);
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        private async Task<EmbeddedActivityLogType> GetEnabledShortActivityLogTypes(string systemKeyword)
+        private async Task<EmbeddedActivityLogType> GetEnabledEmbeddedActivityLogTypes(string systemKeyword)
         {
             var enabledDictionary = await _memoryCacheService.GetOrAddSlidingExpiration(
                 EnabledActivityLogTypes,
-                GetEnabledShortActivityLogTypes);
+                GetEnabledEmbeddedActivityLogTypes);
 
-            return enabledDictionary == null || !enabledDictionary.TryGetValue(systemKeyword, out EmbeddedActivityLogType shortActivityLogType) ?
+            return enabledDictionary == null || !enabledDictionary.TryGetValue(systemKeyword, out EmbeddedActivityLogType embeddedActivityLogType) ?
                 null :
-                shortActivityLogType;
+                embeddedActivityLogType;
         }
 
-        private async Task<IDictionary<string, EmbeddedActivityLogType>> GetEnabledShortActivityLogTypes()
+        private async Task<IDictionary<string, EmbeddedActivityLogType>> GetEnabledEmbeddedActivityLogTypes()
         {
             var filter = Builders<ActivityLogType>.Filter.Eq(e => e.Enabled, true);
             var projection = Builders<ActivityLogType>.Projection
+                .Include(e => e.Id)
                 .Include(e => e.SystemKeyword)
                 .Include(e => e.Name);
 
-            var logTypes = await _activityLogTypes.GetAllAsync(filter, sort: null, projection: projection);
+            var logTypes = await _dbContext.ActivityLogTypes.GetAllAsync(filter, projection: projection);
 
             return logTypes.ToDictionary(
                 kvp => kvp.SystemKeyword,
-                kvp => new EmbeddedActivityLogType { SystemKeyword = kvp.SystemKeyword, Name = kvp.Name });
+                kvp => new EmbeddedActivityLogType(kvp.Id, kvp.Name));
+        }
+
+        private static string ObjectToJson(object value)
+        {
+            return JsonConvert.SerializeObject(
+                value,
+                Formatting.None,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
         }
     }
 }

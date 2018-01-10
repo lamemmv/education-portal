@@ -62,7 +62,7 @@ namespace EP.API
                     appSettings.PublicBlob,
                     appSettings.PrivateBlob)
                 .UseCors("AllowAllOrigins")
-                //.UseIdentityServer()
+                .UseIdentityServer()
                 .UseCustomSwagger()
                 .UseMvcWithDefaultRoute()
                 .InitDefaultData();

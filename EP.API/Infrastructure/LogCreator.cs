@@ -14,8 +14,9 @@ namespace EP.API.Infrastructure
             var logLevel = LogEventLevel.Warning;
 
             return new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", logLevel)
                 .MinimumLevel.Override("System", logLevel)
+                .MinimumLevel.Override("Microsoft", logLevel)
+                .MinimumLevel.Override("IdentityServer", logLevel)
                 .WriteTo.MongoDb(connectionString, logLevel)
                 .CreateLogger();
         }

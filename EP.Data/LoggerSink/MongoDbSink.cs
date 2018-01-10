@@ -36,7 +36,7 @@ namespace EP.Data.LoggerSink
 
         protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
         {
-            if (events == null || !events.Any())
+            if (events != null && events.Any())
             {
                 var documents = GenerateBsonDocuments(events, _formatter);
 

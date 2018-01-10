@@ -12,6 +12,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+
             return new JsonResult(from c in User.Claims select new { c.Type, c.Value });
         }
     }

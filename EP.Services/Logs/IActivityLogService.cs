@@ -1,5 +1,7 @@
 ﻿using EP.Data.Entities.Logs;
+using EP.Data.Entities;
 using EP.Data.Paginations;
+using EP.Services.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -12,7 +14,7 @@ namespace EP.Services.Logs
 
         Task<ActivityLogType> GetLogTypeByIdAsync(string id);
 
-        Task<ActivityLogType> UpdateLogTypeAsync(string id, bool enabled);
+        Task<ApiServerResult> UpdateLogTypeAsync(string id, bool enabled);
 
         Task<IPagedList<ActivityLog>> GetPagedListAsync(
             DateTime createdFromUtc,
@@ -24,10 +26,14 @@ namespace EP.Services.Logs
 
         Task<ActivityLog> GetByIdAsync(string id);
 
-        Task<ActivityLog> CreateAsync(string systemKeyword, ActivityLog entity);
+        Task<ActivityLog> CreateAsync(
+            string systemKeyword,
+            IEntity entity,
+            EmbeddedUser embeddedUser,
+            string ip = null);
 
-        Task<bool> DeleteAsync(string id);
+        Task<ApiServerResult> DeleteAsync(string id);
 
-        Task<bool> DeleteAsync(IEnumerable<string> ids);
+        Task<ApiServerResult> DeleteAsync(IEnumerable<string> ids);
     }
 }
