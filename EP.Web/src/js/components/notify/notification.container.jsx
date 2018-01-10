@@ -26,17 +26,6 @@ class NotificationContainer extends Component {
         const { message, level, title } = this.props.notification;
         return (
             <div>
-                {/* {
-                    message ? (<div id='ep-notification'
-                        className={classNames('alert', {
-                            'alert-success': level == 'success',
-                            'alert-danger': level == 'error',
-                            'alert-info': level == 'info'
-                        })}
-                        role="alert">
-                        {message}
-                    </div>) : null
-                } */}
             </div>
         );
     }

@@ -3,7 +3,8 @@ import {
     GET_FILES_SUCCESS,
     GET_FILES_FAILURE,
     SELECT_FOLDER,
-    DESELECT_FOLDER
+    DESELECT_FOLDER,
+    DOWNLOAD_FILE
 } from './types';
 
 let isfile = (node) => {
@@ -21,7 +22,7 @@ const INITIAL_STATE = {
     }
 };
 
-export default function(state = INITIAL_STATE, action) {
+export default function (state = INITIAL_STATE, action) {
     let error;
     switch (action.type) {
         case GET_FILES: // start fetching files and set loading = true
@@ -109,6 +110,18 @@ export default function(state = INITIAL_STATE, action) {
                 fileState: {
                     files: nodes,
                     blob: state.fileState.blob,
+                    error: null,
+                    loading: true
+                }
+            };
+        case DOWNLOAD_FILE:
+            return {
+                ...state,
+                fileState: {
+                    downloadFile: action.payload,
+                    files: state.fileState.files,
+                    blob: state.fileState.blob,
+                    selectedNode: state.fileState.selectedNode,
                     error: null,
                     loading: true
                 }

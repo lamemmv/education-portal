@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 EP.API/wwwroot/
 EP.API/private/
+EP.API/tempkey.rsa

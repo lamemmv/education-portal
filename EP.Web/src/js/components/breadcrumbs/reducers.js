@@ -162,10 +162,6 @@ export default handleActions({
                 {
                     id: 'files',
                     path: '/files'
-                },
-                {
-                    id: 'filePreview',
-                    path: action.payload.path
                 }
             ]),
             error: null,

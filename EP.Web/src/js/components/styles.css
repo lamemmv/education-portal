@@ -69,10 +69,6 @@
     text-transform: capitalize;
 }
 
-.carousel-item {
-    background-color: var(--box-theme-3);
-}
-
 .carousel-caption p {
     color: #fff;
 }

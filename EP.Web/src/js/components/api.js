@@ -58,6 +58,16 @@ const API = {
         });
     },
 
+    getFile(id) {
+        let url = `${baseUri}admin/blobManager/File/${id}`;
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: []
+        });
+    },
+
     uploadFiles(request) {
         let body = new FormData();
         request.files.map(file => {
@@ -167,14 +177,12 @@ const API = {
 
     deleteFolders(nodes) {
         let body = new FormData();
-        let ids = [];
         nodes.map((node) => {
             if (node.selected){
-                ids.push(node.id);
+                body.append("ids", node.id);
             }            
         });
-
-        body.append("ids", ids);
+        
         let url = `${baseUri}admin/BlobManager`;
         return axios({
             method: 'delete',

@@ -22,13 +22,9 @@ class RouterContainer extends Component {
     let pathname = location.pathname;
     switch (true) {
       case pathname == '/files':
+      // case /\/files\/(?!preview).*/.test(pathname):
+      case /\/files\/.*/.test(pathname):
         store.dispatch(BreadcrumbsAction.gotoFiles());
-        break;
-      case /\/files\/(?!create|list).*/.test(pathname):
-        store.dispatch(BreadcrumbsAction.gotoFilePreview({
-          path: pathname,
-          id: pathname.substring(pathname.lastIndexOf('/') + 1)
-        }));
         break;
       case pathname == '/news':
         store.dispatch(BreadcrumbsAction.gotoHomeNews());

@@ -1,5 +1,4 @@
 import { h, Component } from "preact";
-// import { Container, Image } from 'semantic-ui-react';
 import API from '../api';
 
 class Preview extends Component {
@@ -10,12 +9,13 @@ class Preview extends Component {
         }
     }
 
+    componentWillMount() {
+        API.getFile(this.props.match.params.id);
+    }
+
     render() {
         return (
-        // <Container >
-        //     <Image src={this.state.url} fluid />
-        // </Container>
-        <div>pewview file</div>
+            <section class='container'><img src={this.state.url} /></section>
         );
     };
 }

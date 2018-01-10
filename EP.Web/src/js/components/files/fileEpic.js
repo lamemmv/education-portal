@@ -18,12 +18,14 @@ import {
     DELETE_FILE,
     DELETE_FILE_SUCCESS,
     HIT_TO_BROWSE_FILE,
-    GET_FILES_SUCCESS
+    GET_FILES_SUCCESS,
+    HIT_TO_DOWNLOAD_FILE
 } from './types';
 import {
     getFiles,
     getFilesSuccess,
-    getFilesFailure
+    getFilesFailure,
+    downloadFile
 } from './fileActions';
 import {
     uploadFileSuccess,
@@ -46,6 +48,7 @@ import {
 } from '../breadcrumbs/actions';
 
 import API from '../api';
+import Service from '../errorHandler';
 
 const fetchFilesEpic = action$ =>
     action$.ofType(GET_FILES)
@@ -126,6 +129,11 @@ const deleteFileSuccessEpic = action$ =>
         )
     );
 
+const hitToDownloadFilePic = action$ =>
+    action$.ofType(HIT_TO_DOWNLOAD_FILE)
+    .flatMap(action => Observable.of(downloadFile(action.payload))
+    );
+
 const epics = [
     fetchFilesEpic,
     fetchFilesSuccessEpic,
@@ -134,7 +142,8 @@ const epics = [
     browseFileEpic,
     askForDeleteFileEpic,
     confirmDeleteFilePic,
-    deleteFileSuccessEpic
+    deleteFileSuccessEpic,
+    hitToDownloadFilePic
 ];
 
 const fileEpics = combineEpics(...Object.values(epics));

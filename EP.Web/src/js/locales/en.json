@@ -22,15 +22,15 @@
         "recruitments": "Recruitments"
     },
     "files": {
-        "deleteFile": "Delete file",
         "uploadAll": "Upload all",
         "preview": "Preview",
         "createFolder": "Create folder",
         "selectFile": "Browse files",
-        "deleteFolder": "Delete folder",
+        "delete": "Delete",
         "moveTo": "Move to",
         "copyTo": "Copy to",
-        "rename": "Rename"
+        "rename": "Rename",
+        "download": "Download"
     },
     "folders": {
         "create": "Create",
@@ -50,9 +50,12 @@
     "ok": "OK",
     "errors": {
         "1001": "Invalid parent folder",
-        "1002": "Folder with same name is existed"
+        "1002": "Folder with same name is existed",
+        "1005": "Sorry. The system does not support this file extension"
     },
     "messages": {
-        "askToDeleteFolder": "Are you sure you want to delete this folder?"
+        "askToDeleteFolder": "Are you sure you want to delete this folder?",
+        "succeed": "Succeed",
+        "uploaded": "Uploaded"
     }
 }

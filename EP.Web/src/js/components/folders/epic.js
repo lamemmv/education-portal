@@ -43,9 +43,6 @@ import {
 } from './actions';
 
 import {
-    getFiles
-} from '../files/fileActions';
-import {
     addNotification
 } from '../notify/notification.actions';
 
@@ -92,13 +89,13 @@ const createFolderSuccessEpic = action$ =>
                     page: 1,
                     folderId: action.payload.request.parent
                 })),
-                Observable.of(addNotification('Succeed', 'success', 'Create folder'))) :
-            Observable.of(addNotification('Succeed', 'success', 'Create folder'))
+                Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Create folder'))) :
+            Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Create folder'))
     });
 
 const createFolderFailEpic = action$ =>
     action$.ofType(CREATE_FOLDER_FAILURE)
-    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Create folder'));
+    .map(action => addNotification(Service.getErrorMessage(action.payload), 'error', 'Create folder'));
 
 const askForShowingUpdateFolderEpic = action$ =>
     action$.ofType(ASK_TO_SHOW_UPDATE_FOLDER_DIALOG)
@@ -121,13 +118,13 @@ const updateFolderSuccessEpic = action$ =>
                     page: 1,
                     folderId: action.payload.request.parent
                 })),
-                Observable.of(addNotification('Succeed', 'success', 'Upload folder'))) :
-                Observable.of(addNotification('Succeed', 'success', 'Upload folder'))
+                Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Upload folder'))) :
+            Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Upload folder'))
     });
 
 const updateFolderFailEpic = action$ =>
     action$.ofType(UPDATE_FOLDER_FAILURE)
-    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Update folder'));
+    .map(action => addNotification(Service.getErrorMessage(action.payload), 'error', 'Update folder'));
 
 const askToDeleteFolderEpic = action$ =>
     action$.ofType(ASK_TO_SHOW_DELETE_FOLDER_DIALOG)
@@ -137,26 +134,29 @@ const deleteFoldersEpic = (action$, store) =>
     action$.ofType(DELETE_FOLDER)
     .mergeMap((action) =>
         Observable.fromPromise(API.deleteFolders(action.payload.request.nodes))
-        .map(response => deleteFolderSuccess(action.payload))
+        .map(response => deleteFolderSuccess({
+            request: action.payload,
+            response: response.data
+        }))
         .catch(error => Observable.of(deleteFolderFailure(error)))
     );
 
 const deleteFoldersSuccessEpic = action$ =>
     action$.ofType(DELETE_FOLDER_SUCCESS)
     .flatMap(action => {
-        return action.payload.action ?
+        return action.payload.request.action ?
             Observable.concat(
-                Observable.of(action.payload.action({
+                Observable.of(action.payload.request.action({
                     page: 1,
-                    folderId: action.payload.request.parent
+                    folderId: action.payload.request.request.parent
                 })),
-                Observable.of(addNotification('Succeed', 'success', 'Delete folder'))) :
-                Observable.of(addNotification('Succeed', 'success', 'Delete folder'))
+                Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Delete folder'))) :
+            Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Delete folder'))
     });
 
 const deleteFoldersFailEpic = action$ =>
     action$.ofType(DELETE_FOLDER_FAILURE)
-    .map(action => addNotification(Service.getErrorMesasge(action.payload), 'error', 'Delete folder'));
+    .map(action => addNotification(Service.getErrorMessage(action.payload), 'error', 'Delete folder'));
 
 const epics = [
     getFolderByIdEpic,

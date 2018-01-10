@@ -22,15 +22,15 @@
         "recruitments": "Tuyển dụng"
     },
     "files": {
-        "deleteFile": "Xóa tài liệu",
         "uploadAll": "Upload tất cả",
         "preview": "Xem",
         "createFolder": "Tạo thư mục",
         "selectFile": "Chọn tài liệu",
-        "deleteFolder": "Xóa thư mục",
+        "delete": "Xóa",
         "moveTo": "Di chuyển",
         "copyTo": "Sao chép",
-        "rename": "Sửa tên"
+        "rename": "Sửa tên",
+        "download": "Tải tài liệu"
     },
     "folders": {
         "create": "Tạo",
@@ -50,9 +50,12 @@
     "ok": "Đồng ý",
     "errors": {
         "1001": "Thư mục cha không hợp lệ",
-        "1002": "Thư mục bị trùng trên"
+        "1002": "Thư mục bị trùng trên",
+        "1005": "Xin lỗi. Hệ thống không hỗ trợ loại tài liệu này"
     },
     "messages": {
-        "askToDeleteFolder": "Bạn có chắc muốn xóa thư mục này không?"
+        "askToDeleteFolder": "Bạn có chắc muốn xóa thư mục này không?",
+        "succeed": "Thành công",
+        "uploaded": "Đã upload tài liệu thành công"
     }
 }

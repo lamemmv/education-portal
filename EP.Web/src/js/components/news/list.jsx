@@ -5,26 +5,36 @@ import * as styles from './list.css';
 
 class NewsList extends Component {
 
+    constructor(props, context) {
+        super(props, context);
+        this.createNews = this.createNews.bind(this);
+    }
+
+    createNews() {
+        this.context.router.history.push('/news/create');
+    }
+
     componentWillMount() {
         this.props.actions.getNews({ page: 1 });
     }
 
     render() {
         const { items } = this.props.news;
-        const { gotoCreateNews } = this.props.actions;
         return (
-            <div>
-                <Localizer>
-                    <Link to='news/create'>
-                        <button class="mdc-button mdc-button--raised"
-                            title={<Text id='news.createNews'></Text>}>
-                            <i class="material-icons mdc-button__icon">add</i>
+            <section class='container'>
+                <form>
+                    <Localizer>
+                        <button type="button"
+                            class="btn btn-raised btn-info"
+                            title={<Text id='news.createNews'></Text>}
+                            onClick={this.createNews}>
+                            <i class="material-icons ep-icon">add</i>
                             <span><Text id='news.createNews'></Text></span>
                         </button>
-                    </Link>
-                </Localizer>
-                <div class='table-responsive-vertical shadow-z-1' style={{ margin: 10 }}>
-                    <table id='table' class="table table-striped table-hover table-mc-light-blue">
+                    </Localizer>
+                </form>
+                <div style={{ margin: 10 }}>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th><Text id='news.title'></Text></th>
@@ -51,7 +61,7 @@ class NewsList extends Component {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
         );
     }
 }

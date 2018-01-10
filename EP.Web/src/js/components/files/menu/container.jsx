@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import { Link } from 'react-router-dom';
 import {
     connect
 } from 'preact-redux';
@@ -16,7 +17,7 @@ import {
 } from '../../folders/actions';
 
 import { hitToBrowseFile } from '../upload/actions';
-import { getFiles } from '../fileActions';
+import { getFiles, hitToDownloadFile } from '../fileActions';
 
 import Uploader from '../upload/container';
 import CreateFolder from '../../folders/create/container';
@@ -28,6 +29,7 @@ class FileMenu extends Component {
         const { askToShowCreateFolderDialog,
             askToShowUpdateFolderDialog,
             askToShowDeleteFolderDialog,
+            hitToDownloadFile,
             hitToBrowseFile,
             params
         } = this.props;
@@ -64,7 +66,7 @@ class FileMenu extends Component {
                                             parent: params.id
                                         })}>
                                         <i class='material-icons'>delete</i>
-                                        <Text id='files.deleteFolder'></Text>
+                                        <Text id='files.delete'></Text>
                                     </button>
                                 </li> : null
                             }
@@ -78,7 +80,7 @@ class FileMenu extends Component {
                                     </li> : null
                             }
                             {
-                                files.filter(node => node.selected == true).length == 1 ?
+                                files.filter(node => (node.selected == true && node.nodeType == 1)).length == 1 ?
                                     <li class="nav-item">
                                         <button class="btn btn-primary nav-link ep-nav-link" type='button'
                                             onClick={() => askToShowUpdateFolderDialog({
@@ -86,8 +88,18 @@ class FileMenu extends Component {
                                                 name: selectedNode.name,
                                                 parent: params.id
                                             })}>
-                                            <i class='material-icons'>mode_edit</i>
+                                            <i class='material-icons'>file_download</i>
                                             <Text id='files.rename'></Text>
+                                        </button>
+                                    </li> : null
+                            }
+                            {
+                                files.filter(node => (node.selected == true && node.nodeType == 2)).length == 1 ?
+                                    <li class="nav-item">
+                                        <button class="btn btn-primary nav-link ep-nav-link" type='button'
+                                            onClick={() => hitToDownloadFile(files.filter(n => (n.selected == true && n.nodeType == 2))[0].id)}>
+                                            <i class='material-icons'>file_download</i>
+                                            <Text id='files.download'></Text>
                                         </button>
                                     </li> : null
                             }
@@ -122,6 +134,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         hitToBrowseFile: (parent) => {
             dispatch(hitToBrowseFile(parent));
+        },
+        hitToDownloadFile: (id) => {
+            dispatch(hitToDownloadFile(id))
         }
     }
 }

@@ -15,6 +15,7 @@ import FileMenu from './menu/container';
 import Pagination from './pagination/container';
 import * as styles from './styles.css';
 import Utils from '../utils';
+import NotificationContainer from '../notify/notification.container';
 
 class FileList extends Component {
 
@@ -50,9 +51,13 @@ class FileList extends Component {
     }
 
     componentWillReceiveProps(nextProps, prevProps) {
-        if (nextProps.match.params) {
-            if (nextProps.match.params.id != this.props.match.params.id) {
-                this.init(nextProps.match.params.id);
+        if (nextProps.fileState.downloadFile) {
+            window.location = `${API.getBaseUri()}admin/blobManager/File/${nextProps.fileState.downloadFile}`
+        } else {
+            if (nextProps.match.params) {
+                if (nextProps.match.params.id != this.props.match.params.id) {
+                    this.init(nextProps.match.params.id);
+                }
             }
         }
     }
@@ -88,23 +93,22 @@ class FileList extends Component {
             <div className={classNames('card clearfix ep-card', { 'selected': node.selected })}>
                 {
                     node.nodeType == 1 ?
-                        <div><img class="img-fluid card-img-top"
+                        <img class="img-fluid card-img-top"
                             src={require('../../../assets/images/480px-Icons8_flat_folder.png')} />
-                            <div class="ep-checkbox selection">
-                                <input id={node.id}
-                                    type="checkbox"
-                                    name='selectFolder'
-                                    checked={node.selected}
-                                    onChange={(event) => this.handleInputChange(event, node)}
-                                    onClick={this.handleInputClick} />
-                                <label for="selectFolder"
-                                    onClick={(event) => this.triggerSelection(event, node)}></label>
-                            </div>
-                        </div>
                         :
                         <img class="img-fluid card-img-top" width={30}
                             src={Utils.getIcon(node)} />
                 }
+                <div class="ep-checkbox selection">
+                    <input id={node.id}
+                        type="checkbox"
+                        name='selectNode'
+                        checked={node.selected}
+                        onChange={(event) => this.handleInputChange(event, node)}
+                        onClick={this.handleInputClick} />
+                    <label for="selectNode"
+                        onClick={(event) => this.triggerSelection(event, node)}></label>
+                </div>
                 <div class='card-block'>
                     <div class='card-text ep-card-text'>{node.name}</div>
                 </div>
@@ -132,6 +136,7 @@ class FileList extends Component {
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
+                <NotificationContainer />
                 {this.props.match.params.id ? <FileMenu params={blob} /> : null}
                 <div class='row'>
                     {
