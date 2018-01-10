@@ -21,6 +21,12 @@ namespace EP.Services.Extensions
                 case "application/msword":
                     return GetSubType(contentTypeLower);
 
+                case "application/x-rar-compressed":
+                    return "rar";
+
+                case "application/x-7z-compressed":
+                    return "7z";
+
                 case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                     return "msword";
 

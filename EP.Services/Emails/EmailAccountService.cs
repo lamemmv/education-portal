@@ -3,6 +3,7 @@ using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Caching;
+using EP.Services.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -50,42 +51,60 @@ namespace EP.Services.Emails
                 });
         }
 
-        public async Task<EmailAccount> CreateAsync(EmailAccount entity)
+        public async Task<ApiServerResult> CreateAsync(EmailAccount entity)
         {
-            entity = await _emailAccounts.CreateAsync(entity);
+            await _emailAccounts.CreateAsync(entity);
 
             if (entity.IsDefault)
             {
                 _memoryCacheService.Remove(DefaultEmailAccount);
             }
 
-            return entity;
+            return ApiServerResult.Created(entity.Id);
         }
 
-        public async Task<EmailAccount> UpdateAsync(EmailAccount entity)
+        public async Task<ApiServerResult> UpdateAsync(EmailAccount entity)
         {
-            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
-            var oldEntity = await _emailAccounts.UpdateAsync(entity, projection);
+            var update = Builders<EmailAccount>.Update
+                .Set(e => e.Email, entity.Email)
+                .Set(e => e.DisplayName, entity.DisplayName)
+                .Set(e => e.Host, entity.Host)
+                .Set(e => e.Port, entity.Port)
+                .Set(e => e.UserName, entity.UserName)
+                .Set(e => e.Password, entity.Password)
+                .Set(e => e.EnableSsl, entity.EnableSsl)
+                .Set(e => e.UseDefaultCredentials, entity.UseDefaultCredentials)
+                .Set(e => e.IsDefault, entity.IsDefault)
+                .CurrentDate(e => e.UpdatedOn);
 
-            if (oldEntity != null && entity.IsDefault)
+            var result = await _emailAccounts.UpdatePartiallyAsync(entity.Id, update);
+
+            if (!result)
             {
-                _memoryCacheService.Remove(DefaultEmailAccount);
+                return ApiServerResult.NotFound();
             }
 
-            return oldEntity;
+            _memoryCacheService.Remove(DefaultEmailAccount);
+
+            return ApiServerResult.NoContent();
         }
 
-        public async Task<EmailAccount> DeleteAsync(string id)
+        public async Task<ApiServerResult> DeleteAsync(string id)
         {
-            var projection = Builders<EmailAccount>.Projection.Exclude(e => e.Password);
+            var projection = Builders<EmailAccount>.Projection.Include(e => e.IsDefault);
             var entity = await _emailAccounts.DeleteAsync(id, projection);
 
-            if (entity != null && entity.IsDefault)
+            if (entity == null)
+            {
+                return ApiServerResult.NotFound();
+            }
+
+            if (entity.IsDefault)
             {
                 _memoryCacheService.Remove(DefaultEmailAccount);
             }
 
-            return entity;
+            return ApiServerResult.NoContent();
         }
     }
 }

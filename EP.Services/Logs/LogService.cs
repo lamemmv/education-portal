@@ -2,6 +2,7 @@ using EP.Data.DbContext;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
+using EP.Services.Models;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,16 +43,19 @@ namespace EP.Services.Logs
             return await _logs.GetByIdAsync(id);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<ApiServerResult> DeleteAsync(string id)
         {
-            return await _logs.DeleteAsync(id);
+            var result = await _logs.DeleteAsync(id);
+
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
 
-        public async Task<bool> DeleteAsync(IEnumerable<string> ids)
+        public async Task<ApiServerResult> DeleteAsync(IEnumerable<string> ids)
         {
             var filter = Builders<Log>.Filter.In(e => e.Id, ids);
+            var result = await _logs.DeleteAsync(filter);
 
-            return await _logs.DeleteAsync(filter);
+            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.API.Extensions;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Services.Extensions;
@@ -43,27 +44,17 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await _activityLogService.DeleteAsync(id);
+            var response = await _activityLogService.DeleteAsync(id);
 
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return response.ToActionResult();
         }
 
-        [HttpDelete("DeleteMany/{ids}")]
-        public async Task<IActionResult> DeleteMany(IEnumerable<string> ids)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(IEnumerable<string> ids)
         {
-            var result = await _activityLogService.DeleteAsync(ids);
-
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var response = await _activityLogService.DeleteAsync(ids);
+            
+            return response.ToActionResult();
         }
     }
 }

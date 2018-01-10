@@ -1,9 +1,8 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Logs;
 using EP.API.Areas.Admin.ViewModels;
-using EP.API.Filters;
+using EP.API.Extensions;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
-using EP.Services.Constants;
 using EP.Services.Logs;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -31,20 +30,12 @@ namespace EP.API.Areas.Admin.Controllers
             return await _activityLogService.GetLogTypeByIdAsync(id);
         }
 
-        [HttpPut("{id}"), ValidateViewModel]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody]ActivityLogTypeViewModel viewModel)
         {
-            var oldEntity = await _activityLogService.UpdateLogTypeAsync(id, viewModel.Enabled);
-
-            if (oldEntity == null)
-            {
-                return NotFound();
-            }
-
-            var activityLog = GetUpdatedActivityLog(oldEntity.GetType(), oldEntity.Enabled, viewModel.Enabled);
-            await _activityLogService.CreateAsync(SystemKeyword.UpdateActivityLogType, activityLog);
-
-            return NoContent();
+            var response = await _activityLogService.UpdateLogTypeAsync(id, viewModel.Enabled);
+            
+            return response.ToActionResult();
         }
     }
 }

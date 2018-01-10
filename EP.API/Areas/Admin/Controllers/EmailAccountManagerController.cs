@@ -1,11 +1,10 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Emails;
 using EP.API.Areas.Admin.ViewModels;
+using EP.API.Extensions;
 using EP.API.Filters;
 using EP.Data.Entities.Emails;
 using EP.Data.Paginations;
-using EP.Services.Constants;
 using EP.Services.Emails;
-using EP.Services.Logs;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -16,14 +15,10 @@ namespace EP.API.Areas.Admin.Controllers
     public class EmailAccountManagerController : AdminController
     {
         private readonly IEmailAccountService _emailAccountService;
-        private readonly IActivityLogService _activityLogService;
 
-        public EmailAccountManagerController(
-            IEmailAccountService emailAccountService,
-            IActivityLogService activityLogService)
+        public EmailAccountManagerController(IEmailAccountService emailAccountService)
         {
             _emailAccountService = emailAccountService;
-            _activityLogService = activityLogService;
         }
 
         [HttpGet]
@@ -44,14 +39,9 @@ namespace EP.API.Areas.Admin.Controllers
             var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
             entity.CreatedOn = DateTime.UtcNow;
 
-            await _emailAccountService.CreateAsync(entity);
+            var response = await _emailAccountService.CreateAsync(entity);
 
-            // Remove password when writing log.
-            entity.Password = null;
-            var activityLog = GetCreatedActivityLog(entity.GetType(), entity);
-            await _activityLogService.CreateAsync(SystemKeyword.CreateEmailAccount, activityLog);
-
-            return Created(nameof(Post), entity);
+            return response.ToActionResult();
         }
 
         [HttpPut("{id}"), ValidateViewModel]
@@ -59,35 +49,18 @@ namespace EP.API.Areas.Admin.Controllers
         {
             var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
             entity.Id = id;
-            entity.UpdatedOn = DateTime.UtcNow;
 
-            var oldEntity = await _emailAccountService.UpdateAsync(entity);
+            var response = await _emailAccountService.UpdateAsync(entity);
 
-            if (oldEntity == null)
-            {
-                return NotFound();
-            }
-
-            var activityLog = GetUpdatedActivityLog(oldEntity.GetType(), oldEntity, entity);
-            await _activityLogService.CreateAsync(SystemKeyword.UpdateEmailAccount, activityLog);
-
-            return NoContent();
+            return response.ToActionResult();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var entity = await _emailAccountService.DeleteAsync(id);
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            var activityLog = GetDeletedActivityLog(entity.GetType(), entity);
-            await _activityLogService.CreateAsync(SystemKeyword.DeleteEmailAccount, activityLog);
-
-            return NoContent();
+            var response = await _emailAccountService.DeleteAsync(id);
+            
+            return response.ToActionResult();
         }
     }
 }

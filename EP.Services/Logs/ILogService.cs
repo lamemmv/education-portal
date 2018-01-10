@@ -1,8 +1,9 @@
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
-using System;
+using EP.Services.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Services.Logs
 {
@@ -17,8 +18,8 @@ namespace EP.Services.Logs
 
         Task<Log> GetByIdAsync(string id);
 
-        Task<bool> DeleteAsync(string id);
+        Task<ApiServerResult> DeleteAsync(string id);
 
-        Task<bool> DeleteAsync(IEnumerable<string> ids);
+        Task<ApiServerResult> DeleteAsync(IEnumerable<string> ids);
     }
 }
