@@ -29,8 +29,10 @@ namespace EP.Services.Accounts
             var subjectId = context.Subject.GetSubjectId();
             var user = await _userManger.FindByIdAsync(subjectId);
             var principal = await _claimsFactory.CreateAsync(user);
+
             var claims = principal.Claims.ToList();
-            //claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
+            //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
+            claims.Add(new Claim("blobmanager", "10"));
 
             context.IssuedClaims = claims; // await GetIssuedClaims(user, claims);
         }

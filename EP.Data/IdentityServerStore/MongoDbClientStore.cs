@@ -1,9 +1,10 @@
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using System;
+using IdentityServer4;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.Data.IdentityServerStore
 {
@@ -22,7 +23,7 @@ namespace EP.Data.IdentityServerStore
                 yield return new Client
                 {
                     ClientId = "ep.web",
-                    ClientName = "EP Web Client",
+                    ClientName = "Education Portal Web Client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowOfflineAccess = true,
                     ClientSecrets =
@@ -31,7 +32,11 @@ namespace EP.Data.IdentityServerStore
                     },
                     AllowedScopes =
                     {
-                        "ep.api"
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "ep.api.admin"
                     }
                 };
             }

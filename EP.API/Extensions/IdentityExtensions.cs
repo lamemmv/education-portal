@@ -13,31 +13,9 @@ namespace EP.API.Extensions
 {
     public static class IdentityExtensions
     {
-        public static IServiceCollection AddCustomIdentityServer(
-            this IServiceCollection services,
-            bool isDevelopment)
+        public static IServiceCollection AddCustomIdentity(this IServiceCollection services)
         {
-            services.AddCustomIdentity();
-
-            services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddAspNetIdentity<AppUser>()
-                .AddProfileService<ProfileService>();
-
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(opts =>
-                {
-                    opts.Authority = "http://localhost:5000";
-                    opts.RequireHttpsMetadata = !isDevelopment;
-                    opts.ApiName = "ep.api";
-                });
-
-            return services;
-        }
-
-        private static IdentityBuilder AddCustomIdentity(this IServiceCollection services)
-        {
-            var identityBuilder = services
+            services
                 .AddIdentity<AppUser, AppRole>()
                 .AddDefaultTokenProviders();
 
@@ -93,7 +71,29 @@ namespace EP.API.Extensions
                 };
             });
 
-            return identityBuilder;
+            return services;
+        }
+
+        public static IServiceCollection AddCustomIdentityServer(
+            this IServiceCollection services,
+            string hostUrl,
+            bool isDevelopment)
+        {
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+                .AddAspNetIdentity<AppUser>()
+                .AddProfileService<ProfileService>();
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(opts =>
+                {
+                    opts.ApiName = "ep.api.admin";
+                    //opts.ApiSecret = null;
+                    opts.Authority = hostUrl;
+                    opts.RequireHttpsMetadata = !isDevelopment;
+                });
+
+            return services;
         }
     }
 }

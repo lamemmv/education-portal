@@ -1,11 +1,13 @@
 ﻿using EP.API.Extensions;
+using EP.API.Filters;
 using EP.API.Infrastructure;
-using EP.Data;
-using EP.Services;
+using EP.Services.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 
@@ -40,11 +42,27 @@ namespace EP.API
                 .AddMongoDbContext(_connectionString);
 
             services
-                .AddCustomMvc()
-                .AddCustomIdentityServer(_hostingEnvironment.IsDevelopment())
-                .AddCustomSwaggerGen();
+                .AddCustomIdentity()
+                .AddCustomIdentityServer(_configuration["AppSettings:HostUrl"], _hostingEnvironment.IsDevelopment())
+                .AddMvcCore(opts =>
+                {
+                    opts.Filters.Add(typeof(GlobalExceptionFilter));
+                })
+                .AddApiExplorer()
+                .AddCustomAuthorization()
+                .AddFormatterMappings()
+                .AddDataAnnotations()
+                .AddJsonFormatters(settings => 
+                {
+                    settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    settings.Formatting = Formatting.None;
+                    settings.NullValueHandling = NullValueHandling.Ignore;
+                    settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
 
-            return services.AddInternalServices(_configuration, _connectionString);
+            return services
+                .AddCustomSwaggerGen()
+                .AddInternalServices(_configuration, _connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
