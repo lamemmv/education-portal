@@ -9,6 +9,10 @@ import NewsDetail from './news/detail';
 import CreateNews from './news/create/container';
 import EPBreadcrumbs from './breadcrumbs/container';
 import RouterContainer from './breadcrumbs/router.container';
+import EPAbout from './about/index';
+import EPRecruitment from './recruitments/index';
+import EPParents from './parents/index';
+import EPExam from './examination/index';
 
 import * as styles from './styles.css';
 
@@ -26,6 +30,10 @@ class Main extends Component {
                             <Route exact path='/news' component={NewsIndex} />
                             <Route exact path='/news/create' component={CreateNews} />
                             <Route exact path='/news/:id' component={NewsDetail} />
+                            <Route exact path='/parents' component={EPParents} />
+                            <Route exact path='/exam' component={EPExam} />
+                            <Route exact path='/recruitment' component={EPRecruitment} />
+                            <Route exact path='/about' component={EPAbout} />
                         </Switch>
                     </RouterContainer>
                 </HashRouter>

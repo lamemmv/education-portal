@@ -75,17 +75,17 @@ class EPHeader extends Component {
                         <div class="collapse navbar-collapse" id="navbarCollapse">
                             <ul class="navbar-nav text-md-center nav-justified w-100">
                                 <li class="nav-item active">
-                                    <Link to="/" class='nav-link ep-nav-link'>
+                                    <Link to="/about" class='nav-link ep-nav-link'>
                                         <Text id='header.about'></Text>
                                     </Link>
                                 </li>
                                 <li class="nav-item">
-                                    <Link to="/" class='nav-link ep-nav-link'>
+                                    <Link to="/parents" class='nav-link ep-nav-link'>
                                         <Text id='header.parents'></Text>
                                     </Link>
                                 </li>
                                 <li class="nav-item">
-                                    <Link to="/" class='nav-link ep-nav-link'>
+                                    <Link to="/exam" class='nav-link ep-nav-link'>
                                         <Text id='header.examination'></Text>
                                     </Link>
                                 </li>
@@ -100,7 +100,7 @@ class EPHeader extends Component {
                                     </Link>
                                 </li>
                                 <li class="nav-item">
-                                    <Link to="/courses" class='nav-link ep-nav-link'>
+                                    <Link to="/recruitment" class='nav-link ep-nav-link'>
                                         <Text id='header.recruitments'></Text>
                                     </Link>
                                 </li>
