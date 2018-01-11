@@ -1,4 +1,5 @@
-﻿using EP.Data.AspNetIdentity;
+﻿using EP.API.Infrastructure;
+using EP.Data.AspNetIdentity;
 using EP.Data.DbContext;
 using EP.Data.IdentityServerStore;
 using EP.Services.Accounts;
@@ -10,8 +11,9 @@ using EP.Services.Models;
 using EP.Services.News;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using LightInject.Microsoft.DependencyInjection;
 using LightInject;
+using LightInject.Microsoft.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,7 +54,9 @@ namespace EP.API.Extensions
                 //Blobs.
                 .Register<IBlobService, BlobService>()
                 // News.
-                .Register<INewsService, NewsService>();
+                .Register<INewsService, NewsService>()
+                // Authorization.
+                .Register<IAuthorizationHandler, AdminAuthorizationHandler>();
 
             container
                 // Background tasks.

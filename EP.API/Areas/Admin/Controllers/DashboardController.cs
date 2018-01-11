@@ -19,6 +19,7 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        []
         public async Task<IActionResult> Get()
         {
             var isAuthorized =
