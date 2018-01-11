@@ -1,5 +1,4 @@
 using EP.API.Infrastructure;
-using IdentityServer4.AccessTokenValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EP.API.Extensions
@@ -10,7 +9,7 @@ namespace EP.API.Extensions
         {
             return builder.AddAuthorization(opts =>
             {
-               // opts.AddPolicy("blobmanager", policy => policy.Requirements.Add(new AdminAuthorizationHandler()));
+                opts.AddPolicy("blobmanager", policy => policy.Requirements.Add(ContactOperations.BlobManagerOperationName));
             });
         }
     }
