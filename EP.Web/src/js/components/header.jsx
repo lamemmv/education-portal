@@ -73,7 +73,7 @@ class EPHeader extends Component {
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarCollapse">
-                            <ul class="navbar-nav text-md-center nav-justified w-100">
+                            <ul class="navbar-nav ml-auto">
                                 <li class="nav-item active">
                                     <Link to="/" class='nav-link ep-nav-link'>
                                         <Text id='header.about'></Text>

@@ -2,6 +2,8 @@ import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
 import { Localizer, Text } from 'preact-i18n';
 import * as styles from './list.css';
+import EPPAgination from '../pagination/container';
+import Spinner from '../spinner/container';
 
 class NewsList extends Component {
 
@@ -11,7 +13,7 @@ class NewsList extends Component {
     }
 
     createNews() {
-        this.context.router.history.push('/news/create');
+        this.context.router.history.push('news/create');
     }
 
     componentWillMount() {
@@ -19,9 +21,11 @@ class NewsList extends Component {
     }
 
     render() {
-        const { items } = this.props.news;
+        const { items, pages, page, size, loading } = this.props.news;
+        const { getNews } = this.props.actions;
         return (
             <section class='container'>
+                <Spinner loading={loading} />
                 <form>
                     <Localizer>
                         <button type="button"
@@ -33,34 +37,39 @@ class NewsList extends Component {
                         </button>
                     </Localizer>
                 </form>
-                <div style={{ margin: 10 }}>
-                    <table class="table">
+                <div style={{ marginTop: 10 }}>
+                    <table class="table table-hover table-striped ep-table">
                         <thead>
                             <tr>
                                 <th><Text id='news.title'></Text></th>
                                 <th><Text id='news.ingress'></Text></th>
                                 <th><Text id='news.content'></Text></th>
                                 <th><Text id='news.publishedDate'></Text></th>
-                                <th><Text id='news.link'></Text></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {items.map((item) => {
                                 return (
                                     <tr>
-                                        <td data-title="Title">{item.title}</td>
-                                        <td data-title="Ingress">{item.ingress}</td>
-                                        <td data-title="Content">{item.content}</td>
-                                        <td data-title="PublishedDate">{item.createdOn}</td>
+                                        <td data-title="Title" title={item.title}>{item.title}</td>
+                                        <td data-title="Ingress" title={item.ingress}>{item.ingress}</td>
+                                        <td data-title="Content" title={item.content}>{item.content}</td>
+                                        <td data-title="PublishedDate" title={item.createdOn}>{item.createdOn}</td>
                                         <td data-title="Link">
-                                            <Link to={`news/${item.id}`}>Link</Link>
+                                            <Link to={`news/${item.id}`}><Text id='news.detail'></Text></Link>
                                         </td>
+                                        <td data-title="Delete"><button type="button" class="btn btn-raised btn-danger">
+                                            <Text id='files.delete'></Text>
+                                        </button></td>
                                     </tr>
                                 );
                             })}
                         </tbody>
                     </table>
                 </div>
+                <EPPAgination action={getNews} pages={pages} currentPage={page} size={size} />
             </section>
         );
     }

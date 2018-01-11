@@ -1,5 +1,5 @@
 :root {
-    --breadcrumb-theme-1: #3c571d;
+    --breadcrumb-theme-1: #00695c;
     --breadcrumb-theme-2: #fff;
     --breadcrumb-theme-3: #4CAF50;
     --breadcrumb-theme-4: #9d0f3e;
@@ -14,7 +14,6 @@
 
 .ep-breadcrumb {
     background-color: var(--breadcrumb-theme-1) !important;
-    margin-bottom: 0 !important;
 }
 
 .ep-bc-item {

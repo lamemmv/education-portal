@@ -8,7 +8,9 @@
         "createNews": "Create News",
         "detail": "Detail",
         "create": "Create",
-        "published": "Published"
+        "published": "Published",
+        "titleRequired": "Title is required",
+        "contentRequired": "Content is required"
     },
     "header": {
         "home": "Home",
@@ -48,6 +50,8 @@
     "search": "Search",
     "cancel": "Cancel",
     "ok": "OK",
+    "next": "Next",
+    "previous": "Previous",
     "errors": {
         "1001": "Invalid parent folder",
         "1002": "Folder with same name is existed",
