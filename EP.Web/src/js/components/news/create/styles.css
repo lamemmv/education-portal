@@ -6,3 +6,7 @@ button a:hover {
     color: #fff;
     text-decoration: none;
 }
+
+.ep-form-title {
+    text-transform: uppercase;
+}

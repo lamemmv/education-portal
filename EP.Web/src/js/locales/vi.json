@@ -32,7 +32,8 @@
         "moveTo": "Di chuyển",
         "copyTo": "Sao chép",
         "rename": "Sửa tên",
-        "download": "Tải tài liệu"
+        "download": "Tải tài liệu",
+        "selectImage": "Chọn ảnh đại diện"
     },
     "folders": {
         "create": "Tạo",

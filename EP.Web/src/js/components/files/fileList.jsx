@@ -135,7 +135,6 @@ class FileList extends Component {
             loading
         } = this.props.fileState;
 
-        const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
                 <Spinner loading={loading} />

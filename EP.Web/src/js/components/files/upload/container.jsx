@@ -29,25 +29,26 @@ class Upload extends Component {
     }
 
     selectFile(files) {
-        const { single } = this.props;
+        const { single, image } = this.props;
         const { parent } = this.props.uploadState;
         if (files) {
-            // Array.from(files).map((file)=>{
-            //     let reader = new FileReader();
-            //     reader.onloadend = () => {
-            //         file.url = reader.result;
-            //         this.props.selectFile({ file: file, single: single });
-            //     }
-            //     reader.readAsDataURL(file);
-            // });  
+            if (single && image) {
+                let reader = new FileReader();
+                reader.onloadend = () => {
+                    files[0].url = reader.result;
+                    this.props.selectFile({ files: files, parent: parent, single: single });
+                }
+                reader.readAsDataURL(files[0]);
+            } else {
+                this.props.selectFile({ files: files, parent: parent, single: single });
+            }
 
-            this.props.selectFile({ files: files, parent: parent, single: single });
         }
     }
 
     render() {
         let fileInput = null;
-        const { removeFile, selectFile, uploadFile, callbackAction } = this.props;
+        const { removeFile, selectFile, uploadFile, callbackAction, single } = this.props;
         const { files, browseFile, parent } = this.props.uploadState;
         const supportedImages = ['png', 'jpg', 'gif', 'jpeg'];
         return (
@@ -66,7 +67,7 @@ class Upload extends Component {
                         <div class="modal-body">
                             <div>
                                 <label class="custom-file">
-                                    <input type="file" id="file-input" multiple
+                                    <input type="file" id="file-input" multiple={!single}
                                         style={{ display: 'none' }}
                                         class="custom-file-input"
                                         onChange={() => {

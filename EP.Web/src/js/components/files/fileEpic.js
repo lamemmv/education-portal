@@ -86,13 +86,16 @@ const uploadFilesEpic = action$ =>
 const uploadFileSuccessEpic = action$ =>
     action$.ofType(UPLOAD_FILE_SUCCESS)
     .flatMap(action => {
-        return action.payload.action ?
+        return action.payload.request.action ?
             Observable.concat(
                 Observable.of(getFiles({
                     page: 1,
                     folderId: action.payload.request.parent
                 })),
-                Observable.of(action.payload.action(action.payload.data)),
+                Observable.of(action.payload.request.action({
+                    request: action.payload.request,
+                    data: action.payload.data
+                })),
                 Observable.of(addNotification('Uploaded', 'success', 'Upload files'))) :
             Observable.concat(
                 Observable.of(getFiles({
@@ -131,8 +134,7 @@ const deleteFileSuccessEpic = action$ =>
 
 const hitToDownloadFilePic = action$ =>
     action$.ofType(HIT_TO_DOWNLOAD_FILE)
-    .flatMap(action => Observable.of(downloadFile(action.payload))
-    );
+    .flatMap(action => Observable.of(downloadFile(action.payload)));
 
 const epics = [
     fetchFilesEpic,

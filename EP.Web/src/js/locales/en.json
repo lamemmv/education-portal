@@ -32,7 +32,8 @@
         "moveTo": "Move to",
         "copyTo": "Copy to",
         "rename": "Rename",
-        "download": "Download"
+        "download": "Download",
+        "selectImage": "Select image"
     },
     "folders": {
         "create": "Create",
