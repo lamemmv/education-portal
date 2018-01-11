@@ -36,7 +36,7 @@ namespace EP.Data.IdentityServerStore
         {
             get
             {
-                yield return new ApiResource("ep.api", "Education Portal API");
+                yield return new ApiResource("ep.api.admin", "Education Portal API Administration");
             }
         }
 
@@ -44,9 +44,10 @@ namespace EP.Data.IdentityServerStore
         {
             get
             {
-                //yield return new IdentityResource.OpenId();
-                //yield return new IdentityResource.Profile();
-                yield break;
+                yield return new IdentityResources.OpenId();
+                yield return new IdentityResources.Profile();
+                yield return new IdentityResources.Email();
+                //yield return new IdentityResource { Name = "ep.api.admin" };
             }
         }
     }
