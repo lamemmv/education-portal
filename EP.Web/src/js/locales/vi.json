@@ -8,7 +8,9 @@
         "createNews": "Biên soạn tin",
         "detail": "Chi tiết",
         "create": "Tạo tin",
-        "published": "Công bố"
+        "published": "Công bố",
+        "titleRequired": "Bắc buộc phải nhập tựa đề",
+        "contentRequired": "Bắc buộc phải nhập nội dung"
     },
     "header": {
         "home": "Trang chủ",
@@ -48,6 +50,8 @@
     "search": "Tìm kiếm",
     "cancel": "Bỏ qua",
     "ok": "Đồng ý",
+    "next": "Sau",
+    "previous": "Trước",
     "errors": {
         "1001": "Thư mục cha không hợp lệ",
         "1002": "Thư mục bị trùng trên",

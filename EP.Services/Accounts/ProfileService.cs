@@ -14,18 +14,27 @@ namespace EP.Services.Accounts
     public sealed class ProfileService : IProfileService
     {
         private readonly UserManager<AppUser> _userManger;
+        private readonly IUserClaimsPrincipalFactory<AppUser> _claimsFactory;
 
-        public ProfileService(UserManager<AppUser> userManger)
+        public ProfileService(
+            UserManager<AppUser> userManger,
+            IUserClaimsPrincipalFactory<AppUser> claimsFactory)
         {
             _userManger = userManger;
+            _claimsFactory = claimsFactory;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var subjectId = context.Subject.GetSubjectId();
             var user = await _userManger.FindByIdAsync(subjectId);
+            var principal = await _claimsFactory.CreateAsync(user);
 
-            context.IssuedClaims = await GetIssuedClaims(user);
+            var claims = principal.Claims.ToList();
+            //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
+            claims.Add(new Claim("blobmanager", "10"));
+
+            context.IssuedClaims = claims; // await GetIssuedClaims(user, claims);
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
@@ -43,12 +52,9 @@ namespace EP.Services.Accounts
             context.IsActive = isActive;
         }
 
-        private async Task<List<Claim>> GetIssuedClaims(AppUser user)
+        private async Task<List<Claim>> GetIssuedClaims(AppUser user, List<Claim> claims)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtClaimTypes.Name, await _userManger.GetUserNameAsync(user))
-            };
+            claims.Add(new Claim(JwtClaimTypes.Name, await _userManger.GetUserNameAsync(user)));
 
             if (_userManger.SupportsUserEmail)
             {

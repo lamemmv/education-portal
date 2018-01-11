@@ -3,10 +3,16 @@
     --box-theme-2: #fff;
     --box-theme-3: #265828;
     --box-theme-4: #33691E;
+    --box-theme-5: #2BBBAD;
 }
 
 .ep-navbar {
     box-shadow: 0 0px 0px 0 rgba(0, 0, 0, .14), 0 0px 0px 0px rgba(0, 0, 0, .2), 0 1px 0px 0 rgba(0, 0, 0, .12);
+}
+
+.navbar.navbar-expand-md.navbar-light.ep-navbar {
+    background-color: var(--box-theme-5);
+    margin-bottom: 1px;
 }
 
 .ep-navbar:last-child {
@@ -14,7 +20,7 @@
 }
 
 .ep-nav-link {
-    color: var(--box-theme-3) !important;
+    color: var(--box-theme-2) !important;
 }
 
 .ep-navbar-brand {

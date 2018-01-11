@@ -1,0 +1,37 @@
+.ep-table tbody tr td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.ep-table tbody tr td[data-title='Title'] {
+    max-width: 100px;
+}
+
+.ep-table tbody tr td[data-title='Ingress'] {
+    max-width: 150px;
+}
+
+.ep-table tbody tr td[data-title='Content'] {
+    max-width: 200px;
+}
+
+.ep-table tbody tr td[data-title='PublishedDate'] {
+    max-width: 80px;
+}
+
+.ep-table tbody tr td[data-title='Link'] {
+    max-width: 45px;
+}
+
+.ep-table tbody tr td[data-title='Delete'] {
+    max-width: 45px;
+}
+
+.ep-table thead {
+    background-color: #42A5F5;
+}
+
+.ep-table thead tr th {
+    color: #fff;
+}

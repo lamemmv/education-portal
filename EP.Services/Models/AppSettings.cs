@@ -1,4 +1,4 @@
-﻿namespace EP.Services
+﻿namespace EP.Services.Models
 {
     public sealed class AppSettings
     {

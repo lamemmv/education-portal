@@ -43,6 +43,7 @@ export default handleActions({
     [CREATE_NEWS_SUCCESS]: (state, action) => {
         return Object.assign({}, state, {
             id: action.payload,
+            redirectTo: '/news',
             error: null,
             loading: false
         });

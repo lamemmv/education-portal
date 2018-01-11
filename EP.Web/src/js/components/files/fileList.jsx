@@ -16,6 +16,7 @@ import Pagination from './pagination/container';
 import * as styles from './styles.css';
 import Utils from '../utils';
 import NotificationContainer from '../notify/notification.container';
+import Spinner from '../spinner/container';
 
 class FileList extends Component {
 
@@ -130,12 +131,14 @@ class FileList extends Component {
             currentPage,
             pages,
             showPagination,
-            blob
+            blob,
+            loading
         } = this.props.fileState;
 
         const imageTypes = ['image/gif', "image/jpeg", "image/png"];
         return (
             <section class='container'>
+                <Spinner loading={loading} />
                 <NotificationContainer />
                 {this.props.match.params.id ? <FileMenu params={blob} /> : null}
                 <div class='row'>

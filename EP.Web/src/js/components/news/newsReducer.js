@@ -1,4 +1,7 @@
-import { handleActions, Action } from 'redux-actions';
+import {
+    handleActions,
+    Action
+} from 'redux-actions';
 import {
     GET_NEWS_LIST,
     GET_NEWS_LIST_FAILURE,
@@ -22,9 +25,17 @@ export default handleActions({
         });
     },
     [GET_NEWS_LIST_SUCCESS]: (state, action) => {
+        let pages = [];
+        if (action.payload.totalPages > 1) {
+            for (let i = 0; i < action.payload.totalPages; i++) {
+                pages.push(i + 1);
+            }
+        }
         return Object.assign({}, state, {
             items: action.payload.items ? action.payload.items : [],
             page: action.payload.page,
+            pages: pages,
+            size: action.payload.size,
             error: null,
             loading: false
         });
