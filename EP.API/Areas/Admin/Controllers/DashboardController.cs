@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EP.API.Areas.Admin.Controllers
 {
-    [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize]
     [Route("api/admin/[controller]")]
     public class DashboardController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace EP.API.Areas.Admin.Controllers
         public async Task<IActionResult> Get()
         {
             var isAuthorized =
-                await _authorizationService.AuthorizeAsync(User, "Host", ContactOperations.BlobManagerOperationName);
+                await _authorizationService.AuthorizeAsync(User, "Over21Only");
 
             if (!isAuthorized.Succeeded)
             {

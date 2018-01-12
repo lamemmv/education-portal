@@ -30,6 +30,8 @@ namespace EP.API.Extensions
             IConfiguration configuration,
             string connectionString)
         {
+            services.AddSingleton<IAuthorizationHandler, MinimumAgeAuthorizationHandler>();
+
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
             var container = new ServiceContainer(new ContainerOptions
@@ -54,9 +56,7 @@ namespace EP.API.Extensions
                 //Blobs.
                 .Register<IBlobService, BlobService>()
                 // News.
-                .Register<INewsService, NewsService>()
-                // Authorization.
-                .Register<IAuthorizationHandler, AdminAuthorizationHandler>();
+                .Register<INewsService, NewsService>();
 
             container
                 // Background tasks.
@@ -70,6 +70,8 @@ namespace EP.API.Extensions
                 .Register<IResourceStore, MongoDbResourceStore>(new PerContainerLifetime())
                 .Register<IClientStore, MongoDbClientStore>(new PerContainerLifetime())
                 .Register<IPersistedGrantStore, MongoDbPersistedGrantStore>(new PerContainerLifetime());
+            // Authorization.
+            //.Register<IAuthorizationHandler, MinimumAgeAuthorizationHandler>(new PerContainerLifetime());
 
             return container.CreateServiceProvider(services);
         }

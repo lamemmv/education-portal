@@ -44,10 +44,11 @@ namespace EP.Data.IdentityServerStore
         {
             get
             {
-                yield return new IdentityResources.OpenId();
+                /*yield return new IdentityResources.OpenId();
                 yield return new IdentityResources.Profile();
-                yield return new IdentityResources.Email();
+                yield return new IdentityResources.Email();*/
                 //yield return new IdentityResource { Name = "ep.api.admin" };
+                yield break;
             }
         }
     }

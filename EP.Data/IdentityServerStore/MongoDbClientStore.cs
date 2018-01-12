@@ -32,10 +32,10 @@ namespace EP.Data.IdentityServerStore
                     },
                     AllowedScopes =
                     {
-                        IdentityServerConstants.StandardScopes.OpenId,
+                        /*IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,*/
                         "ep.api.admin"
                     }
                 };

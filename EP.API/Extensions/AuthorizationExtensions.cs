@@ -1,4 +1,5 @@
 using EP.API.Infrastructure;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EP.API.Extensions
@@ -9,7 +10,12 @@ namespace EP.API.Extensions
         {
             return builder.AddAuthorization(opts =>
             {
-                opts.AddPolicy("blobmanager", policy => policy.Requirements.Add(ContactOperations.BlobManagerOperationName));
+                opts.AddPolicy("Over21Only", policy => 
+                {
+                    policy.AuthenticationSchemes.Clear();
+                    policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+                    policy.Requirements.Add(new MinimumAgeRequirement(21));
+                });
             });
         }
     }
