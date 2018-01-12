@@ -257,7 +257,12 @@ namespace EP.Services.Blobs
             var filter = Builders<Blob>.Filter.Eq(e => e.Name, _commonFolderName) &
                 Builders<Blob>.Filter.Exists(e => e.Parent, false) &
                 Builders<Blob>.Filter.Exists(e => e.Ancestors, false);
-            var commonBlob = await _blobs.GetSingleAsync(filter);
+            var projection = Builders<Blob>.Projection
+                .Include(e => e.Id)
+                .Include(e => e.Name)
+                .Include(e => e.VirtualPath)
+                .Include(e => e.PhysicalPath);
+            var commonBlob = await _blobs.GetSingleAsync(filter, projection);
 
             return commonBlob;
         }
