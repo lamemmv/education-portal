@@ -1,5 +1,8 @@
+using EP.Data.Entities.Blobs;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using System.IO;
+using System;
 
 namespace EP.API.Extensions
 {
@@ -8,34 +11,57 @@ namespace EP.API.Extensions
         public static IApplicationBuilder UseCustomStaticFiles(
             this IApplicationBuilder app,
             string webRootPath,
-            string publicBlob,
-            string privateBlob)
+            string contentRootPath,
+            IConfiguration configuration)
         {
             return app
-                .EnsureAvailableDirectories(webRootPath, publicBlob, privateBlob)
+                .EnsureAvailableDirectories(webRootPath, contentRootPath, configuration)
                 .UseStaticFiles();
         }
 
         private static IApplicationBuilder EnsureAvailableDirectories(
             this IApplicationBuilder app,
             string webRootPath,
-            string publicBlob,
-            string privateBlob)
+            string contentRootPath,
+            IConfiguration configuration)
         {
-            string publicBlobPath = Path.Combine(webRootPath, publicBlob);
-            string privateBlobPath = Path.Combine(Directory.GetCurrentDirectory(), privateBlob);
+            var publicFolderName = configuration["AppSettings:PublicFolder"];
+            var publicFolderPath = Path.Combine(webRootPath, publicFolderName);
+            CreateDirectoryIfNotExist(publicFolderPath);
 
-            if (!Directory.Exists(publicBlobPath))
+            var privateFolderName = configuration["AppSettings:PrivateFolder"];
+            var privateFolderPath = Path.Combine(contentRootPath, privateFolderName);
+            CreateDirectoryIfNotExist(privateFolderPath);
+
+            var commonFolderName = configuration["AppSettings:CommonFolder"];
+            var commonFolderPath = Path.Combine(webRootPath, commonFolderName);
+            CreateDirectoryIfNotExist(commonFolderPath);
+
+            return app.InitDefaultBlob(new[]
             {
-                Directory.CreateDirectory(publicBlobPath);
-            }
+                BuildBlob(publicFolderName, publicFolderPath, publicFolderName),
+                BuildBlob(privateFolderName, privateFolderPath),
+                BuildBlob(commonFolderName, commonFolderPath, commonFolderName)
+            });
+        }
 
-            if (!Directory.Exists(privateBlobPath))
+        private static void CreateDirectoryIfNotExist(string path)
+        {
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(privateBlobPath);
+                Directory.CreateDirectory(path);
             }
+        }
 
-            return app.InitDefaultBlob(publicBlob, publicBlobPath, privateBlob, privateBlobPath);
+        private static Blob BuildBlob(string name, string physicalPath, string virtualPath = null)
+        {
+            return new Blob
+            {
+                Name = name,
+                VirtualPath = virtualPath,
+                PhysicalPath = physicalPath,
+                CreatedOn = DateTime.UtcNow
+            };
         }
     }
 }

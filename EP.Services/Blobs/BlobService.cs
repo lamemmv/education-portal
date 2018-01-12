@@ -236,7 +236,7 @@ namespace EP.Services.Blobs
                 }
 
                 // System Directory.
-                if (string.IsNullOrEmpty(entity.Parent))
+                if (entity.IsSystemFolder())
                 {
                     return new ApiServerResult(ApiStatusCode.Blob_SystemDirectory, id, "System folder could not be deleted.");
                 }

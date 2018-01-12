@@ -1,4 +1,5 @@
 using EP.Data.Entities.Blobs;
+using System.Linq;
 
 namespace EP.Services.Blobs
 {
@@ -10,6 +11,13 @@ namespace EP.Services.Blobs
                 !string.IsNullOrEmpty(entity.RandomName) &&
                 !string.IsNullOrEmpty(entity.ContentType) &&
                 !string.IsNullOrEmpty(entity.PhysicalPath);
+        }
+
+        public static bool IsSystemFolder(this Blob entity)
+        {
+            return entity != null &&
+                string.IsNullOrEmpty(entity.Parent) &&
+                (entity.Ancestors == null || !entity.Ancestors.Any());
         }
     }
 }

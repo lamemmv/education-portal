@@ -26,7 +26,14 @@ namespace EP.Services.News
 
         public async Task<IPagedList<NewsItem>> GetPagedListAsync(int? page, int? size)
         {
-            return await _news.GetPagedListAsync(skip: page, take: size);
+            var projection = Builders<NewsItem>.Projection
+                .Include(e => e.Id)
+                .Include(e => e.Title)
+                .Include(e => e.Ingress)
+                .Include(e => e.Published)
+                .Include(e => e.PublishedDate);
+
+            return await _news.GetPagedListAsync(projection: projection, skip: page, take: size);
         }
 
         public async Task<NewsItem> GetByIdAsync(string id)

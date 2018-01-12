@@ -16,22 +16,12 @@ namespace EP.API.Extensions
 {
     public static class DbInitializerExtensions
     {
-        public static IApplicationBuilder InitDefaultBlob(
-            this IApplicationBuilder app,
-            string publicBlob,
-            string publicBlobPath,
-            string privateBlob,
-            string privateBlobPath)
+        public static IApplicationBuilder InitDefaultBlob(this IApplicationBuilder app, params Blob[] blobs)
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 // This protects from deadlocks by starting the async method on the ThreadPool.
-                Task.Run(() => SeedBlobAsync(
-                    scope.ServiceProvider,
-                    publicBlob,
-                    publicBlobPath,
-                    privateBlob,
-                    privateBlobPath)).Wait();
+                Task.Run(() => SeedBlobAsync(scope.ServiceProvider, blobs)).Wait();
             }
 
             return app;
@@ -50,45 +40,21 @@ namespace EP.API.Extensions
             return app;
         }
 
-        private static async Task SeedBlobAsync(
-            IServiceProvider serviceProvider,
-            string publicBlob,
-            string publicBlobPath,
-            string privateBlob,
-            string privateBlobPath)
+        private static async Task SeedBlobAsync(IServiceProvider serviceProvider, params Blob[] blobs)
         {
             var dbContext = serviceProvider.GetRequiredService<MongoDbContext>();
-            
-            var filter = Builders<Blob>.Filter.Eq(e => e.Name, publicBlob);
-            var projection = Builders<Blob>.Projection.Include(e => e.Id);
-            var blob = await dbContext.Blobs.GetSingleAsync(filter, projection);
+            FilterDefinition<Blob> filter;
+            long dbCount;
 
-            if (blob == null)
+            foreach (var blob in blobs)
             {
-                blob = new Blob
+                filter = Builders<Blob>.Filter.Eq(e => e.Name, blob.Name);
+                dbCount = await dbContext.Blobs.CountAsync(filter);
+
+                if (dbCount == 0)
                 {
-                    Name = publicBlob,
-                    VirtualPath = publicBlob,
-                    PhysicalPath = publicBlobPath,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                await dbContext.Blobs.CreateAsync(blob);
-            }
-
-            filter = Builders<Blob>.Filter.Eq(e => e.Name, privateBlob);
-            blob = await dbContext.Blobs.GetSingleAsync(filter, projection);
-
-            if (blob == null)
-            {
-                blob = new Blob
-                {
-                    Name = privateBlob,
-                    PhysicalPath = privateBlobPath,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                await dbContext.Blobs.CreateAsync(blob);
+                    await dbContext.Blobs.CreateAsync(blob);
+                }
             }
         }
 

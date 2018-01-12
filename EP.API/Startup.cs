@@ -1,7 +1,6 @@
 ﻿using EP.API.Extensions;
 using EP.API.Filters;
 using EP.API.Infrastructure;
-using EP.Services.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,16 +16,20 @@ namespace EP.API
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly bool _isDevelopment;
+        private readonly string _webRootPath;
+        private readonly string _contentRootPath;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
-            _hostingEnvironment = env;
+
+            _isDevelopment = env.IsDevelopment();
+            _webRootPath = env.WebRootPath;
+            _contentRootPath = env.ContentRootPath;
 
             Log.Logger = LogCreator.Create(_connectionString);
-
             ObjectMapper.RegisterMapping();
         }
 
@@ -43,7 +46,7 @@ namespace EP.API
 
             services
                 .AddCustomIdentity()
-                .AddCustomIdentityServer(_configuration["AppSettings:HostUrl"], _hostingEnvironment.IsDevelopment())
+                .AddCustomIdentityServer(_configuration["AppSettings:HostUrl"], _isDevelopment)
                 .AddMvcCore(opts =>
                 {
                     opts.Filters.Add(typeof(GlobalExceptionFilter));
@@ -52,7 +55,7 @@ namespace EP.API
                 .AddCustomAuthorization()
                 .AddFormatterMappings()
                 .AddDataAnnotations()
-                .AddJsonFormatters(settings => 
+                .AddJsonFormatters(settings =>
                 {
                     settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     settings.Formatting = Formatting.None;
@@ -66,19 +69,16 @@ namespace EP.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, AppSettings appSettings)
+        public void Configure(IApplicationBuilder app)
         {
-            if (_hostingEnvironment.IsDevelopment())
+            if (_isDevelopment)
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app
                 .UseResponseCompression()
-                .UseCustomStaticFiles(
-                    _hostingEnvironment.WebRootPath,
-                    appSettings.PublicBlob,
-                    appSettings.PrivateBlob)
+                .UseCustomStaticFiles(_webRootPath, _contentRootPath, _configuration)
                 .UseCors("AllowAllOrigins")
                 .UseIdentityServer()
                 .UseCustomSwagger()

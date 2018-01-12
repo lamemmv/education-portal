@@ -7,6 +7,7 @@ namespace EP.Data.Entities.Blobs
     {
         public string Name { get; set; }
 
+        [BsonIgnoreIfNull]
         public string RandomName { get; set; }
 
         [BsonIgnoreIfNull]
