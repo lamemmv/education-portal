@@ -7,6 +7,9 @@ import {
 } from 'redux';
 
 import * as FetchNewsActions from './newsActions';
+import {
+    askToOpenConfirmation
+} from '../dialogs/actions';
 
 import NewsList from './list';
 
@@ -18,7 +21,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators(FetchNewsActions, dispatch)
+        actions: bindActionCreators({ ...FetchNewsActions,
+            askToOpenConfirmation
+        }, dispatch)
     }
 }
 

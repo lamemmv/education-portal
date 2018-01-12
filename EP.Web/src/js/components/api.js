@@ -19,24 +19,6 @@ const API = {
             .join('&');
     },
 
-    getNews(page, size) {
-        let params = {
-            page: page ? page : 1,
-            size: size ? size : PageSetting.getPageSize()
-        };
-        let url = `${baseUri}admin/newsManager`;
-        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
-        let headers = new Headers({
-            'Access-Control-Allow-Origin': '*'
-        });
-
-        return axios({
-            method: 'get',
-            url: url,
-            headers: headers
-        });
-    },
-
     getFiles(filter) {
         let params = {
             page: filter.page ? filter.page : 1,
@@ -69,6 +51,10 @@ const API = {
     },
 
     uploadFiles(request) {
+        if (request.parent == null){
+            request.parent = '';
+        }
+
         let body = new FormData();
         request.files.map(file => {
             body.append("files", file);
@@ -100,12 +86,59 @@ const API = {
         });
     },
 
+    getNews(page, size) {
+        let params = {
+            page: page ? page : 1,
+            size: size ? size : PageSetting.getPageSize()
+        };
+        let url = `${baseUri}admin/newsManager`;
+        url += (url.indexOf('?') === -1 ? '?' : '&') + API.queryParams(params);
+        let headers = new Headers({
+            'Access-Control-Allow-Origin': '*'
+        });
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: headers
+        });
+    },
+
+    getNewsById(id) {
+        let url = `${baseUri}admin/newsManager/${id}`;
+
+        return axios({
+            method: 'get',
+            url: url,
+            headers: []
+        });
+    },
+
     createNews(request) {
         let url = `${baseUri}admin/newsManager`;
         return axios({
             method: 'post',
             url: url,
             data: request,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
+
+    updateNews(request) {
+        let url = `${baseUri}admin/newsManager/${request.id}`;
+        return axios({
+            method: 'put',
+            url: url,
+            data: {
+                title: request.title,
+                content: request.content,
+                ingress: request.ingress,
+                published: request.published,
+                blobId: request.blobId
+            },
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

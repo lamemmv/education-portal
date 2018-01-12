@@ -10,7 +10,8 @@
         "create": "Tạo tin",
         "published": "Công bố",
         "titleRequired": "Bắc buộc phải nhập tựa đề",
-        "contentRequired": "Bắc buộc phải nhập nội dung"
+        "contentRequired": "Bắc buộc phải nhập nội dung",
+        "editNews": "Sửa tin tức"
     },
     "header": {
         "home": "Trang chủ",
@@ -24,7 +25,7 @@
         "recruitments": "Tuyển dụng"
     },
     "files": {
-        "uploadAll": "Upload tất cả",
+        "uploadAll": "Tải lên tất cả",
         "preview": "Xem",
         "createFolder": "Tạo thư mục",
         "selectFile": "Chọn tài liệu",

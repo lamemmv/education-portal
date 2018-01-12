@@ -9,11 +9,11 @@
 }
 
 .ep-table tbody tr td[data-title='Ingress'] {
-    max-width: 150px;
+    max-width: 250px;
 }
 
-.ep-table tbody tr td[data-title='Content'] {
-    max-width: 200px;
+.ep-table tbody tr td[data-title='Published'] {
+    max-width: 80px;
 }
 
 .ep-table tbody tr td[data-title='PublishedDate'] {

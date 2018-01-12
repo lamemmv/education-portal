@@ -8,8 +8,6 @@ import {
 } from 'redux';
 
 import { Text } from 'preact-i18n';
-let classNames = require('classnames');
-
 import * as styles from './styles.css';
 import * as NewsActions from '../newsActions';
 import { hitToBrowseFile } from '../../files/upload/actions';
@@ -25,7 +23,8 @@ class CreateNews extends Component {
             ingress: '',
             content: '',
             blobId: null,
-            published: false
+            published: false,
+            url: null
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.cancel = this.cancel.bind(this);
@@ -46,7 +45,7 @@ class CreateNews extends Component {
         this.context.router.history.push('/news');
     }
 
-    validate = (files) => {
+    validate = () => {
         if (this.state.title == '') {
             this.setState({
                 formValid: false
@@ -55,13 +54,6 @@ class CreateNews extends Component {
         }
 
         if (this.state.content == '') {
-            this.setState({
-                formValid: false
-            });
-            return;
-        }
-        let _files = files ? files : this.props.news.files;
-        if (_files != null && _files.length > 0) {
             this.setState({
                 formValid: false
             });
@@ -77,14 +69,15 @@ class CreateNews extends Component {
         if (nextProps.news.redirectTo) {
             this.context.router.history.push(nextProps.news.redirectTo);
         } else {
-            const { blobId, files } = nextProps.news;
+            const { blobId, url } = nextProps.news;
             this.setState((prevState, nextState) => {
                 return {
-                    blobId: blobId
+                    blobId: blobId,
+                    url: url
                 }
             });
 
-            this.validate(files);
+            this.validate();
         }
     }
 
@@ -92,6 +85,7 @@ class CreateNews extends Component {
         const { createNews,
             prepareDataForCreatingNews,
             hitToBrowseFile } = this.props.actions;
+
         return (
             <section class='container'>
                 <form role='form'>
@@ -102,8 +96,8 @@ class CreateNews extends Component {
                     <legend class='ep-form-title'><Text id='news.createNews'></Text></legend>
                     <div class='row'>
                         <div class='col-md-7'>
-                            <div className={classNames('form-group bmd-form-group')}>
-                                <label for="newsTitle" class="bmd-label-floating"><Text id='news.title'></Text></label>
+                            <div class='form-group'>
+                                <label for="newsTitle"><Text id='news.title'></Text></label>
                                 <input type="text"
                                     name='title'
                                     class="form-control"
@@ -113,7 +107,7 @@ class CreateNews extends Component {
                                 <span class="bmd-help"><Text id='news.titleRequired'></Text></span>
                             </div>
                             <div class='form-group'>
-                                <label for="newsIngress" class="bmd-label-floating"><Text id='news.ingress'></Text></label>
+                                <label for="newsIngress"><Text id='news.ingress'></Text></label>
                                 <input type="text"
                                     name='ingress'
                                     class="form-control"
@@ -121,8 +115,8 @@ class CreateNews extends Component {
                                     value={this.state.ingress}
                                     onChange={this.handleInputChange} />
                             </div>
-                            <div className={classNames('form-group bmd-form-group')}>
-                                <label for="newsContent" class="bmd-label-floating"><Text id='news.content'></Text></label>
+                            <div class='form-group'>
+                                <label for="newsContent"><Text id='news.content'></Text></label>
                                 <textarea class="form-control"
                                     rows="3"
                                     name='content'
@@ -158,12 +152,12 @@ class CreateNews extends Component {
                             </button>
                             <button type="button"
                                 class="btn btn-raised btn-secondary"
-                                onClick={() => hitToBrowseFile('5a55c93dcf193c134c344c81')}>
+                                onClick={() => hitToBrowseFile()}>
                                 <Text id='files.selectImage'></Text>
                             </button>
                         </div>
                         <div class='col-md-5'>
-                            <img src={temporaryImage}
+                            <img src={this.state.url ? this.state.url : temporaryImage}
                                 alt="newImage"
                                 style={{ width: '100%' }}
                                 class="rounded float-right mx-auto d-block" />
@@ -177,7 +171,7 @@ class CreateNews extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        news: state.newsCreate
+        news: state.news
     };
 }
 

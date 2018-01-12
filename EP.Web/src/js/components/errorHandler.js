@@ -6,6 +6,7 @@ const Service = {
         let message = resources["errors"][errorCode];
         return message;
     },
+
     getMessage(key) {
         return resources["messages"][key];
     }

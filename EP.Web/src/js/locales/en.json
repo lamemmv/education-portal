@@ -10,7 +10,8 @@
         "create": "Create",
         "published": "Published",
         "titleRequired": "Title is required",
-        "contentRequired": "Content is required"
+        "contentRequired": "Content is required",
+        "editNews": "Edit news"
     },
     "header": {
         "home": "Home",
