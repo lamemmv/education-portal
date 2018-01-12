@@ -1,9 +1,9 @@
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Data.IdentityServerStore
 {
@@ -44,9 +44,9 @@ namespace EP.Data.IdentityServerStore
         {
             get
             {
-                /*yield return new IdentityResources.OpenId();
-                yield return new IdentityResources.Profile();
-                yield return new IdentityResources.Email();*/
+                //yield return new IdentityResources.OpenId();
+                //yield return new IdentityResources.Profile();
+                //yield return new IdentityResources.Email();
                 //yield return new IdentityResource { Name = "ep.api.admin" };
                 yield break;
             }

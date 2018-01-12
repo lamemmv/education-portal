@@ -1,12 +1,9 @@
 ﻿using EP.Data.AspNetIdentity;
 using EP.Services.Accounts;
 using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
-using System.Threading.Tasks;
 using System;
 
 namespace EP.API.Extensions
@@ -46,44 +43,30 @@ namespace EP.API.Extensions
                 signinOpts.RequireConfirmedPhoneNumber = false;
             });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings.
-                // options.LoginPath = string.Empty;
-                // options.LogoutPath = string.Empty;
-                // options.AccessDeniedPath = string.Empty;
-                options.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToLogin = ctx =>
-                    {
-                        if (ctx.Request.Path.StartsWithSegments("/api") &&
-                            ctx.Response.StatusCode == (int)HttpStatusCode.OK)
-                        {
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        }
-                        else
-                        {
-                            ctx.Response.Redirect(ctx.RedirectUri);
-                        }
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    // Cookie settings.
+            //    // options.LoginPath = string.Empty;
+            //    // options.LogoutPath = string.Empty;
+            //    // options.AccessDeniedPath = string.Empty;
+            //    options.Events = new CookieAuthenticationEvents
+            //    {
+            //        OnRedirectToLogin = ctx =>
+            //        {
+            //            if (ctx.Request.Path.StartsWithSegments("/api") &&
+            //                ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+            //            {
+            //                ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            //            }
+            //            else
+            //            {
+            //                ctx.Response.Redirect(ctx.RedirectUri);
+            //            }
 
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToAccessDenied = ctx =>
-                    {
-                        if (ctx.Request.Path.StartsWithSegments("/api") &&
-                            ctx.Response.StatusCode == (int)HttpStatusCode.OK)
-                        {
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        }
-                        else
-                        {
-                            ctx.Response.Redirect(ctx.RedirectUri);
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+            //            return Task.CompletedTask;
+            //        }
+            //    };
+            //});
 
             return services;
         }

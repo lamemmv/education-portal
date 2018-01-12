@@ -1,10 +1,9 @@
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Data.IdentityServerStore
 {
@@ -32,10 +31,10 @@ namespace EP.Data.IdentityServerStore
                     },
                     AllowedScopes =
                     {
-                        /*IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
-                        IdentityServerConstants.StandardScopes.OfflineAccess,*/
+                        //IdentityServerConstants.StandardScopes.OpenId,
+                        //IdentityServerConstants.StandardScopes.Profile,
+                        //IdentityServerConstants.StandardScopes.Email,
+                        //IdentityServerConstants.StandardScopes.OfflineAccess,
                         "ep.api.admin"
                     }
                 };
