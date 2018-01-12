@@ -32,7 +32,7 @@ namespace EP.Services.Accounts
 
             var claims = principal.Claims.ToList();
             //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
-            claims.Add(new Claim("blobmanager", "10"));
+            claims.Add(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth", "10/10/1985"));
 
             context.IssuedClaims = claims; // await GetIssuedClaims(user, claims);
         }

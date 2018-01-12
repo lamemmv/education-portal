@@ -67,6 +67,20 @@ namespace EP.API.Extensions
                         }
 
                         return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api") &&
+                            ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+                        {
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
             });
@@ -84,7 +98,16 @@ namespace EP.API.Extensions
                 .AddAspNetIdentity<AppUser>()
                 .AddProfileService<ProfileService>();
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+            services
+                .AddAuthentication(opts =>
+                {
+                    //opts.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    opts.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    //opts.DefaultSignInScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    //opts.DefaultSignOutScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    opts.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    //opts.DefaultForbidScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                })
                 .AddIdentityServerAuthentication(opts =>
                 {
                     opts.ApiName = "ep.api.admin";
