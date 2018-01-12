@@ -19,7 +19,7 @@ namespace EP.Services.Blobs
 
         Task<ApiServerResult> CreateFolderAsync(Blob entity);
 
-        Task<IEnumerable<ApiServerResult>> CreateFileAsync(string parent, IFormFile[] files);
+        Task<IEnumerable<ApiServerResult>> CreateFileAsync(IFormFile[] files, string parent = null);
 
         Task<ApiServerResult> UpdateFolderAsync(Blob entity);
 

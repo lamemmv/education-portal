@@ -24,13 +24,16 @@ namespace EP.Services.Blobs
 
         private readonly IRepository<Blob> _blobs;
         private readonly IActivityLogService _activityLogService;
+        private readonly string _commonFolderName;
 
         public BlobService(
             MongoDbContext dbContext,
-            IActivityLogService activityLogService)
+            IActivityLogService activityLogService,
+            AppSettings appSettings)
         {
             _blobs = dbContext.Blobs;
             _activityLogService = activityLogService;
+            _commonFolderName = appSettings.CommonFolder;
         }
 
         public async Task<IPagedList<Blob>> GetChildListAsync(string id, int? page, int? size)
@@ -97,9 +100,11 @@ namespace EP.Services.Blobs
             return ApiServerResult.Created(entity.Id);
         }
 
-        public async Task<IEnumerable<ApiServerResult>> CreateFileAsync(string parent, IFormFile[] files)
+        public async Task<IEnumerable<ApiServerResult>> CreateFileAsync(IFormFile[] files, string parent = null)
         {
-            var parentEntity = await GetByIdAsync(parent);
+            var parentEntity = string.IsNullOrWhiteSpace(parent) ?
+                await GetSystemFolder(_commonFolderName) :
+                await GetByIdAsync(parent);
 
             if (parentEntity == null)
             {
@@ -245,6 +250,16 @@ namespace EP.Services.Blobs
             var result = await _blobs.DeleteAsync(id);
 
             return result ? new ApiServerResult(id: id) : new ApiServerResult(ApiStatusCode.NotFound, id);
+        }
+
+        private async Task<Blob> GetSystemFolder(string name)
+        {
+            var filter = Builders<Blob>.Filter.Eq(e => e.Name, _commonFolderName) &
+                Builders<Blob>.Filter.Exists(e => e.Parent, false) &
+                Builders<Blob>.Filter.Exists(e => e.Ancestors, false);
+            var commonBlob = await _blobs.GetSingleAsync(filter);
+
+            return commonBlob;
         }
 
         private async Task<bool> IsExistence(string parent, string name)

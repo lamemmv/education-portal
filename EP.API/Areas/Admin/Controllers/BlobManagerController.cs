@@ -3,6 +3,7 @@ using EP.API.Extensions;
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
+using EP.Services.Extensions;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
@@ -67,7 +68,7 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var results = await _blobService.CreateFileAsync(viewModel.Parent.Trim(), viewModel.Files);
+            var results = await _blobService.CreateFileAsync(viewModel.Files, viewModel.Parent.TrimNull());
 
             return Ok(results);
         }
