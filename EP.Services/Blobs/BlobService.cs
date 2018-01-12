@@ -179,7 +179,7 @@ namespace EP.Services.Blobs
                     ContentType = file.ContentType,
                     VirtualPath = fileVirtualPath,
                     PhysicalPath = filePhysicalPath,
-                    Parent = parent,
+                    Parent = parentEntity.Id,
                     Ancestors = ancestors,
                     CreatedOn = DateTime.UtcNow
                 };
