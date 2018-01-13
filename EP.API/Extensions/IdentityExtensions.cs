@@ -76,7 +76,28 @@ namespace EP.API.Extensions
             string hostUrl,
             bool isDevelopment)
         {
-            services.AddIdentityServer()
+            services
+                .AddIdentityServer(opts =>
+                {
+                    var endpoints = opts.Endpoints;
+                    endpoints.EnableAuthorizeEndpoint = false;
+                    endpoints.EnableUserInfoEndpoint = false;
+                    endpoints.EnableEndSessionEndpoint = false;
+                    endpoints.EnableCheckSessionEndpoint = false;
+                    endpoints.EnableIntrospectionEndpoint = false;
+
+                    var discovery = opts.Discovery;
+                    discovery.ShowEndpoints = false;
+                    discovery.ShowKeySet = false;
+                    discovery.ShowIdentityScopes = false;
+                    discovery.ShowApiScopes = false;
+                    discovery.ShowClaims = false;
+                    discovery.ShowResponseTypes = false;
+                    discovery.ShowResponseModes = false;
+                    discovery.ShowGrantTypes = false;
+                    discovery.ShowExtensionGrantTypes = false;
+                    discovery.ShowTokenEndpointAuthenticationMethods = false;
+                })
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<AppUser>()
                 .AddProfileService<ProfileService>();
@@ -94,7 +115,7 @@ namespace EP.API.Extensions
                 .AddIdentityServerAuthentication(opts =>
                 {
                     opts.ApiName = "ep.api.admin";
-                    //opts.ApiSecret = null;
+                    opts.ApiSecret = "ep.api.admin@P@SSW0RD";
                     opts.Authority = hostUrl;
                     opts.RequireHttpsMetadata = !isDevelopment;
                 });
