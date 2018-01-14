@@ -28,13 +28,13 @@ namespace EP.Services.Accounts
         {
             var subjectId = context.Subject.GetSubjectId();
             var user = await _userManger.FindByIdAsync(subjectId);
+
             var principal = await _claimsFactory.CreateAsync(user);
+            var claims = principal.Claims
+                //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type))
+                .ToList();
 
-            var claims = principal.Claims.ToList();
-            //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
-            claims.Add(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth", "10/10/1985"));
-
-            context.IssuedClaims = claims; // await GetIssuedClaims(user, claims);
+            context.IssuedClaims = claims; //await GetIssuedClaims(user);
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
@@ -52,9 +52,12 @@ namespace EP.Services.Accounts
             context.IsActive = isActive;
         }
 
-        private async Task<List<Claim>> GetIssuedClaims(AppUser user, List<Claim> claims)
+        private async Task<List<Claim>> GetIssuedClaims(AppUser user)
         {
-            claims.Add(new Claim(JwtClaimTypes.Name, await _userManger.GetUserNameAsync(user)));
+            var claims = new List<Claim>
+            {
+                new Claim(JwtClaimTypes.Name, await _userManger.GetUserNameAsync(user))
+            };
 
             if (_userManger.SupportsUserEmail)
             {
@@ -76,7 +79,7 @@ namespace EP.Services.Accounts
             if (_userManger.SupportsUserPhoneNumber)
             {
                 var phoneNumber = await _userManger.GetPhoneNumberAsync(user);
-                
+
                 if (!string.IsNullOrEmpty(phoneNumber))
                 {
                     claims.AddRange(new[]

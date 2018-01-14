@@ -1,5 +1,6 @@
 ﻿using EP.API.Infrastructure;
-using IdentityServer4.AccessTokenValidation;
+using EP.Services.Constants;
+using EP.Services.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -21,8 +22,10 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var isAuthorized =
-                await _authorizationService.AuthorizeAsync(User, "Over21Only");
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                null,
+                new FunctionPermissionRequirement(SystemKeyword.CreateBlob, Permission.Host));
 
             if (!isAuthorized.Succeeded)
             {

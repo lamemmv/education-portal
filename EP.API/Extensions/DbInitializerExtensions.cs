@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Extensions
 {
@@ -232,12 +232,16 @@ namespace EP.API.Extensions
                 }
             };
 
-            var dbCount = await dbContext.ActivityLogTypes.CountAsync();
+            long dbCount;
 
-            if (dbCount != activityLogTypes.LongLength)
+            foreach (var logType in activityLogTypes)
             {
-                await dbContext.ActivityLogTypes.DeleteAsync();
-                await dbContext.ActivityLogTypes.CreateAsync(activityLogTypes);
+                dbCount = await dbContext.ActivityLogTypes.CountAsync();
+
+                if (dbCount == 0)
+                {
+                    await dbContext.ActivityLogTypes.CreateAsync(logType);
+                }
             }
         }
     }
