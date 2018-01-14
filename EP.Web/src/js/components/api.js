@@ -51,7 +51,7 @@ const API = {
     },
 
     uploadFiles(request) {
-        if (request.parent == null){
+        if (request.parent == null) {
             request.parent = '';
         }
 
@@ -146,6 +146,18 @@ const API = {
         });
     },
 
+    deleteNews(id) {
+        let url = `${baseUri}admin/newsManager/${id}`;
+        return axios({
+            method: 'delete',
+            url: url,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+    },
+
     getFolders(page, size) {
         let params = {
             page: page ? page : 1,
@@ -211,11 +223,11 @@ const API = {
     deleteFolders(nodes) {
         let body = new FormData();
         nodes.map((node) => {
-            if (node.selected){
+            if (node.selected) {
                 body.append("ids", node.id);
-            }            
+            }
         });
-        
+
         let url = `${baseUri}admin/BlobManager`;
         return axios({
             method: 'delete',

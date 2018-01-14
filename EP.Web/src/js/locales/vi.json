@@ -11,7 +11,8 @@
         "published": "Công bố",
         "titleRequired": "Bắc buộc phải nhập tựa đề",
         "contentRequired": "Bắc buộc phải nhập nội dung",
-        "editNews": "Sửa tin tức"
+        "editNews": "Sửa tin tức",
+        "askToDelete": "Bạn có chắc muốn xóa tin này không?"
     },
     "header": {
         "home": "Trang chủ",

@@ -4,6 +4,7 @@ import { Localizer, Text } from 'preact-i18n';
 import * as styles from './list.css';
 import EPPAgination from '../pagination/container';
 import Spinner from '../spinner/container';
+import EPConfirmation from '../dialogs/container';
 
 class NewsList extends Component {
 
@@ -21,10 +22,22 @@ class NewsList extends Component {
     }
 
     render() {
-        const { items, pages, page, size, loading } = this.props.news;
-        const { getNews, askToOpenConfirmation } = this.props.actions;
+        const { items,
+            pages,
+            page,
+            size,
+            loading,
+            showDeleteConfirmation,
+            deleteRequest } = this.props.news;
+        const { getNews,
+            askToOpenConfirmation,
+            deleteNews } = this.props.actions;
         return (
             <section class='container'>
+                <EPConfirmation showDialog={showDeleteConfirmation}
+                    action={deleteNews}
+                    callbackAction={getNews}
+                    request={deleteRequest} />
                 <Spinner loading={loading} />
                 <form>
                     <Localizer>
@@ -68,7 +81,10 @@ class NewsList extends Component {
                                         <td data-title="Delete">
                                             <button type="button"
                                                 class="btn btn-raised btn-danger"
-                                                onClick={() => askToOpenConfirmation()}>
+                                                onClick={() => askToOpenConfirmation({
+                                                    message: <Text id='news.askToDelete'></Text>,
+                                                    id: item.id
+                                                })}>
                                                 <Text id='files.delete'></Text>
                                             </button>
                                         </td>

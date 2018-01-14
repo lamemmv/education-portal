@@ -9,7 +9,7 @@ import NewsReducer from '../components/news/newsReducer';
 import notification from '../components/notify/notification.reducer';
 import breadcrumbs from '../components/breadcrumbs/reducers';
 import FolderReducers from '../components/folders/reducers';
-import ConfirmationReducers from '../components/dialogs/reducers';
+//import ConfirmationReducers from '../components/dialogs/reducers';
 
 const rootReducer = combineReducers({
     posts: PostReducer,
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
     notification,
     breadcrumbs,
     folders: FolderReducers,
-    dialog: ConfirmationReducers
+    ///dialog: ConfirmationReducers
 });
 
 export default rootReducer;
