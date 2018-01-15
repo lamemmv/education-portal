@@ -5,10 +5,11 @@ using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
 using EP.Services.Extensions;
 using ExpressMapper.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -16,18 +17,20 @@ namespace EP.API.Areas.Admin.Controllers
     {
         private readonly IBlobService _blobService;
 
-        public BlobManagerController(IBlobService blobService)
+        public BlobManagerController(
+            IBlobService blobService,
+            IAuthorizationService authorizationService) : base(authorizationService)
         {
             _blobService = blobService;
         }
 
         [HttpGet]
-        public async Task<dynamic> Get(BlobSearchViewModel viewModel)
+        public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
         {
             var blob = await _blobService.GetBlobForChildListAsync(viewModel.Id);
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
-            return new { blob, childList };
+            return Ok(new { blob, childList });
         }
 
         [HttpGet("File/{id}")]
@@ -43,7 +46,7 @@ namespace EP.API.Areas.Admin.Controllers
             }
 
             Stream stream = new FileStream(entity.PhysicalPath, FileMode.Open, FileAccess.Read);
-            
+
             return File(stream, entity.ContentType, entity.Name);
         }
 

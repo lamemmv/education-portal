@@ -38,7 +38,6 @@ namespace EP.Services.Models
         public static ApiServerResult NotFound()
             => new ApiServerResult(ApiStatusCode.NotFound);
 
-
         public static ApiServerResult ServerError(ApiStatusCode statusCode, string message)
             => new ApiServerResult(statusCode, message: message);
     }

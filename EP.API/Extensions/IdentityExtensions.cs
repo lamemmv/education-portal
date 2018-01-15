@@ -88,7 +88,7 @@ namespace EP.API.Extensions
 
                     var discovery = opts.Discovery;
                     discovery.ShowEndpoints = false;
-                    discovery.ShowKeySet = false;
+                    //discovery.ShowKeySet = false;
                     discovery.ShowIdentityScopes = false;
                     discovery.ShowApiScopes = false;
                     discovery.ShowClaims = false;

@@ -1,34 +1,27 @@
+using EP.Services.Enums;
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using System.Threading.Tasks;
 
 namespace EP.API.Infrastructure
 {
-    public sealed class FunctionPermissionHandler : AuthorizationHandler<FunctionPermissionRequirement, object>
+    public sealed class FunctionPermissionHandler : AuthorizationHandler<OperationAuthorizationRequirement, Permission>
     {
         protected override Task HandleRequirementAsync(
-            AuthorizationHandlerContext context, FunctionPermissionRequirement requirement, object resource)
+            AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Permission resource)
         {
-            if (!context.User.HasClaim(c => c.Type == ClaimTypes.DateOfBirth))
+            var permissionClaim = context.User.FindFirst(c => c.Type == requirement.Name);
+
+            if (permissionClaim != null &&
+                int.TryParse(permissionClaim.Value, out int permissionValue))
             {
-                return Task.CompletedTask;
+                var permission = (Permission)permissionValue;
+
+                if (permission.HasFlag(resource))
+                {
+                    context.Succeed(requirement);
+                }
             }
-
-            //var dateOfBirth = Convert.ToDateTime(
-            //    context.User.FindFirst(c => c.Type == ClaimTypes.DateOfBirth).Value);
-
-            //int calculatedAge = DateTime.Today.Year - dateOfBirth.Year;
-            
-            //if (dateOfBirth > DateTime.Today.AddYears(-calculatedAge))
-            //{
-            //    calculatedAge--;
-            //}
-
-            //if (calculatedAge >= requirement.Age)
-            //{
-            //    context.Succeed(requirement);
-            //}
 
             return Task.CompletedTask;
         }

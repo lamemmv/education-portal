@@ -1,15 +1,15 @@
 ﻿using EP.Data.DbContext;
-using EP.Data.Entities.Logs;
 using EP.Data.Entities;
+using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Services.Caching;
 using EP.Services.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace EP.Services.Logs
 {
@@ -132,26 +132,24 @@ namespace EP.Services.Logs
         {
             var enabledDictionary = await _memoryCacheService.GetOrAddSlidingExpiration(
                 EnabledActivityLogTypes,
-                GetEnabledEmbeddedActivityLogTypes);
+                async () =>
+                {
+                    var filter = Builders<ActivityLogType>.Filter.Eq(e => e.Enabled, true);
+                    var projection = Builders<ActivityLogType>.Projection
+                        .Include(e => e.Id)
+                        .Include(e => e.SystemKeyword)
+                        .Include(e => e.Name);
+
+                    var logTypes = await _dbContext.ActivityLogTypes.GetAllAsync(filter, projection: projection);
+
+                    return logTypes.ToDictionary(
+                        kvp => kvp.SystemKeyword,
+                        kvp => new EmbeddedActivityLogType(kvp.Id, kvp.Name));
+                });
 
             return enabledDictionary == null || !enabledDictionary.TryGetValue(systemKeyword, out EmbeddedActivityLogType embeddedActivityLogType) ?
                 null :
                 embeddedActivityLogType;
-        }
-
-        private async Task<IDictionary<string, EmbeddedActivityLogType>> GetEnabledEmbeddedActivityLogTypes()
-        {
-            var filter = Builders<ActivityLogType>.Filter.Eq(e => e.Enabled, true);
-            var projection = Builders<ActivityLogType>.Projection
-                .Include(e => e.Id)
-                .Include(e => e.SystemKeyword)
-                .Include(e => e.Name);
-
-            var logTypes = await _dbContext.ActivityLogTypes.GetAllAsync(filter, projection: projection);
-
-            return logTypes.ToDictionary(
-                kvp => kvp.SystemKeyword,
-                kvp => new EmbeddedActivityLogType(kvp.Id, kvp.Name));
         }
 
         private static string ObjectToJson(object value)

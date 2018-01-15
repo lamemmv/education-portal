@@ -1,5 +1,5 @@
-﻿using EP.API.Areas.Admin.ViewModels.News;
-using EP.API.Areas.Admin.ViewModels;
+﻿using EP.API.Areas.Admin.ViewModels;
+using EP.API.Areas.Admin.ViewModels.News;
 using EP.API.Extensions;
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
@@ -9,9 +9,10 @@ using EP.Data.Paginations;
 using EP.Services.Blobs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -20,7 +21,10 @@ namespace EP.API.Areas.Admin.Controllers
         private readonly INewsService _newsService;
         private readonly IBlobService _blobService;
 
-        public NewsManagerController(INewsService newsService, IBlobService blobService)
+        public NewsManagerController(
+            INewsService newsService,
+            IBlobService blobService,
+            IAuthorizationService authorizationService) : base(authorizationService)
         {
             _newsService = newsService;
             _blobService = blobService;

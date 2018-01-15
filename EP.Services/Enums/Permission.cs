@@ -8,8 +8,7 @@ namespace EP.Services.Enums
         None = 0,
         Read = 1,
         Host = 2,
-        Publish = 4,
-        Upload = 8,
-        All = Read | Host | Publish | Upload
+        Upload = 4,
+        All = Read | Host | Upload
     }
 }

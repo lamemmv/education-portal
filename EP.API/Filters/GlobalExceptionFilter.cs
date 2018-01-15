@@ -28,7 +28,7 @@ namespace EP.API.Filters
             if (exceptionType == typeof(UnauthorizedAccessException))
             {
                 errorMessage = "Unauthorized Access.";
-                statusCode = ApiStatusCode.Unauthorized;
+                statusCode = ApiStatusCode.Forbidden;
             }
             else if (exceptionType == typeof(TimeoutException) &&
                 exception.Source.StartsWith("MongoDB", StringComparison.OrdinalIgnoreCase))
