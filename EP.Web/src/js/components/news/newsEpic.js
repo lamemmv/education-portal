@@ -82,6 +82,27 @@ const updateNewsSuccessEpic = action$ =>
         return Observable.of(addNotification(Service.getMessage('succeed'), 'success', 'Update News'))
     });
 
+const deleteNewsEpic = action$ =>
+    action$.ofType(DELETE_NEWS)
+    .mergeMap(action =>
+        Observable.fromPromise(API.deleteNews(action.payload.request.id))
+        .map(response => updateNewsSuccess(response.data))
+        .catch(error => Observable.of(updateNewsFailure(error)))
+    );
+
+const deleteNewsSuccessEpic = action$ =>
+    action$.ofType(DELETE_NEWS_SUCCESS)
+    .flatMap(action => {
+        return action.payload.request.action ?
+            Observable.concat(
+                Observable.of(action.payload.request.action({
+                    request: action.payload.request,
+                    data: action.payload.data
+                })),
+                Observable.of(addNotification('Uploaded', 'success', 'Upload files'))) :
+            Observable.of(addNotification('Uploaded', 'success', 'Upload files'))
+    });
+
 const epics = [
     fetchNewsEpic,
     fetchNewsByIdEpic,

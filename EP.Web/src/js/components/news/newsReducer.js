@@ -26,6 +26,8 @@ import {
     REMOVE_FILE
 } from '../files/types';
 
+import { OPEN_CONFIRMATION } from '../dialogs/types';
+
 const initialState = {
     ingress: '',
     content: '',
@@ -38,7 +40,10 @@ const initialState = {
     items: [],
     page: 1,
     loading: false,
-    error: null
+    error: null,
+    deleteRequest: {
+
+    }
 };
 
 export default handleActions({
@@ -180,6 +185,13 @@ export default handleActions({
             error: null,
             loading: false,
             files: state.files.filter(el => el != action.payload)
+        });
+    },
+    [OPEN_CONFIRMATION]: (state, action) => {
+        return Object.assign({}, state, {
+            deleteRequest: action.payload,
+            showDeleteConfirmation: true,
+            loading: false,
         });
     },
 }, initialState);

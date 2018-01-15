@@ -1,16 +1,11 @@
 import { h, Component } from "preact";
-import { connect } from 'preact-redux';
 import { Localizer, Text } from 'preact-i18n';
-import {
-    bindActionCreators
-} from 'redux';
-import question from '../../../../assets/images/orange-question-mark-icon.png';
-import * as modalActions from './actions';
+import question from '../../../assets/images/orange-question-mark-icon.png';
 
 class EPConfirmation extends Component {
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.modal.showDialog) {
+        if (nextProps.showDialog) {
             $(this.confirmationDialog).modal({ backdrop: 'static' });
         } else {
             if (this.confirmationDialog.className.indexOf('show') >= 0) {
@@ -20,16 +15,16 @@ class EPConfirmation extends Component {
     }
 
     render() {
-        const { action, callbackAction, request } = this.props;
+        const { request, action, callbackAction } = this.props;
         return (
             <div class="modal fade"
-                id="deleteFolderModal"
+                id="confirmationModal"
                 tabindex="-1"
                 role="dialog"
                 aria-labelledby="deleteFolderDialog"
                 aria-hidden="true"
                 ref={dialog => {
-                    this.deleteFolderDialog = dialog;
+                    this.confirmationDialog = dialog;
                 }}>
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -37,7 +32,7 @@ class EPConfirmation extends Component {
                         </div>
                         <div class="modal-body">
                             <img src={question} height={50} />
-                            <span><Text id='messages.askToDeleteFolder'></Text></span>
+                            <span>{request.message}</span>
                         </div>
                         <div class="modal-footer">
                             <button type="button"
@@ -61,16 +56,4 @@ class EPConfirmation extends Component {
     };
 }
 
-const mapStateToProps = (state) => {
-    return {
-        modal: state.dialog
-    };
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        actions: bindActionCreators(modalActions, dispatch)
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(EPModal);
+export default EPConfirmation;

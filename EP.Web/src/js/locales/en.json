@@ -11,7 +11,8 @@
         "published": "Published",
         "titleRequired": "Title is required",
         "contentRequired": "Content is required",
-        "editNews": "Edit news"
+        "editNews": "Edit news",
+        "askToDelete": "Are you sure you want to delete this news?"
     },
     "header": {
         "home": "Home",
