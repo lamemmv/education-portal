@@ -4,11 +4,13 @@ using EP.Data.Entities.Blobs;
 using EP.Data.Entities.Emails;
 using EP.Data.Entities.Logs;
 using EP.Services.Constants;
+using EP.Services.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -70,15 +72,26 @@ namespace EP.API.Extensions
         private static async Task SeedIdentityAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
-            var roles = new string[] { "Administrators", "Supervisors", "Moderators", "Registereds", "Guests" };
-
-            foreach (var roleName in roles)
+            var roles = new AppRole[]
             {
-                var identityRole = await roleManager.FindByNameAsync(roleName.ToUpperInvariant());
+                new AppRole("Administrators")
+                {
+                    Claims = new List<AppClaim>
+                    {
+                        new AppClaim(FunctionName.BlobManagement, ((int)Permission.All).ToString()),
+                        new AppClaim(FunctionName.NewsManagement, ((int)Permission.All).ToString())
+                    },
+                    CreatedOn = DateTime.UtcNow
+                }
+            };
+
+            foreach (var role in roles)
+            {
+                var identityRole = await roleManager.FindByNameAsync(role.Name.ToUpperInvariant());
 
                 if (identityRole == null)
                 {
-                    await roleManager.CreateAsync(new AppRole(roleName) { CreatedOn = DateTime.UtcNow });
+                    await roleManager.CreateAsync(role);
                 }
             }
 
@@ -96,16 +109,11 @@ namespace EP.API.Extensions
                     Email = email,
                     EmailConfirmed = true,
                     //FullName = "System Administrator"
-                    Roles = roles.ToList(),
+                    Roles = roles.Select(r => r.Name).ToList(),
                     CreatedOn = DateTime.UtcNow
                 };
 
                 var result = await userManager.CreateAsync(user, password);
-
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRolesAsync(user, roles);
-                }
             }
         }
 

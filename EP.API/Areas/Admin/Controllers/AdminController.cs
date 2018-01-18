@@ -18,19 +18,21 @@ namespace EP.API.Areas.Admin.Controllers
             _authorizationService = authorizationService;
         }
 
-        protected async Task AuthorizeReadAsync(string functionName)
+        protected abstract string FunctionName { get; }
+
+        protected async Task AuthorizeReadAsync(string functionName = null)
         {
-            await AuthorizeAsync(Permission.Read, functionName);
+            await AuthorizeAsync(Permission.Read, functionName ?? FunctionName);
         }
 
-        protected async Task AuthorizeHostAsync(string functionName)
+        protected async Task AuthorizeHostAsync(string functionName = null)
         {
-            await AuthorizeAsync(Permission.Host, functionName);
+            await AuthorizeAsync(Permission.Host, functionName ?? FunctionName);
         }
 
-        protected async Task AuthorizeUploadAsync(string functionName)
+        protected async Task AuthorizeUploadAsync(string functionName = null)
         {
-            await AuthorizeAsync(Permission.Upload, functionName);
+            await AuthorizeAsync(Permission.Upload, functionName ?? FunctionName);
         }
 
         private async Task AuthorizeAsync(Permission permission, string functionName)

@@ -35,9 +35,9 @@ namespace EP.Data.AspNetIdentity
         public Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             var roleClaims = role.Claims;
-            roleClaims = roleClaims ?? new List<AppRoleClaim>();
+            roleClaims = roleClaims ?? new List<AppClaim>();
 
-            roleClaims.Add(new AppRoleClaim(claim.Type, claim.Value));
+            roleClaims.Add(new AppClaim(claim.Type, claim.Value));
 
             return Task.CompletedTask;
         }

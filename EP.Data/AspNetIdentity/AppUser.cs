@@ -62,7 +62,7 @@ namespace EP.Data.AspNetIdentity
         public virtual List<AppUserLogin> Logins { get; set; }
 
         [BsonIgnoreIfNull]
-        public virtual List<AppUserClaim> Claims { get; set; }
+        public virtual List<AppClaim> Claims { get; set; }
 
         [BsonIgnoreIfNull]
         public virtual IList<AppUserToken> Tokens { get; set; }

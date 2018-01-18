@@ -24,9 +24,13 @@ namespace EP.API.Areas.Admin.Controllers
             _blobService = blobService;
         }
 
+        protected override string FunctionName => Services.Constants.FunctionName.BlobManagement;
+
         [HttpGet]
         public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
         {
+            await AuthorizeReadAsync();
+
             var blob = await _blobService.GetBlobForChildListAsync(viewModel.Id);
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
 
@@ -36,6 +40,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet("File/{id}")]
         public async Task<IActionResult> Download(string id)
         {
+            await AuthorizeReadAsync();
+
             var entity = await _blobService.GetByIdAsync(id);
 
             if (!entity.IsFile())
@@ -53,6 +59,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("Folder"), ValidateViewModel]
         public async Task<IActionResult> PostFolder([FromBody]FolderViewModel viewModel)
         {
+            await AuthorizeHostAsync();
+
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.CreatedOn = DateTime.UtcNow;
 
@@ -64,6 +72,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
         public async Task<IActionResult> PostFile([FromForm]FileViewModel viewModel)
         {
+            await AuthorizeUploadAsync();
+
             if (viewModel.Files == null || viewModel.Files.Length == 0)
             {
                 ModelState.AddModelError(nameof(viewModel.Files), "Files should not be empty.");
@@ -79,6 +89,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("Folder/{id}"), ValidateViewModel]
         public async Task<IActionResult> PutFolder(string id, [FromBody]FolderViewModel viewModel)
         {
+            await AuthorizeHostAsync();
+
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.Id = id;
 
@@ -90,6 +102,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(string[] ids)
         {
+            await AuthorizeHostAsync();
+
             if (ids == null || ids.Length == 0)
             {
                 ModelState.AddModelError(nameof(ids), "Ids should not be empty.");

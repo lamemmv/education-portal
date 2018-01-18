@@ -137,9 +137,9 @@ namespace EP.Data.AspNetIdentity
         public Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             var userClaims = user.Claims;
-            userClaims = userClaims ?? new List<AppUserClaim>();
+            userClaims = userClaims ?? new List<AppClaim>();
 
-            userClaims.AddRange(claims.Select(clm => new AppUserClaim(clm.Type, clm.Value)));
+            userClaims.AddRange(claims.Select(clm => new AppClaim(clm.Type, clm.Value)));
 
             return Task.CompletedTask;
         }
@@ -154,7 +154,7 @@ namespace EP.Data.AspNetIdentity
                     c.Type.Equals(claim.Type, StringComparison.OrdinalIgnoreCase) &&
                     c.Value.Equals(claim.Value, StringComparison.OrdinalIgnoreCase));
 
-                user.Claims.Add(new AppUserClaim(newClaim.Type, newClaim.Value));
+                user.Claims.Add(new AppClaim(newClaim.Type, newClaim.Value));
             }
 
             return Task.CompletedTask;
@@ -180,9 +180,9 @@ namespace EP.Data.AspNetIdentity
         public async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
             var filter = Builders<TUser>.Filter.ElemMatch(e => e.Claims,
-                Builders<AppUserClaim>.Filter.And(
-                    Builders<AppUserClaim>.Filter.Eq(clm => clm.Type, claim.Type),
-                    Builders<AppUserClaim>.Filter.Eq(clm => clm.Value, claim.Value)
+                Builders<AppClaim>.Filter.And(
+                    Builders<AppClaim>.Filter.Eq(clm => clm.Type, claim.Type),
+                    Builders<AppClaim>.Filter.Eq(clm => clm.Value, claim.Value)
                 )
             );
 

@@ -1,14 +1,14 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 
 namespace EP.Data.AspNetIdentity
 {
-    public class AppRoleClaim
+    public class AppClaim
     {
-        public AppRoleClaim()
+        public AppClaim()
         {
         }
 
-        public AppRoleClaim(string claimType, string claimValue)
+        public AppClaim(string claimType, string claimValue)
         {
             Type = claimType;
             Value = claimValue;

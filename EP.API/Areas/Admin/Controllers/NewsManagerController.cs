@@ -30,21 +30,29 @@ namespace EP.API.Areas.Admin.Controllers
             _blobService = blobService;
         }
 
+        protected override string FunctionName => Services.Constants.FunctionName.NewsManagement;
+
         [HttpGet]
         public async Task<IPagedList<NewsItem>> Get([FromQuery]PaginationSearchViewModel viewModel)
         {
+            await AuthorizeReadAsync();
+
             return await _newsService.GetPagedListAsync(viewModel.Page, viewModel.Size);
         }
 
         [HttpGet("{id}")]
         public async Task<NewsItem> Get(string id)
         {
+            await AuthorizeReadAsync();
+
             return await _newsService.GetByIdAsync(id);
         }
 
         [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
+            await AuthorizeHostAsync();
+
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
             entity.CreatedOn = DateTime.UtcNow;
@@ -57,6 +65,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
+            await AuthorizeHostAsync();
+
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Id = id;
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
@@ -69,6 +79,8 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
+            await AuthorizeHostAsync();
+
             var response = await _newsService.DeleteAsync(id);
 
             return response.ToActionResult();

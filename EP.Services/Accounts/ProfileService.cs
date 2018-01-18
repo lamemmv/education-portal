@@ -13,15 +13,15 @@ namespace EP.Services.Accounts
 {
     public sealed class ProfileService : IProfileService
     {
+        private readonly RoleManager<AppRole> _roleManger;
         private readonly UserManager<AppUser> _userManger;
-        private readonly IUserClaimsPrincipalFactory<AppUser> _claimsFactory;
 
         public ProfileService(
-            UserManager<AppUser> userManger,
-            IUserClaimsPrincipalFactory<AppUser> claimsFactory)
+            RoleManager<AppRole> roleManger,
+            UserManager<AppUser> userManger)
         {
+            _roleManger = roleManger;
             _userManger = userManger;
-            _claimsFactory = claimsFactory;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -29,12 +29,7 @@ namespace EP.Services.Accounts
             var subjectId = context.Subject.GetSubjectId();
             var user = await _userManger.FindByIdAsync(subjectId);
 
-            var principal = await _claimsFactory.CreateAsync(user);
-            var claims = principal.Claims
-                //.Where(claim => context.RequestedClaimTypes.Contains(claim.Type))
-                .ToList();
-
-            context.IssuedClaims = claims; //await GetIssuedClaims(user);
+            context.IssuedClaims = await GetIssuedClaims(user);
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
@@ -103,6 +98,16 @@ namespace EP.Services.Accounts
                 var roles = await _userManger.GetRolesAsync(user);
 
                 claims.AddRange(roles.Select(role => new Claim(JwtClaimTypes.Role, role)));
+
+                foreach (var roleName in roles)
+                {
+                    var role = await _roleManger.FindByNameAsync(roleName.ToUpperInvariant());
+
+                    if (role != null)
+                    {
+                        claims.AddRange(await _roleManger.GetClaimsAsync(role));
+                    }
+                }
             }
 
             return claims;

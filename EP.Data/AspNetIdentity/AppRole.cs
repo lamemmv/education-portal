@@ -28,7 +28,7 @@ namespace EP.Data.AspNetIdentity
         public virtual string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         [BsonIgnoreIfNull]
-        public virtual List<AppRoleClaim> Claims { get; set; }
+        public virtual List<AppClaim> Claims { get; set; }
 
         public override string ToString()
         {
