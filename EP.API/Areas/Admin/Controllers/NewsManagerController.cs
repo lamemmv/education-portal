@@ -1,6 +1,5 @@
-﻿using EP.API.Areas.Admin.ViewModels;
-using EP.API.Areas.Admin.ViewModels.News;
-using EP.API.Extensions;
+﻿using EP.API.Areas.Admin.ViewModels.News;
+using EP.API.Areas.Admin.ViewModels;
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Data.Entities.News;
@@ -11,8 +10,8 @@ using EP.Services.News;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -57,9 +56,9 @@ namespace EP.API.Areas.Admin.Controllers
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
             entity.CreatedOn = DateTime.UtcNow;
 
-            var response = await _newsService.CreateAsync(entity);
+            await _newsService.CreateAsync(entity);
 
-            return response.ToActionResult();
+            return Created(string.Empty, entity.Id);
         }
 
         [HttpPut("{id}"), ValidateViewModel]
@@ -71,9 +70,14 @@ namespace EP.API.Areas.Admin.Controllers
             entity.Id = id;
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
 
-            var response = await _newsService.UpdateAsync(entity);
+            var result = await _newsService.UpdateAsync(entity);
 
-            return response.ToActionResult();
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -81,9 +85,14 @@ namespace EP.API.Areas.Admin.Controllers
         {
             await AuthorizeHostAsync();
 
-            var response = await _newsService.DeleteAsync(id);
+            var result = await _newsService.DeleteAsync(id);
 
-            return response.ToActionResult();
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
         private async Task<EmbeddedBlob> GetEmbeddedBlobAsync(string id)

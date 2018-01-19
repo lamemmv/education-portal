@@ -1,5 +1,4 @@
 ﻿using EP.API.Areas.Admin.ViewModels.Blobs;
-using EP.API.Extensions;
 using EP.API.Filters;
 using EP.Data.Entities.Blobs;
 using EP.Services.Blobs;
@@ -7,9 +6,9 @@ using EP.Services.Extensions;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.IO;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -64,9 +63,9 @@ namespace EP.API.Areas.Admin.Controllers
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.CreatedOn = DateTime.UtcNow;
 
-            var response = await _blobService.CreateFolderAsync(entity);
+            await _blobService.CreateFolderAsync(entity);
 
-            return response.ToActionResult();
+            return Created(string.Empty, entity.Id);
         }
 
         [HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
@@ -81,9 +80,9 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var results = await _blobService.CreateFileAsync(viewModel.Files, viewModel.Parent.TrimNull());
+            var ids = await _blobService.CreateFileAsync(viewModel.Files, viewModel.Parent.TrimNull());
 
-            return Ok(results);
+            return Created(string.Empty, ids);
         }
 
         [HttpPut("Folder/{id}"), ValidateViewModel]
@@ -94,9 +93,14 @@ namespace EP.API.Areas.Admin.Controllers
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.Id = id;
 
-            var response = await _blobService.UpdateFolderAsync(entity);
+            var result = await _blobService.UpdateFolderAsync(entity);
 
-            return response.ToActionResult();
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
         [HttpDelete]
@@ -111,9 +115,9 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var results = await _blobService.DeleteAsync(ids);
+            await _blobService.DeleteAsync(ids);
 
-            return Ok(results);
+            return NoContent();
         }
     }
 }

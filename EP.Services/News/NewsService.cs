@@ -1,11 +1,9 @@
 ﻿using EP.Data.DbContext;
-using EP.Data.Entities.Logs;
 using EP.Data.Entities.News;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Constants;
 using EP.Services.Logs;
-using EP.Services.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -41,16 +39,16 @@ namespace EP.Services.News
             return await _news.GetByIdAsync(id);
         }
 
-        public async Task<ApiServerResult> CreateAsync(NewsItem entity)
+        public async Task<NewsItem> CreateAsync(NewsItem entity)
         {
             await _news.CreateAsync(entity);
 
             //await LogCreateAsync(entity);
 
-            return ApiServerResult.Created(entity.Id);
+            return entity;
         }
 
-        public async Task<ApiServerResult> UpdateAsync(NewsItem entity)
+        public async Task<bool> UpdateAsync(NewsItem entity)
         {
             var update = Builders<NewsItem>.Update
                 .Set(e => e.Title, entity.Title)
@@ -63,31 +61,21 @@ namespace EP.Services.News
 
             var result = await _news.UpdatePartiallyAsync(entity.Id, update);
 
-            if (!result)
-            {
-                return ApiServerResult.NotFound();
-            }
-
             //await LogUpdateAsync(entity);
 
-            return ApiServerResult.NoContent();
+            return result;
         }
 
-        public async Task<ApiServerResult> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
             var projection = Builders<NewsItem>.Projection
                 .Exclude(e => e.Blob)
                 .Exclude(e => e.Content);
             var oldEntity = await _news.DeleteAsync(id, projection);
 
-            if (oldEntity == null)
-            {
-                return ApiServerResult.NotFound();
-            }
-
             //await LogDeleteAsync(oldEntity);
 
-            return ApiServerResult.NoContent();
+            return oldEntity != null;
         }
 
         #region Write Logs

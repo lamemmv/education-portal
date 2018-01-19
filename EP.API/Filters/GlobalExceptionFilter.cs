@@ -19,38 +19,17 @@ namespace EP.API.Filters
 
         public void OnException(ExceptionContext context)
         {
-            string errorMessage;
-            ApiStatusCode statusCode;
+            var httpContext = context.HttpContext;
+            var exception = context.Exception;
 
-            Exception exception = context.Exception;
-            Type exceptionType = exception.GetType();
-
-            if (exceptionType == typeof(UnauthorizedAccessException))
-            {
-                errorMessage = "Unauthorized Access.";
-                statusCode = ApiStatusCode.Forbidden;
-            }
-            else if (exceptionType == typeof(TimeoutException) &&
-                exception.Source.StartsWith("MongoDB", StringComparison.OrdinalIgnoreCase))
-            {
-                errorMessage = "Server is unavailable.";
-                statusCode = ApiStatusCode.ServiceUnavailable;
-            }
-            else
-            {
-                errorMessage = "An unhandled error occurred.";
-                statusCode = ApiStatusCode.InternalServerError;
-            }
-
-            HttpContext httpContext = context.HttpContext;
             WriteLog(httpContext, exception);
 
-            HttpResponse response = httpContext.Response;
-            response.StatusCode = (int)statusCode;
+            var result = GetActionResult(exception, out var apiStatusCode);
+            var response = httpContext.Response;
+            response.StatusCode = (int)apiStatusCode;
             response.ContentType = "application/json";
-
             context.ExceptionHandled = true;
-            context.Result = new JsonResult(ApiServerResult.ServerError(statusCode, errorMessage));
+            context.Result = result;
         }
 
         private void WriteLog(HttpContext httpContext, Exception exception)
@@ -75,6 +54,41 @@ namespace EP.API.Filters
             catch (Exception)
             {
             }
+        }
+
+        private static IActionResult GetActionResult(Exception exception, out ApiStatusCode apiStatusCode)
+        {
+            Type exceptionType = exception.GetType();
+
+            if (exceptionType == typeof(BadRequestException))
+            {
+                apiStatusCode = ApiStatusCode.BadRequest;
+                var badRequestException = (BadRequestException)exception;
+
+                return new BadRequestObjectResult(
+                    ApiServerResult.ServerError(badRequestException.StatusCode, badRequestException.Message));
+            }
+
+            if (exceptionType == typeof(UnauthorizedAccessException))
+            {
+                apiStatusCode = ApiStatusCode.Forbidden;
+
+                return new ForbidResult();
+            }
+
+            if (exceptionType == typeof(TimeoutException) &&
+                exception.Source.StartsWith("MongoDB", StringComparison.OrdinalIgnoreCase))
+            {
+                apiStatusCode = ApiStatusCode.ServiceUnavailable;
+
+                return new JsonResult(
+                    ApiServerResult.ServerError(apiStatusCode, "Server is unavailable."));
+            }
+
+            apiStatusCode = ApiStatusCode.InternalServerError;
+
+            return new JsonResult(
+                ApiServerResult.ServerError(apiStatusCode, "An unhandled error occurred."));
         }
     }
 }
