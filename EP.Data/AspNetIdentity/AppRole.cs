@@ -31,8 +31,6 @@ namespace EP.Data.AspNetIdentity
         public virtual List<AppClaim> Claims { get; set; }
 
         public override string ToString()
-        {
-            return Name;
-        }
+            => Name;
     }
 }

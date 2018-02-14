@@ -14,6 +14,7 @@
         public const string ResetUserPassword = nameof(ResetUserPassword);
 
         public const string CreateBlob = nameof(CreateBlob);
+        public const string UpdateBlob = nameof(UpdateBlob);
         public const string DeleteBlob = nameof(DeleteBlob);
 
         public const string CreateNews = nameof(CreateNews);

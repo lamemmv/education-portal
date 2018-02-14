@@ -14,12 +14,9 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async static Task EnsureAppUserIndexes(IMongoCollection<AppUser> users)
-		{
-            await Task.WhenAll(
+            => await Task.WhenAll(
                 EnsureUniqueIndexOnNormalizedUserName(users),
-                EnsureUniqueIndexOnNormalizedEmail(users)
-            );
-		}
+                EnsureUniqueIndexOnNormalizedEmail(users));
 
         private async static Task EnsureUniqueIndexOnNormalizedUserName(IMongoCollection<AppUser> users)
 		{

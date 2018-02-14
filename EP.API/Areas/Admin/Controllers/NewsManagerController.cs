@@ -9,6 +9,7 @@ using EP.Services.Blobs;
 using EP.Services.News;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
@@ -17,24 +18,25 @@ namespace EP.API.Areas.Admin.Controllers
 {
     public class NewsManagerController : AdminController
     {
+        private const string NewsFunctionName = Services.Constants.FunctionName.NewsManagement;
+        
         private readonly INewsService _newsService;
         private readonly IBlobService _blobService;
 
         public NewsManagerController(
+            IHttpContextAccessor accessor,
+            IAuthorizationService authorizationService,
             INewsService newsService,
-            IBlobService blobService,
-            IAuthorizationService authorizationService) : base(authorizationService)
+            IBlobService blobService) : base(accessor, authorizationService)
         {
             _newsService = newsService;
             _blobService = blobService;
         }
 
-        protected override string FunctionName => Services.Constants.FunctionName.NewsManagement;
-
         [HttpGet]
         public async Task<IPagedList<NewsItem>> Get([FromQuery]PaginationSearchViewModel viewModel)
         {
-            await AuthorizeReadAsync();
+            await AuthorizeReadAsync(NewsFunctionName);
 
             return await _newsService.GetPagedListAsync(viewModel.Page, viewModel.Size);
         }
@@ -42,7 +44,7 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet("{id}")]
         public async Task<NewsItem> Get(string id)
         {
-            await AuthorizeReadAsync();
+            await AuthorizeReadAsync(NewsFunctionName);
 
             return await _newsService.GetByIdAsync(id);
         }
@@ -50,13 +52,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost, ValidateViewModel]
         public async Task<IActionResult> Post([FromBody]NewsViewModel viewModel)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(NewsFunctionName);
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
             entity.CreatedOn = DateTime.UtcNow;
 
-            await _newsService.CreateAsync(entity);
+            await _newsService.CreateAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             return Created(string.Empty, entity.Id);
         }
@@ -64,13 +66,13 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("{id}"), ValidateViewModel]
         public async Task<IActionResult> Put(string id, [FromBody]NewsViewModel viewModel)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(NewsFunctionName);
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Id = id;
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
 
-            var result = await _newsService.UpdateAsync(entity);
+            var result = await _newsService.UpdateAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             if (!result)
             {
@@ -83,9 +85,9 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(NewsFunctionName);
 
-            var result = await _newsService.DeleteAsync(id);
+            var result = await _newsService.DeleteAsync(id, GetEmbeddedUser(), GetClientIP());
 
             if (!result)
             {
@@ -96,10 +98,8 @@ namespace EP.API.Areas.Admin.Controllers
         }
 
         private async Task<EmbeddedBlob> GetEmbeddedBlobAsync(string id)
-        {
-            return id.IsInvalidObjectId() ?
+            => id.IsInvalidObjectId() ?
                 null :
                 await _blobService.GetEmbeddedBlobByIdAsync(id);
-        }
     }
 }

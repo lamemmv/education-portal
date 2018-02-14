@@ -10,10 +10,8 @@ namespace EP.Data.IdentityServerStore
     public sealed class MongoDbClientStore : IClientStore
     {
         public async Task<Client> FindClientByIdAsync(string clientId)
-        {
-            return await Task.FromResult(
+            => await Task.FromResult(
                 Clients.FirstOrDefault(e => e.ClientId.Equals(clientId, StringComparison.Ordinal)));
-        }
 
         private static IEnumerable<Client> Clients
         {

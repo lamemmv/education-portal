@@ -1,5 +1,6 @@
 ﻿using EP.Data.DbContext;
 using EP.Data.Entities.News;
+using EP.Data.Entities;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Constants;
@@ -35,20 +36,19 @@ namespace EP.Services.News
         }
 
         public async Task<NewsItem> GetByIdAsync(string id)
-        {
-            return await _news.GetByIdAsync(id);
-        }
+            => await _news.GetByIdAsync(id);
 
-        public async Task<NewsItem> CreateAsync(NewsItem entity)
+        public async Task<NewsItem> CreateAsync(NewsItem entity, EmbeddedUser embeddedUser, string ip)
         {
             await _news.CreateAsync(entity);
 
-            //await LogCreateAsync(entity);
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.CreateNews, entity, embeddedUser, ip);
 
             return entity;
         }
 
-        public async Task<bool> UpdateAsync(NewsItem entity)
+        public async Task<bool> UpdateAsync(NewsItem entity, EmbeddedUser embeddedUser, string ip)
         {
             var update = Builders<NewsItem>.Update
                 .Set(e => e.Title, entity.Title)
@@ -61,46 +61,28 @@ namespace EP.Services.News
 
             var result = await _news.UpdatePartiallyAsync(entity.Id, update);
 
-            //await LogUpdateAsync(entity);
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.UpdateNews, entity, embeddedUser, ip);
 
             return result;
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id, EmbeddedUser embeddedUser, string ip)
         {
             var projection = Builders<NewsItem>.Projection
                 .Exclude(e => e.Blob)
                 .Exclude(e => e.Content);
             var oldEntity = await _news.DeleteAsync(id, projection);
 
-            //await LogDeleteAsync(oldEntity);
+            if (oldEntity != null)
+            {
+                // Activity Log.
+                await _activityLogService.CreateAsync(SystemKeyword.DeleteNews, oldEntity, embeddedUser, ip);
 
-            return oldEntity != null;
+                return true;
+            }
+
+            return false;
         }
-
-        #region Write Logs
-
-        private async Task LogCreateAsync(NewsItem entity)
-        {
-            entity.Blob = null;
-            entity.Content = null;
-
-            await _activityLogService.CreateAsync(SystemKeyword.CreateNews, entity, null, null);
-        }
-
-        private async Task LogUpdateAsync(NewsItem entity)
-        {
-            entity.Blob = null;
-            entity.Content = null;
-
-            await _activityLogService.CreateAsync(SystemKeyword.UpdateNews, entity, null, null);
-        }
-
-        private async Task LogDeleteAsync(NewsItem entity)
-        {
-            await _activityLogService.CreateAsync(SystemKeyword.DeleteNews, entity, null, null);
-        }
-
-        #endregion
     }
 }

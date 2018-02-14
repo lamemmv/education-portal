@@ -2,7 +2,6 @@ using EP.Data.DbContext;
 using EP.Data.Entities.Logs;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
-using EP.Services.Models;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,24 +37,17 @@ namespace EP.Services.Logs
             return await _logs.GetPagedListAsync(filter, skip: page, take: size);
         }
 
-        public async Task<Log> GetByIdAsync(string id) 
-        {
-            return await _logs.GetByIdAsync(id);
-        }
+        public async Task<Log> GetByIdAsync(string id)
+            => await _logs.GetByIdAsync(id);
 
-        public async Task<ApiServerResult> DeleteAsync(string id)
-        {
-            var result = await _logs.DeleteAsync(id);
+        public async Task<bool> DeleteAsync(string id)
+            => await _logs.DeleteAsync(id);
 
-            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
-        }
-
-        public async Task<ApiServerResult> DeleteAsync(IEnumerable<string> ids)
+        public async Task DeleteAsync(IEnumerable<string> ids)
         {
             var filter = Builders<Log>.Filter.In(e => e.Id, ids);
-            var result = await _logs.DeleteAsync(filter);
 
-            return result ? ApiServerResult.NoContent() : ApiServerResult.NotFound();
+            await _logs.DeleteAsync(filter);
         }
     }
 }

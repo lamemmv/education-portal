@@ -80,19 +80,13 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.NormalizedUserName);
-        }
+            => await Task.FromResult(user.NormalizedUserName);
 
         public async Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.Id);
-        }
+            => await Task.FromResult(user.Id);
 
         public async Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.UserName);
-        }
+            => await Task.FromResult(user.UserName);
 
         public Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken)
         {
@@ -277,9 +271,7 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.Roles);
-        }
+            => await Task.FromResult(user.Roles);
 
         public async Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
         {
@@ -312,14 +304,10 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.PasswordHash);
-        }
+            => await Task.FromResult(user.PasswordHash);
 
         public async Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.PasswordHash != null);
-        }
+            => await Task.FromResult(user.PasswordHash != null);
 
         #endregion
 
@@ -333,9 +321,7 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.SecurityStamp);
-        }
+            => await Task.FromResult(user.SecurityStamp);
 
         #endregion
 
@@ -349,9 +335,7 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.TwoFactorEnabled);
-        }
+            => await Task.FromResult(user.TwoFactorEnabled);
 
         #endregion
 
@@ -365,14 +349,10 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.PhoneNumber);
-        }
+            => await Task.FromResult(user.PhoneNumber);
 
         public async Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.PhoneNumberConfirmed);
-        }
+            => await Task.FromResult(user.PhoneNumberConfirmed);
 
         public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
         {
@@ -393,14 +373,10 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.Email);
-        }
+            => await Task.FromResult(user.Email);
 
         public async Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.EmailConfirmed);
-        }
+            => await Task.FromResult(user.EmailConfirmed);
 
         public Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
         {
@@ -418,9 +394,7 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.NormalizedEmail);
-        }
+            => await Task.FromResult(user.NormalizedEmail);
 
         public Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
@@ -434,9 +408,7 @@ namespace EP.Data.AspNetIdentity
         #region IUserLockoutStore
 
         public async Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.LockoutEnd);
-        }
+            => await Task.FromResult(user.LockoutEnd);
 
         public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
         {
@@ -460,14 +432,10 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.AccessFailedCount);
-        }
+            => await Task.FromResult(user.AccessFailedCount);
 
         public async Task<bool> GetLockoutEnabledAsync(TUser user, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(user.LockoutEnabled);
-        }
+            => await Task.FromResult(user.LockoutEnabled);
 
         public Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken)
         {

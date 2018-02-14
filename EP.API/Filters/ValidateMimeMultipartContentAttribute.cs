@@ -19,9 +19,7 @@ namespace EP.API.Filters
         }
 
         private static bool IsMultipartContentType(string contentType)
-        {
-            return !string.IsNullOrEmpty(contentType) &&
+            => !string.IsNullOrEmpty(contentType) &&
                 contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
     }
 }

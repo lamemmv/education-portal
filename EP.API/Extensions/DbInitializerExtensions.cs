@@ -212,6 +212,13 @@ namespace EP.API.Extensions
                 },
                 new ActivityLogType
                 {
+                    SystemKeyword = SystemKeyword.UpdateBlob,
+                    Name = "Update a Blob",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow
+                },
+                new ActivityLogType
+                {
                     SystemKeyword = SystemKeyword.DeleteBlob,
                     Name = "Delete a Blob",
                     Enabled = true,

@@ -62,13 +62,9 @@ namespace EP.Data.LoggerSink
             }
         }
 
-        private static IMongoCollection<BsonDocument> GetMongoCollection(
-            string connectionString,
-            string collectionName)
-        {
-            return MongoDbHelper
+        private static IMongoCollection<BsonDocument> GetMongoCollection(string connectionString, string collectionName)
+            => MongoDbHelper
                 .GetMongoDatabase(connectionString)
                 .GetCollection<BsonDocument>(collectionName);
-        }
     }
 }

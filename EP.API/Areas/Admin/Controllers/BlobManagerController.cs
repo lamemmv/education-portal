@@ -5,6 +5,7 @@ using EP.Services.Blobs;
 using EP.Services.Extensions;
 using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,21 +15,22 @@ namespace EP.API.Areas.Admin.Controllers
 {
     public class BlobManagerController : AdminController
     {
+        private const string BlobFunctionName = Services.Constants.FunctionName.BlobManagement;
+        
         private readonly IBlobService _blobService;
 
         public BlobManagerController(
-            IBlobService blobService,
-            IAuthorizationService authorizationService) : base(authorizationService)
+            IHttpContextAccessor accessor,
+            IAuthorizationService authorizationService,
+            IBlobService blobService) : base(accessor, authorizationService)
         {
             _blobService = blobService;
         }
 
-        protected override string FunctionName => Services.Constants.FunctionName.BlobManagement;
-
         [HttpGet]
         public async Task<IActionResult> Get(BlobSearchViewModel viewModel)
         {
-            await AuthorizeReadAsync();
+            await AuthorizeReadAsync(BlobFunctionName);
 
             var blob = await _blobService.GetBlobForChildListAsync(viewModel.Id);
             var childList = await _blobService.GetChildListAsync(viewModel.Id, viewModel.Page, viewModel.Size);
@@ -39,7 +41,7 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpGet("File/{id}")]
         public async Task<IActionResult> Download(string id)
         {
-            await AuthorizeReadAsync();
+            await AuthorizeReadAsync(BlobFunctionName);
 
             var entity = await _blobService.GetByIdAsync(id);
 
@@ -58,12 +60,12 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("Folder"), ValidateViewModel]
         public async Task<IActionResult> PostFolder([FromBody]FolderViewModel viewModel)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(BlobFunctionName);
 
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.CreatedOn = DateTime.UtcNow;
 
-            await _blobService.CreateFolderAsync(entity);
+            await _blobService.CreateFolderAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             return Created(string.Empty, entity.Id);
         }
@@ -71,7 +73,7 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPost("File"), ValidateViewModel, ValidateMimeMultipartContent]
         public async Task<IActionResult> PostFile([FromForm]FileViewModel viewModel)
         {
-            await AuthorizeUploadAsync();
+            await AuthorizeUploadAsync(BlobFunctionName);
 
             if (viewModel.Files == null || viewModel.Files.Length == 0)
             {
@@ -80,7 +82,11 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var ids = await _blobService.CreateFileAsync(viewModel.Files, viewModel.Parent.TrimNull());
+            var ids = await _blobService.CreateFileAsync(
+                viewModel.Files,
+                viewModel.Parent.TrimNull(),
+                GetEmbeddedUser(),
+                GetClientIP());
 
             return Created(string.Empty, ids);
         }
@@ -88,12 +94,12 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpPut("Folder/{id}"), ValidateViewModel]
         public async Task<IActionResult> PutFolder(string id, [FromBody]FolderViewModel viewModel)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(BlobFunctionName);
 
             var entity = viewModel.Map<FolderViewModel, Blob>();
             entity.Id = id;
 
-            var result = await _blobService.UpdateFolderAsync(entity);
+            var result = await _blobService.UpdateFolderAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             if (!result)
             {
@@ -106,7 +112,7 @@ namespace EP.API.Areas.Admin.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(string[] ids)
         {
-            await AuthorizeHostAsync();
+            await AuthorizeHostAsync(BlobFunctionName);
 
             if (ids == null || ids.Length == 0)
             {
@@ -115,7 +121,7 @@ namespace EP.API.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _blobService.DeleteAsync(ids);
+            await _blobService.DeleteAsync(ids, GetEmbeddedUser(), GetClientIP());
 
             return NoContent();
         }

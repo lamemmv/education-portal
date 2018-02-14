@@ -1,9 +1,12 @@
 ﻿using EP.Data.DbContext;
 using EP.Data.Entities.Blobs;
+using EP.Data.Entities;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
+using EP.Services.Constants;
 using EP.Services.Enums;
 using EP.Services.Extensions;
+using EP.Services.Logs;
 using EP.Services.Models;
 using EP.Services.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -22,16 +25,16 @@ namespace EP.Services.Blobs
         private const string InvalidParentField = "The Parent field is invalid.";
 
         private readonly IRepository<Blob> _blobs;
-        //private readonly IActivityLogService _activityLogService;
+        private readonly IActivityLogService _activityLogService;
         private readonly string _commonFolderName;
 
         public BlobService(
             MongoDbContext dbContext,
-            //IActivityLogService activityLogService,
+            IActivityLogService activityLogService,
             AppSettings appSettings)
         {
             _blobs = dbContext.Blobs;
-            //_activityLogService = activityLogService;
+            _activityLogService = activityLogService;
             _commonFolderName = appSettings.CommonFolder;
         }
 
@@ -61,9 +64,7 @@ namespace EP.Services.Blobs
         }
 
         public async Task<Blob> GetByIdAsync(string id)
-        {
-            return await _blobs.GetByIdAsync(id);
-        }
+            => await _blobs.GetByIdAsync(id);
 
         public async Task<EmbeddedBlob> GetEmbeddedBlobByIdAsync(string id)
         {
@@ -76,7 +77,7 @@ namespace EP.Services.Blobs
             return new EmbeddedBlob { Id = entity.Id, VirtualPath = entity.VirtualPath };
         }
 
-        public async Task<Blob> CreateFolderAsync(Blob entity)
+        public async Task<Blob> CreateFolderAsync(Blob entity, EmbeddedUser embeddedUser, string ip)
         {
             await EnsureNotDuplicatedName(entity.Parent, entity.Name);
 
@@ -91,10 +92,15 @@ namespace EP.Services.Blobs
             ancestors.Add(new BlobAncestor(parentEntity.Id, parentEntity.Name));
             entity.Ancestors = ancestors;
 
-            return await _blobs.CreateAsync(entity);
+            await _blobs.CreateAsync(entity);
+
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.CreateBlob, entity, embeddedUser, ip);
+
+            return entity;
         }
 
-        public async Task<IEnumerable<string>> CreateFileAsync(IFormFile[] files, string parent = null)
+        public async Task<IEnumerable<string>> CreateFileAsync(IFormFile[] files, string parent, EmbeddedUser embeddedUser, string ip)
         {
             var parentEntity = string.IsNullOrWhiteSpace(parent) ?
                 await GetSystemFolder(_commonFolderName) :
@@ -172,13 +178,16 @@ namespace EP.Services.Blobs
 
                 await Task.WhenAll(_blobs.CreateAsync(entity), file.SaveAsAsync(entity.PhysicalPath));
 
+                // Activity Log.
+                await _activityLogService.CreateAsync(SystemKeyword.CreateBlob, entity, embeddedUser, ip);
+
                 results.Add(entity.Id);
             }
 
             return results;
         }
 
-        public async Task<bool> UpdateFolderAsync(Blob entity)
+        public async Task<bool> UpdateFolderAsync(Blob entity, EmbeddedUser embeddedUser, string ip)
         {
             await EnsureNotDuplicatedName(entity.Parent, entity.Name);
 
@@ -186,18 +195,23 @@ namespace EP.Services.Blobs
                 .Set(e => e.Name, entity.Name)
                 .CurrentDate(e => e.UpdatedOn);
 
-            return await _blobs.UpdatePartiallyAsync(entity.Id, update);
+            var result = await _blobs.UpdatePartiallyAsync(entity.Id, update);
+
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.UpdateBlob, entity, embeddedUser, ip);
+
+            return result;
         }
 
-        public async Task DeleteAsync(string[] ids)
+        public async Task DeleteAsync(string[] ids, EmbeddedUser embeddedUser, string ip)
         {
             foreach (var id in ids)
             {
-                await DeleteAsync(id);
+                await DeleteAsync(id, embeddedUser, ip);
             }
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id, EmbeddedUser embeddedUser, string ip)
         {
             var entity = await GetByIdAsync(id);
 
@@ -220,7 +234,10 @@ namespace EP.Services.Blobs
 
             var result = await _blobs.DeleteAsync(id);
 
-            return await _blobs.DeleteAsync(id);
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.DeleteBlob, entity, embeddedUser, ip);
+
+            return result;
         }
 
         private async Task<Blob> GetSystemFolder(string name)

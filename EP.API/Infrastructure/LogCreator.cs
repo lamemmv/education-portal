@@ -25,11 +25,8 @@ namespace EP.API.Infrastructure
             this LoggerSinkConfiguration loggerConfiguration,
             string connectionString,
             LogEventLevel restrictedToMinimumLevel)
-        {
-            // new RenderedCompactJsonFormatter()
-            return loggerConfiguration.Sink(
+            => loggerConfiguration.Sink(
                 new MongoDbSink(new CompactJsonFormatter(), connectionString),
                 restrictedToMinimumLevel);
-        }
     }
 }

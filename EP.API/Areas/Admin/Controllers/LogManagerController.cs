@@ -1,59 +1,69 @@
-//using EP.API.Areas.Admin.ViewModels.Logs;
-//using EP.API.Extensions;
-//using EP.Data.Entities.Logs;
-//using EP.Data.Paginations;
-//using EP.Services.Extensions;
-//using EP.Services.Logs;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using System;
+using EP.API.Areas.Admin.ViewModels.Logs;
+using EP.Data.Entities.Logs;
+using EP.Data.Paginations;
+using EP.Services.Extensions;
+using EP.Services.Logs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System;
 
-//namespace EP.API.Areas.Admin.Controllers
-//{
-//    public class LogManagerController : AdminController
-//    {
-//        private readonly ILogService _logService;
+namespace EP.API.Areas.Admin.Controllers
+{
+    public class LogManagerController : AdminController
+    {
+        private const string LogFunctionName = Services.Constants.FunctionName.LogManagement;
 
-//        public LogManagerController(ILogService logService)
-//        {
-//            _logService = logService;
-//        }
+        private readonly ILogService _logService;
 
-//        [HttpGet]
-//        public async Task<IPagedList<Log>> Get([FromQuery]LogSearchViewModel viewModel)
-//        {
-//            var from = viewModel.From ?? DateTime.Now.AddDays(-1);
-//            var to = viewModel.To ?? DateTime.Now;
+        public LogManagerController(
+            IHttpContextAccessor accessor,
+            IAuthorizationService authorizationService,
+            ILogService logService) : base(accessor, authorizationService)
+        {
+            _logService = logService;
+        }
 
-//            return await _logService.GetPagedListAsync(
-//                from.StartOfDayUtc(),
-//                to.EndOfDayUtc(),
-//                viewModel.Levels,
-//                viewModel.Page,
-//                viewModel.Size);
-//        }
+        [HttpGet]
+        public async Task<IPagedList<Log>> Get([FromQuery]LogSearchViewModel viewModel)
+        {
+            await AuthorizeReadAsync(LogFunctionName);
 
-//        [HttpGet("{id}")]
-//        public async Task<Log> Get(string id)
-//        {
-//            return await _logService.GetByIdAsync(id);
-//        }
+            var from = viewModel.From ?? DateTime.Now.AddDays(-1);
+            var to = viewModel.To ?? DateTime.Now;
 
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> Delete(string id)
-//        {
-//            var response = await _logService.DeleteAsync(id);
+            return await _logService.GetPagedListAsync(
+                from.StartOfDayUtc(),
+                to.EndOfDayUtc(),
+                viewModel.Levels,
+                viewModel.Page,
+                viewModel.Size);
+        }
 
-//            return response.ToActionResult();
-//        }
+        [HttpGet("{id}")]
+        public async Task<Log> Get(string id)
+        {
+            await AuthorizeReadAsync(LogFunctionName);
 
-//        [HttpDelete]
-//        public async Task<IActionResult> Delete(IEnumerable<string> ids)
-//        {
-//            var response = await _logService.DeleteAsync(ids);
-            
-//            return response.ToActionResult();
-//        }
-//    }
-//}
+            return await _logService.GetByIdAsync(id);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string[] ids)
+        {
+            await AuthorizeHostAsync(LogFunctionName);
+
+            if (ids == null || ids.Length == 0)
+            {
+                ModelState.AddModelError(nameof(ids), "Ids should not be empty.");
+
+                return BadRequest(ModelState);
+            }
+
+            await _logService.DeleteAsync(ids);
+
+            return NoContent();
+        }
+    }
+}

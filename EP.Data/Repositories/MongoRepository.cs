@@ -119,9 +119,7 @@ namespace EP.Data.Repositories
         }
 
         public async Task CreateAsync(IEnumerable<TEntity> entities)
-        {
-            await _collection.InsertManyAsync(entities);
-        }
+            => await _collection.InsertManyAsync(entities);
 
         //public async Task<bool> UpdateAsync(TEntity entity)
         //{

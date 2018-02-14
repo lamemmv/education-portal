@@ -1,4 +1,5 @@
 ﻿using EP.Data.Entities.News;
+using EP.Data.Entities;
 using EP.Data.Paginations;
 using System.Threading.Tasks;
 
@@ -10,10 +11,10 @@ namespace EP.Services.News
 
         Task<NewsItem> GetByIdAsync(string id);
 
-        Task<NewsItem> CreateAsync(NewsItem entity);
+        Task<NewsItem> CreateAsync(NewsItem entity, EmbeddedUser embeddedUser, string ip);
 
-        Task<bool> UpdateAsync(NewsItem entity);
+        Task<bool> UpdateAsync(NewsItem entity, EmbeddedUser embeddedUser, string ip);
 
-        Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(string id, EmbeddedUser embeddedUser, string ip);
     }
 }

@@ -61,9 +61,7 @@ namespace EP.Services.Emails
         }
 
         public async Task<QueuedEmail> CreateAsync(QueuedEmail entity)
-        {
-            return await _queuedEmails.CreateAsync(entity);
-        }
+            => await _queuedEmails.CreateAsync(entity);
 
         public async Task<bool> UpdateAsync(string id, int sentTries, DateTime? sentOnUtc, string failedReason)
         {

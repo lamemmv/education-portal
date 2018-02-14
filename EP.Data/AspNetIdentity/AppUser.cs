@@ -68,8 +68,6 @@ namespace EP.Data.AspNetIdentity
         public virtual IList<AppUserToken> Tokens { get; set; }
 
         public override string ToString()
-        {
-            return UserName;
-        }
+            => UserName;
     }
 }

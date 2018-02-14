@@ -1,8 +1,11 @@
 ﻿using EP.Data.DbContext;
 using EP.Data.Entities.Emails;
+using EP.Data.Entities;
 using EP.Data.Paginations;
 using EP.Data.Repositories;
 using EP.Services.Caching;
+using EP.Services.Constants;
+using EP.Services.Logs;
 using EP.Services.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
@@ -15,13 +18,16 @@ namespace EP.Services.Emails
 
         private readonly IRepository<EmailAccount> _emailAccounts;
         private readonly IMemoryCacheService _memoryCacheService;
+        private readonly IActivityLogService _activityLogService;
 
         public EmailAccountService(
             MongoDbContext dbContext,
-            IMemoryCacheService memoryCacheService)
+            IMemoryCacheService memoryCacheService,
+            IActivityLogService activityLogService)
         {
             _emailAccounts = dbContext.EmailAccounts;
             _memoryCacheService = memoryCacheService;
+            _activityLogService = activityLogService;
         }
 
         public async Task<IPagedList<EmailAccount>> GetPagedListAsync(int? page, int? size)
@@ -51,7 +57,7 @@ namespace EP.Services.Emails
                 });
         }
 
-        public async Task<ApiServerResult> CreateAsync(EmailAccount entity)
+        public async Task<EmailAccount> CreateAsync(EmailAccount entity, EmbeddedUser embeddedUser, string ip)
         {
             await _emailAccounts.CreateAsync(entity);
 
@@ -60,10 +66,13 @@ namespace EP.Services.Emails
                 _memoryCacheService.Remove(DefaultEmailAccount);
             }
 
-            return ApiServerResult.Created(entity.Id);
+            // Activity Log.
+            await _activityLogService.CreateAsync(SystemKeyword.CreateEmailAccount, entity, embeddedUser, ip);
+
+            return entity;
         }
 
-        public async Task<ApiServerResult> UpdateAsync(EmailAccount entity)
+        public async Task<bool> UpdateAsync(EmailAccount entity, EmbeddedUser embeddedUser, string ip)
         {
             var update = Builders<EmailAccount>.Update
                 .Set(e => e.Email, entity.Email)
@@ -79,32 +88,35 @@ namespace EP.Services.Emails
 
             var result = await _emailAccounts.UpdatePartiallyAsync(entity.Id, update);
 
-            if (!result)
-            {
-                return ApiServerResult.NotFound();
-            }
-
-            _memoryCacheService.Remove(DefaultEmailAccount);
-
-            return ApiServerResult.NoContent();
-        }
-
-        public async Task<ApiServerResult> DeleteAsync(string id)
-        {
-            var projection = Builders<EmailAccount>.Projection.Include(e => e.IsDefault);
-            var entity = await _emailAccounts.DeleteAsync(id, projection);
-
-            if (entity == null)
-            {
-                return ApiServerResult.NotFound();
-            }
-
-            if (entity.IsDefault)
+            if (result)
             {
                 _memoryCacheService.Remove(DefaultEmailAccount);
+
+                // Activity Log.
+                await _activityLogService.CreateAsync(SystemKeyword.UpdateEmailAccount, entity, embeddedUser, ip);
             }
 
-            return ApiServerResult.NoContent();
+            return result;
+        }
+
+        public async Task<bool> DeleteAsync(string id, EmbeddedUser embeddedUser, string ip)
+        {
+            var oldEntity = await _emailAccounts.DeleteAsync(id, null);
+
+            if (oldEntity != null)
+            {
+                if (oldEntity.IsDefault)
+                {
+                    _memoryCacheService.Remove(DefaultEmailAccount);
+                }
+
+                // Activity Log.
+                await _activityLogService.CreateAsync(SystemKeyword.DeleteEmailAccount, oldEntity, embeddedUser, ip);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

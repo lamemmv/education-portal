@@ -30,13 +30,9 @@ namespace EP.Data.Paginations
         public int Size { get; }
 
         public static IPagedList<TEntity> Empty(int page, int size)
-        {
-            return new PagedList<TEntity>(page, size);
-        }
+            => new PagedList<TEntity>(page, size);
 
         public static IPagedList<TEntity> Create(long totalItems, IEnumerable<TEntity> items, int totalPages, int page, int size)
-        {
-            return new PagedList<TEntity>(totalItems, items, totalPages, page, size);
-        }
+            => new PagedList<TEntity>(totalItems, items, totalPages, page, size);
     }
 }

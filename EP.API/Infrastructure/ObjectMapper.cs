@@ -22,25 +22,20 @@ namespace EP.API.Infrastructure
         }
 
         private static void EmailMapping()
-        {
-            Mapper.Register<EmailAccountViewModel, EmailAccount>()
+            => Mapper.Register<EmailAccountViewModel, EmailAccount>()
                 .Member(dest => dest.Email, src => src.Email.Trim())
                 .Member(dest => dest.DisplayName, src => src.DisplayName.TrimNull())
                 .Member(dest => dest.Host, src => src.Host.Trim())
                 .Member(dest => dest.UserName, src => src.UserName.Trim())
                 .Member(dest => dest.Host, src => src.Password.Trim());
-        }
 
         private static void BlobMapping()
-        {
-            Mapper.Register<FolderViewModel, Blob>()
+            => Mapper.Register<FolderViewModel, Blob>()
                 .Member(dest => dest.Name, src => src.Name.Trim())
                 .Member(dest => dest.Parent, src => src.Parent.Trim());
-        }
 
         private static void NewsMapping()
-        {
-            Mapper.Register<NewsViewModel, NewsItem>()
+            => Mapper.Register<NewsViewModel, NewsItem>()
                 .Member(dest => dest.Title, src => src.Title.Trim())
                 .Member(dest => dest.Ingress, src => src.Ingress.TrimNull())
                 .Member(dest => dest.Content, src => src.Content.Trim())
@@ -48,6 +43,5 @@ namespace EP.API.Infrastructure
                 {
                     return src.Published ? DateTime.UtcNow : new DateTime?();
                 });
-        }
     }
 }

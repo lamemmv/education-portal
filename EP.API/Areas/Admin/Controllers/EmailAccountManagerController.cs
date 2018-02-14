@@ -1,66 +1,92 @@
-﻿//using EP.API.Areas.Admin.ViewModels.Emails;
-//using EP.API.Areas.Admin.ViewModels;
-//using EP.API.Extensions;
-//using EP.API.Filters;
-//using EP.Data.Entities.Emails;
-//using EP.Data.Paginations;
-//using EP.Services.Emails;
-//using ExpressMapper.Extensions;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Threading.Tasks;
-//using System;
+﻿using EP.API.Areas.Admin.ViewModels.Emails;
+using EP.API.Areas.Admin.ViewModels;
+using EP.API.Filters;
+using EP.Data.Entities.Emails;
+using EP.Data.Paginations;
+using EP.Services.Emails;
+using ExpressMapper.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System;
 
-//namespace EP.API.Areas.Admin.Controllers
-//{
-//    public class EmailAccountManagerController : AdminController
-//    {
-//        private readonly IEmailAccountService _emailAccountService;
+namespace EP.API.Areas.Admin.Controllers
+{
+    public class EmailAccountManagerController : AdminController
+    {
+        private const string EmailAccountFunctionName = Services.Constants.FunctionName.EmailAccountManagement;
 
-//        public EmailAccountManagerController(IEmailAccountService emailAccountService)
-//        {
-//            _emailAccountService = emailAccountService;
-//        }
+        private readonly IEmailAccountService _emailAccountService;
 
-//        [HttpGet]
-//        public async Task<IPagedList<EmailAccount>> Get([FromQuery]PaginationSearchViewModel viewModel)
-//        {
-//            return await _emailAccountService.GetPagedListAsync(viewModel.Page, viewModel.Size);
-//        }
+        public EmailAccountManagerController(
+            IHttpContextAccessor accessor,
+            IAuthorizationService authorizationService,
+            IEmailAccountService emailAccountService) : base(accessor, authorizationService)
+        {
+            _emailAccountService = emailAccountService;
+        }
 
-//        [HttpGet("{id}")]
-//        public async Task<EmailAccount> Get(string id)
-//        {
-//            return await _emailAccountService.GetByIdAsync(id);
-//        }
+        [HttpGet]
+        public async Task<IPagedList<EmailAccount>> Get([FromQuery]PaginationSearchViewModel viewModel)
+        {
+            await AuthorizeReadAsync(EmailAccountFunctionName);
 
-//        [HttpPost, ValidateViewModel]
-//        public async Task<IActionResult> Post([FromBody]EmailAccountViewModel viewModel)
-//        {
-//            var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
-//            entity.CreatedOn = DateTime.UtcNow;
+            return await _emailAccountService.GetPagedListAsync(viewModel.Page, viewModel.Size);
+        }
 
-//            var response = await _emailAccountService.CreateAsync(entity);
+        [HttpGet("{id}")]
+        public async Task<EmailAccount> Get(string id)
+        {
+            await AuthorizeReadAsync(EmailAccountFunctionName);
 
-//            return response.ToActionResult();
-//        }
+            return await _emailAccountService.GetByIdAsync(id);
+        }
 
-//        [HttpPut("{id}"), ValidateViewModel]
-//        public async Task<IActionResult> Put(string id, [FromBody]EmailAccountViewModel viewModel)
-//        {
-//            var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
-//            entity.Id = id;
+        [HttpPost, ValidateViewModel]
+        public async Task<IActionResult> Post([FromBody]EmailAccountViewModel viewModel)
+        {
+            await AuthorizeHostAsync(EmailAccountFunctionName);
 
-//            var response = await _emailAccountService.UpdateAsync(entity);
+            var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
+            entity.CreatedOn = DateTime.UtcNow;
 
-//            return response.ToActionResult();
-//        }
+            await _emailAccountService.CreateAsync(entity, GetEmbeddedUser(), GetClientIP());
 
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> Delete(string id)
-//        {
-//            var response = await _emailAccountService.DeleteAsync(id);
-            
-//            return response.ToActionResult();
-//        }
-//    }
-//}
+            return Created(string.Empty, entity.Id);
+        }
+
+        [HttpPut("{id}"), ValidateViewModel]
+        public async Task<IActionResult> Put(string id, [FromBody]EmailAccountViewModel viewModel)
+        {
+            await AuthorizeHostAsync(EmailAccountFunctionName);
+
+            var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
+            entity.Id = id;
+
+            var result = await _emailAccountService.UpdateAsync(entity, GetEmbeddedUser(), GetClientIP());
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await AuthorizeHostAsync(EmailAccountFunctionName);
+
+            var result = await _emailAccountService.DeleteAsync(id, GetEmbeddedUser(), GetClientIP());
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+    }
+}

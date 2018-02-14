@@ -9,8 +9,7 @@ namespace EP.API.Extensions
         public static MongoDbContextBuilder<MongoDbContext> AddMongoDbContext(
             this IServiceCollection services,
             string connectionString)
-        {
-            return services.AddMongoDbContext(opts =>
+            => services.AddMongoDbContext(opts =>
             {
                 opts.ConnectionString = connectionString;
                 // Further configuration can be used as such:
@@ -26,7 +25,6 @@ namespace EP.API.Extensions
                 //    WriteConcern = new WriteConcern(1)
                 //};
             });
-        }
 
         private static MongoDbContextBuilder<MongoDbContext> AddMongoDbContext(
             this IServiceCollection services,

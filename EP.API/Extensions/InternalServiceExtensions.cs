@@ -11,9 +11,10 @@ using EP.Services.Models;
 using EP.Services.News;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using LightInject;
 using LightInject.Microsoft.DependencyInjection;
+using LightInject;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,8 @@ namespace EP.API.Extensions
         {
             services
                 .Configure<AppSettings>(configuration.GetSection("AppSettings"))
-                .AddSingleton<IAuthorizationHandler, FunctionPermissionHandler>();
+                .AddSingleton<IAuthorizationHandler, FunctionPermissionHandler>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var container = new ServiceContainer(new ContainerOptions
             {

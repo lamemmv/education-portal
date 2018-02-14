@@ -60,8 +60,6 @@ namespace EP.Services.Extensions
         }
 
         private static string GetSubType(string contentType)
-        {
-            return contentType.Substring(contentType.IndexOf('/') + 1);
-        }
+            => contentType.Substring(contentType.IndexOf('/') + 1);
     }
 }

@@ -7,9 +7,7 @@ namespace EP.Services.Utilities
         private const string PASSWORD_CHARS_NUMERIC = "0123456789";
 
         public static string Numberic(int size)
-        {
-            return RandomString(PASSWORD_CHARS_NUMERIC, size);
-        }
+            => RandomString(PASSWORD_CHARS_NUMERIC, size);
 
         private static string RandomString(string allowChars, int size)
         {

@@ -13,11 +13,9 @@ namespace EP.API.Extensions
             string webRootPath,
             string contentRootPath,
             IConfiguration configuration)
-        {
-            return app
+            => app
                 .EnsureAvailableDirectories(webRootPath, contentRootPath, configuration)
                 .UseStaticFiles();
-        }
 
         private static IApplicationBuilder EnsureAvailableDirectories(
             this IApplicationBuilder app,
@@ -54,14 +52,12 @@ namespace EP.API.Extensions
         }
 
         private static Blob BuildBlob(string name, string physicalPath, string virtualPath = null)
-        {
-            return new Blob
+            => new Blob
             {
                 Name = name,
                 VirtualPath = virtualPath,
                 PhysicalPath = physicalPath,
                 CreatedOn = DateTime.UtcNow
             };
-        }
     }
 }

@@ -1,9 +1,13 @@
-﻿using EP.Services.Enums;
-using Microsoft.AspNetCore.Authorization;
+﻿using EP.Data.Entities;
+using EP.Services.Enums;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System;
+using IdentityModel;
 
 namespace EP.API.Areas.Admin.Controllers
 {
@@ -11,29 +15,51 @@ namespace EP.API.Areas.Admin.Controllers
     [Route("api/admin/[controller]")]
     public abstract class AdminController : ControllerBase
     {
+        private readonly IHttpContextAccessor _accessor;
         private readonly IAuthorizationService _authorizationService;
 
-        protected AdminController(IAuthorizationService authorizationService)
+        protected AdminController(
+            IHttpContextAccessor accessor,
+            IAuthorizationService authorizationService)
         {
+            _accessor = accessor;
             _authorizationService = authorizationService;
         }
 
-        protected abstract string FunctionName { get; }
-
-        protected async Task AuthorizeReadAsync(string functionName = null)
+        protected EmbeddedUser GetEmbeddedUser()
         {
-            await AuthorizeAsync(Permission.Read, functionName ?? FunctionName);
+            var claims = User?.Claims;
+
+            if (claims?.Any() == true)
+            {
+                var embeddedUser = new EmbeddedUser();
+
+                var claim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+                embeddedUser.Id = claim.Value;
+
+                claim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Name);
+                embeddedUser.UserName = claim.Value;
+
+                claim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
+                embeddedUser.ClientId = claim.Value;
+
+                return embeddedUser;
+            }
+
+            return null;
         }
 
-        protected async Task AuthorizeHostAsync(string functionName = null)
-        {
-            await AuthorizeAsync(Permission.Host, functionName ?? FunctionName);
-        }
+        protected string GetClientIP()
+            => _accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
-        protected async Task AuthorizeUploadAsync(string functionName = null)
-        {
-            await AuthorizeAsync(Permission.Upload, functionName ?? FunctionName);
-        }
+        protected async Task AuthorizeReadAsync(string functionName)
+            => await AuthorizeAsync(Permission.Read, functionName);
+
+        protected async Task AuthorizeHostAsync(string functionName)
+            => await AuthorizeAsync(Permission.Host, functionName);
+
+        protected async Task AuthorizeUploadAsync(string functionName)
+            => await AuthorizeAsync(Permission.Upload, functionName);
 
         private async Task AuthorizeAsync(Permission permission, string functionName)
         {

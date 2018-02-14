@@ -10,27 +10,17 @@ namespace EP.Data.IdentityServerStore
     public sealed class MongoDbResourceStore : IResourceStore
     {
         public async Task<ApiResource> FindApiResourceAsync(string name)
-        {
-            return await Task.FromResult(
+            => await Task.FromResult(
                 ApiResources.FirstOrDefault(e => e.Name.Equals(name, StringComparison.Ordinal)));
-        }
 
-        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(
-            IEnumerable<string> scopeNames)
-        {
-            return await Task.FromResult(ApiResources.Where(e => scopeNames.Contains(e.Name)));
-        }
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            => await Task.FromResult(ApiResources.Where(e => scopeNames.Contains(e.Name)));
 
-        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(
-            IEnumerable<string> scopeNames)
-        {
-            return await Task.FromResult(IdentityResources.Where(e => scopeNames.Contains(e.Name)));
-        }
+        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            => await Task.FromResult(IdentityResources.Where(e => scopeNames.Contains(e.Name)));
 
         public async Task<Resources> GetAllResourcesAsync()
-        {
-            return await Task.FromResult(new Resources(IdentityResources, ApiResources));
-        }
+            => await Task.FromResult(new Resources(IdentityResources, ApiResources));
 
         private static IEnumerable<ApiResource> ApiResources
         {

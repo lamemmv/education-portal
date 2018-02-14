@@ -109,19 +109,13 @@ namespace EP.Data.AspNetIdentity
         }
 
         public async Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(role.NormalizedName);
-        }
+            => await Task.FromResult(role.NormalizedName);
 
         public async Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(role.Id);
-        }
+            => await Task.FromResult(role.Id);
 
         public async Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(role.Name);
-        }
+            => await Task.FromResult(role.Name);
 
         public Task SetNormalizedRoleNameAsync(TRole role, string normalizedName, CancellationToken cancellationToken)
         {

@@ -38,10 +38,11 @@ namespace EP.API.Filters
             {
                 HttpRequest request = httpContext.Request;
                 ConnectionInfo connection = httpContext.Connection;
+                var userName = httpContext.User?.Identity?.Name;
 
                 _logger.Error(
                     exception,
-                    "Source: {Source}, TraceIdentifier: {TraceIdentifier}, HTTP: {RequestMethod} {RequestPath}?{QueryString}, ConnectionId: {ConnectionId}, RemoteIp: {RemoteIp}, LocalIp: {LocalIp}",
+                    "Source: {Source}, TraceIdentifier: {TraceIdentifier}, HTTP: {RequestMethod} {RequestPath}?{QueryString}, ConnectionId: {ConnectionId}, RemoteIp: {RemoteIp}, LocalIp: {LocalIp}, UserName: {UserName}",
                     exception.Source,
                     httpContext.TraceIdentifier,
                     request.Method,
@@ -49,7 +50,8 @@ namespace EP.API.Filters
                     request.QueryString.ToString(),
                     connection.Id,
                     connection.RemoteIpAddress.ToString(),
-                    connection.LocalIpAddress.ToString());
+                    connection.LocalIpAddress.ToString(),
+                    userName);
             }
             catch (Exception)
             {

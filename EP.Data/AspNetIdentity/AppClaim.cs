@@ -19,9 +19,7 @@ namespace EP.Data.AspNetIdentity
         public string Value { get; set; }
 
         public virtual Claim ToClaim()
-        {
-            return new Claim(Type, Value);
-        }
+            => new Claim(Type, Value);
 
         public virtual void InitializeFromClaim(Claim claim)
         {

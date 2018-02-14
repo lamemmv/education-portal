@@ -7,8 +7,7 @@ namespace EP.API.Extensions
     public static class SwaggerExtensions
     {
         public static IServiceCollection AddCustomSwaggerGen(this IServiceCollection services)
-        {
-            return services.AddSwaggerGen(opts =>
+            => services.AddSwaggerGen(opts =>
             {
                 opts.SwaggerDoc("v1", new Info
                 {
@@ -16,16 +15,13 @@ namespace EP.API.Extensions
                     Title = "EP API"
                 });
             });
-        }
 
         public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app)
-        {
-            return app
+            => app
                 .UseSwagger()
                 .UseSwaggerUI(opts =>
                 {
                     opts.SwaggerEndpoint("/swagger/v1/swagger.json", "EP API v1");
                 });
-        }
     }
 }

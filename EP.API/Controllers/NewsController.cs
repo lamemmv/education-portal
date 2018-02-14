@@ -18,14 +18,10 @@ namespace EP.API.Controllers
 
         [HttpGet]
         public async Task<IPagedList<NewsItem>> Get(int? page, int? size)
-        {
-            return await _newsService.GetPagedListAsync(page, size);
-        }
+            => await _newsService.GetPagedListAsync(page, size);
 
         [HttpGet("{id}")]
         public async Task<NewsItem> Get(string id)
-        {
-            return await _newsService.GetByIdAsync(id);
-        }
+            => await _newsService.GetByIdAsync(id);
     }
 }

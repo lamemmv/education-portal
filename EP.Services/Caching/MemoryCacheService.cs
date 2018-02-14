@@ -17,24 +17,16 @@ namespace EP.Services.Caching
         }
 
         public T GetOrAddNeverExpiration<T>(string key, Func<T> acquire)
-        {
-            return GetOrAdd(key, acquire, Never, 0);
-        }
+            => GetOrAdd(key, acquire, Never, 0);
 
         public T GetOrAddSlidingExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
-        {
-            return GetOrAdd(key, acquire, Sliding, cacheInMinutes);
-        }
+            => GetOrAdd(key, acquire, Sliding, cacheInMinutes);
 
         public T GetOrAddAbsoluteExpiration<T>(string key, Func<T> acquire, int cacheInMinutes = 120)
-        {
-            return GetOrAdd(key, acquire, Absolute, cacheInMinutes);
-        }
+            => GetOrAdd(key, acquire, Absolute, cacheInMinutes);
 
         public void Remove(string key)
-        {
-            _memoryCache.Remove(key);
-        }
+            => _memoryCache.Remove(key);
 
         private T GetOrAdd<T>(string key, Func<T> acquire, int expiration, int cacheInMinutes)
         {

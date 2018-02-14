@@ -1,6 +1,6 @@
 ﻿using EP.Data.Entities.Emails;
+using EP.Data.Entities;
 using EP.Data.Paginations;
-using EP.Services.Models;
 using System.Threading.Tasks;
 
 namespace EP.Services.Emails
@@ -11,10 +11,10 @@ namespace EP.Services.Emails
 
         Task<EmailAccount> GetByIdAsync(string id);
 
-        Task<ApiServerResult> CreateAsync(EmailAccount entity);
+        Task<EmailAccount> CreateAsync(EmailAccount entity, EmbeddedUser embeddedUser, string ip);
 
-        Task<ApiServerResult> UpdateAsync(EmailAccount entity);
+        Task<bool> UpdateAsync(EmailAccount entity, EmbeddedUser embeddedUser, string ip);
 
-        Task<ApiServerResult> DeleteAsync(string id);
+        Task<bool> DeleteAsync(string id, EmbeddedUser embeddedUser, string ip);
     }
 }
