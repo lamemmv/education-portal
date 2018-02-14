@@ -1,8 +1,9 @@
-﻿using EP.Services.Enums;
+﻿using EP.API.Models;
+using EP.Services.Enums;
 using EP.Services.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
 
@@ -68,7 +69,7 @@ namespace EP.API.Filters
                 var badRequestException = (BadRequestException)exception;
 
                 return new BadRequestObjectResult(
-                    ApiServerResult.ServerError(badRequestException.StatusCode, badRequestException.Message));
+                    new ApiServerResult(badRequestException.StatusCode, badRequestException.Message));
             }
 
             if (exceptionType == typeof(UnauthorizedAccessException))
@@ -84,13 +85,13 @@ namespace EP.API.Filters
                 apiStatusCode = ApiStatusCode.ServiceUnavailable;
 
                 return new JsonResult(
-                    ApiServerResult.ServerError(apiStatusCode, "Server is unavailable."));
+                    new ApiServerResult(apiStatusCode, "Server is unavailable."));
             }
 
             apiStatusCode = ApiStatusCode.InternalServerError;
 
             return new JsonResult(
-                ApiServerResult.ServerError(apiStatusCode, "An unhandled error occurred."));
+                new ApiServerResult(apiStatusCode, "An unhandled error occurred."));
         }
     }
 }
