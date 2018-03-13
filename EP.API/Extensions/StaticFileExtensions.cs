@@ -2,7 +2,6 @@ using EP.Data.Entities.Blobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using System;
 
 namespace EP.API.Extensions
 {
@@ -56,8 +55,7 @@ namespace EP.API.Extensions
             {
                 Name = name,
                 VirtualPath = virtualPath,
-                PhysicalPath = physicalPath,
-                CreatedOn = DateTime.UtcNow
+                PhysicalPath = physicalPath
             };
     }
 }

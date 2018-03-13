@@ -26,10 +26,10 @@ namespace EP.Services.Logs
             int? page,
             int? size)
         {
-            var filter = Builders<Log>.Filter.Gte(e => e.CreatedOn, createdFromUtc) &
-                Builders<Log>.Filter.Lte(e => e.CreatedOn, createdToUtc);
+            var filter = Builders<Log>.Filter.Gte(e => e.Timestamp, createdFromUtc) &
+                Builders<Log>.Filter.Lte(e => e.Timestamp, createdToUtc);
 
-            if (levels != null && levels.Length > 0)
+            if (levels?.Length > 0)
             {
                 filter &= Builders<Log>.Filter.In(e => e.Level, levels.Select(lv => lv.ToLowerInvariant()));
             }

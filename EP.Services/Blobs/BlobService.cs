@@ -172,8 +172,7 @@ namespace EP.Services.Blobs
                     VirtualPath = fileVirtualPath,
                     PhysicalPath = filePhysicalPath,
                     Parent = parentEntity.Id,
-                    Ancestors = ancestors,
-                    CreatedOn = DateTime.UtcNow
+                    Ancestors = ancestors
                 };
 
                 await Task.WhenAll(_blobs.CreateAsync(entity), file.SaveAsAsync(entity.PhysicalPath));
@@ -192,8 +191,7 @@ namespace EP.Services.Blobs
             await EnsureNotDuplicatedName(entity.Parent, entity.Name);
 
             var update = Builders<Blob>.Update
-                .Set(e => e.Name, entity.Name)
-                .CurrentDate(e => e.UpdatedOn);
+                .Set(e => e.Name, entity.Name);
 
             var result = await _blobs.UpdatePartiallyAsync(entity.Id, update);
 

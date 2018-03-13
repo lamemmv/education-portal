@@ -80,11 +80,10 @@ namespace EP.Services.Emails
                 .Set(e => e.Host, entity.Host)
                 .Set(e => e.Port, entity.Port)
                 .Set(e => e.UserName, entity.UserName)
-                .Set(e => e.Password, entity.Password)
+                //.Set(e => e.Password, entity.Password)
                 .Set(e => e.EnableSsl, entity.EnableSsl)
                 .Set(e => e.UseDefaultCredentials, entity.UseDefaultCredentials)
-                .Set(e => e.IsDefault, entity.IsDefault)
-                .CurrentDate(e => e.UpdatedOn);
+                .Set(e => e.IsDefault, entity.IsDefault);
 
             var result = await _emailAccounts.UpdatePartiallyAsync(entity.Id, update);
 

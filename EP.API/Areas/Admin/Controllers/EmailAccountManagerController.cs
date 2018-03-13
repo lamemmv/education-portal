@@ -49,8 +49,6 @@ namespace EP.API.Areas.Admin.Controllers
             await AuthorizeHostAsync(EmailAccountFunctionName);
 
             var entity = viewModel.Map<EmailAccountViewModel, EmailAccount>();
-            entity.CreatedOn = DateTime.UtcNow;
-
             await _emailAccountService.CreateAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             return Created(string.Empty, entity.Id);

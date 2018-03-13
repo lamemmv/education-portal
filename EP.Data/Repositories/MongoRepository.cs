@@ -118,40 +118,17 @@ namespace EP.Data.Repositories
             return entity;
         }
 
-        public async Task CreateAsync(IEnumerable<TEntity> entities)
-            => await _collection.InsertManyAsync(entities);
-
-        //public async Task<bool> UpdateAsync(TEntity entity)
-        //{
-        //    if (entity.Id.IsInvalidObjectId())
-        //    {
-        //        return false;
-        //    }
-
-        //    var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
-        //    var result = await _collection.ReplaceOneAsync(filter, entity);
-
-        //    return result.IsSuccess();
-        //}
-
-        public async Task<TEntity> UpdateAsync(
-            TEntity entity,
-            ProjectionDefinition<TEntity, TEntity> projection = null,
-            ReturnDocument returnDocument = ReturnDocument.Before)
+        public async Task<bool> UpdateAsync(TEntity entity)
         {
             if (entity.Id.IsInvalidObjectId())
             {
-                return default(TEntity);
+                return false;
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id);
-            var options = new FindOneAndReplaceOptions<TEntity, TEntity>
-            {
-                Projection = projection,
-                ReturnDocument = returnDocument
-            };
+            var result = await _collection.ReplaceOneAsync(filter, entity);
 
-            return await _collection.FindOneAndReplaceAsync(filter, entity, options);
+            return result.IsSuccess();
         }
 
         public async Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition)
@@ -167,38 +144,17 @@ namespace EP.Data.Repositories
             return result.IsSuccess();
         }
 
-        public async Task<TEntity> UpdatePartiallyAsync(
-            string id,
-            UpdateDefinition<TEntity> definition,
-            ProjectionDefinition<TEntity, TEntity> projection = null,
-            ReturnDocument returnDocument = ReturnDocument.Before)
+        public async Task<bool> DeleteAsync(string id)
         {
             if (id.IsInvalidObjectId())
             {
-                return default(TEntity);
+                return false;
             }
 
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
-            var options = new FindOneAndUpdateOptions<TEntity, TEntity>
-            {
-                Projection = projection,
-                ReturnDocument = returnDocument
-            };
+            var result = await _collection.DeleteOneAsync(filter);
 
-            return await _collection.FindOneAndUpdateAsync(filter, definition, options);
-        }
-
-        public async Task<bool> DeleteAsync(string id)
-        {
-           if (id.IsInvalidObjectId())
-           {
-               return false;
-           }
-
-           var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
-           var result = await _collection.DeleteOneAsync(filter);
-
-           return result.IsSuccess();
+            return result.IsSuccess();
         }
 
         public async Task<TEntity> DeleteAsync(

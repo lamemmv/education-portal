@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EP.API.Extensions
 {
@@ -80,8 +80,7 @@ namespace EP.API.Extensions
                     {
                         new AppClaim(FunctionName.BlobManagement, ((int)Permission.All).ToString()),
                         new AppClaim(FunctionName.NewsManagement, ((int)Permission.All).ToString())
-                    },
-                    CreatedOn = DateTime.UtcNow
+                    }
                 }
             };
 
@@ -109,8 +108,7 @@ namespace EP.API.Extensions
                     Email = email,
                     EmailConfirmed = true,
                     //FullName = "System Administrator"
-                    Roles = roles.Select(r => r.Name).ToList(),
-                    CreatedOn = DateTime.UtcNow
+                    Roles = roles.Select(r => r.Name).ToList()
                 };
 
                 var result = await userManager.CreateAsync(user, password);
@@ -136,8 +134,7 @@ namespace EP.API.Extensions
                     Password = password,
                     EnableSsl = false,
                     UseDefaultCredentials = true,
-                    IsDefault = true,
-                    CreatedOn = DateTime.UtcNow
+                    IsDefault = true
                 };
 
                 await dbContext.EmailAccounts.CreateAsync(emailAcc);
@@ -152,22 +149,19 @@ namespace EP.API.Extensions
                 {
                     SystemKeyword = SystemKeyword.UpdateActivityLogType,
                     Name = "Update an Activity Log Type",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateEmailAccount,
                     Name = "Create a new Email Account",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateEmailAccount,
                     Name = "Update an Email Account",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
@@ -179,71 +173,61 @@ namespace EP.API.Extensions
                 {
                     SystemKeyword = SystemKeyword.CreateUser,
                     Name = "Create a new User",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateUser,
                     Name = "Update an User",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteUser,
                     Name = "Delete an User",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.ResetUserPassword,
                     Name = "Reset password of an User",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateBlob,
                     Name = "Create a new Blob",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateBlob,
                     Name = "Update a Blob",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteBlob,
                     Name = "Delete a Blob",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.CreateNews,
                     Name = "Create a new News",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.UpdateNews,
                     Name = "Update a News",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 },
                 new ActivityLogType
                 {
                     SystemKeyword = SystemKeyword.DeleteNews,
                     Name = "Delete a News",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow
+                    Enabled = true
                 }
             };
 

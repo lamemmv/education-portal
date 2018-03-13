@@ -56,7 +56,6 @@ namespace EP.API.Areas.Admin.Controllers
 
             var entity = viewModel.Map<NewsViewModel, NewsItem>();
             entity.Blob = await GetEmbeddedBlobAsync(viewModel.BlobId);
-            entity.CreatedOn = DateTime.UtcNow;
 
             await _newsService.CreateAsync(entity, GetEmbeddedUser(), GetClientIP());
 

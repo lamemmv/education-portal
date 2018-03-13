@@ -50,19 +50,13 @@ namespace EP.Services.News
 
         public async Task<bool> UpdateAsync(NewsItem entity, EmbeddedUser embeddedUser, string ip)
         {
-            var update = Builders<NewsItem>.Update
-                .Set(e => e.Title, entity.Title)
-                .Set(e => e.Blob, entity.Blob)
-                .Set(e => e.Ingress, entity.Ingress)
-                .Set(e => e.Content, entity.Content)
-                .Set(e => e.Published, entity.Published)
-                .Set(e => e.PublishedDate, entity.PublishedDate)
-                .CurrentDate(e => e.UpdatedOn);
+            var result = await _news.UpdateAsync(entity);
 
-            var result = await _news.UpdatePartiallyAsync(entity.Id, update);
-
-            // Activity Log.
-            await _activityLogService.CreateAsync(SystemKeyword.UpdateNews, entity, embeddedUser, ip);
+            if (result)
+            {
+                // Activity Log.
+                await _activityLogService.CreateAsync(SystemKeyword.UpdateNews, entity, embeddedUser, ip);
+            }
 
             return result;
         }

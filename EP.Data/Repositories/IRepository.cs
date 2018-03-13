@@ -32,22 +32,9 @@ namespace EP.Data.Repositories
 
         Task<TEntity> CreateAsync(TEntity entity);
 
-        Task CreateAsync(IEnumerable<TEntity> entities);
-
-        //Task<bool> UpdateAsync(TEntity entity);
-
-        Task<TEntity> UpdateAsync(
-            TEntity entity,
-            ProjectionDefinition<TEntity, TEntity> projection = null,
-            ReturnDocument returnDocument = ReturnDocument.Before);
+        Task<bool> UpdateAsync(TEntity entity);
 
         Task<bool> UpdatePartiallyAsync(string id, UpdateDefinition<TEntity> definition);
-
-        Task<TEntity> UpdatePartiallyAsync(
-            string id,
-            UpdateDefinition<TEntity> definition,
-            ProjectionDefinition<TEntity, TEntity> projection = null,
-            ReturnDocument returnDocument = ReturnDocument.Before);
 
         Task<bool> DeleteAsync(string id);
 

@@ -43,13 +43,13 @@ namespace EP.Services.Emails
 
             if (loadNotSentItemsOnly)
             {
-                filter &= Builders<QueuedEmail>.Filter.Eq("SentOn", BsonNull.Value);
+                filter &= Builders<QueuedEmail>.Filter.Exists(e => e.SentOn, false);
             }
 
             if (loadOnlyItemsToBeSent)
             {
-                DateTime nowUtc = DateTime.UtcNow;
-                filter &= Builders<QueuedEmail>.Filter.Eq("DontSendBeforeDate", BsonNull.Value) |
+                var nowUtc = DateTime.UtcNow;
+                filter &= Builders<QueuedEmail>.Filter.Exists(e => e.DontSendBeforeDate, false) |
                     Builders<QueuedEmail>.Filter.Lte(e => e.DontSendBeforeDate, nowUtc);
             }
 

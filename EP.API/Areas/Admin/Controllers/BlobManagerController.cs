@@ -63,8 +63,6 @@ namespace EP.API.Areas.Admin.Controllers
             await AuthorizeHostAsync(BlobFunctionName);
 
             var entity = viewModel.Map<FolderViewModel, Blob>();
-            entity.CreatedOn = DateTime.UtcNow;
-
             await _blobService.CreateFolderAsync(entity, GetEmbeddedUser(), GetClientIP());
 
             return Created(string.Empty, entity.Id);

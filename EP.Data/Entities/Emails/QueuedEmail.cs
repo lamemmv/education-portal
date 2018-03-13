@@ -33,6 +33,8 @@ namespace EP.Data.Entities.Emails
 
         public string Body { get; set; }
 
+        public DateTime CreatedOn { get; set; }
+
         [BsonIgnoreIfNull]
         public DateTime? DontSendBeforeDate { get; set; }
 

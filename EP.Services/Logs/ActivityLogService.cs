@@ -38,8 +38,7 @@ namespace EP.Services.Logs
         public async Task<bool> UpdateLogTypeAsync(string id, bool enabled)
         {
             var update = Builders<ActivityLogType>.Update
-                .Set(e => e.Enabled, enabled)
-                .CurrentDate(e => e.UpdatedOn);
+                .Set(e => e.Enabled, enabled);
 
             var result = await _dbContext.ActivityLogTypes.UpdatePartiallyAsync(id, update);
 
@@ -64,15 +63,15 @@ namespace EP.Services.Logs
             var filter = Builders<ActivityLog>.Filter.Gte(e => e.CreatedOn, createdFromUtc) &
                 Builders<ActivityLog>.Filter.Lte(e => e.CreatedOn, createdToUtc);
 
-            if (!string.IsNullOrEmpty(userName))
-            {
-                //filter &= Builders<ActivityLog>.Filter.Eq(e => e.UserName, userName);
-            }
+            // if (!string.IsNullOrEmpty(userName))
+            // {
+            //     filter &= Builders<ActivityLog>.Filter.Eq(e => e.UserName, userName);
+            // }
 
-            if (!string.IsNullOrEmpty(ip))
-            {
-                filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip);
-            }
+            // if (!string.IsNullOrEmpty(ip))
+            // {
+            //     filter &= Builders<ActivityLog>.Filter.Eq(e => e.IP, ip);
+            // }
 
             return await _dbContext.ActivityLogs.GetPagedListAsync(filter, skip: page, take: size);
         }
@@ -98,9 +97,9 @@ namespace EP.Services.Logs
                 EntityName = entity.GetType().FullName,
                 LogValue = ObjectToJson(entity),
                 IP = ip,
-                ActivityLogType = embeddedActivityLogType,
-                Creator = embeddedUser,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow,
+                CreatedBy = embeddedUser,
+                ActivityLogType = embeddedActivityLogType
             };
 
             return await _dbContext.ActivityLogs.CreateAsync(log);
