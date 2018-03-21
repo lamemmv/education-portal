@@ -1,5 +1,6 @@
 ﻿using EP.Data.AspNetIdentity;
 using EP.Services.Accounts;
+using EP.Services.Models;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,11 @@ namespace EP.API.Extensions
 {
     public static class IdentityExtensions
     {
-        public static IServiceCollection AddCustomIdentity(this IServiceCollection services)
+        public static IServiceCollection AddCustomIdentity(
+            this IServiceCollection services,
+            PasswordOptions passwordPolicies,
+            LockoutPolicies lockoutPolicies,
+            SignInOptions signinPolicies)
         {
             services
                 .AddIdentity<AppUser, AppRole>()
@@ -20,18 +25,18 @@ namespace EP.API.Extensions
             {
                 // Password settings.
                 PasswordOptions passwordOpts = opts.Password;
-                passwordOpts.RequireDigit = false;
-                passwordOpts.RequiredLength = 6;
-                passwordOpts.RequireNonAlphanumeric = false;
-                passwordOpts.RequireUppercase = false;
-                passwordOpts.RequireLowercase = false;
-                passwordOpts.RequiredUniqueChars = 0;
+                passwordOpts.RequireDigit = passwordPolicies.RequireDigit;
+                passwordOpts.RequiredLength = passwordPolicies.RequiredLength;
+                passwordOpts.RequiredUniqueChars = passwordPolicies.RequiredUniqueChars;               
+                passwordOpts.RequireNonAlphanumeric = passwordPolicies.RequireNonAlphanumeric;
+                passwordOpts.RequireLowercase = passwordPolicies.RequireLowercase;
+                passwordOpts.RequireUppercase = passwordPolicies.RequireUppercase;
 
                 // Lockout settings.
                 LockoutOptions lockoutOpts = opts.Lockout;
-                lockoutOpts.AllowedForNewUsers = true;
-                lockoutOpts.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                lockoutOpts.MaxFailedAccessAttempts = 5;
+                lockoutOpts.AllowedForNewUsers = lockoutPolicies.AllowedForNewUsers;
+                lockoutOpts.MaxFailedAccessAttempts = lockoutPolicies.MaxFailedAccessAttempts;
+                lockoutOpts.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(lockoutPolicies.DefaultLockoutInMinutes);
 
                 // User settings.
                 //options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
@@ -39,8 +44,8 @@ namespace EP.API.Extensions
 
                 // SignIn settings.
                 SignInOptions signinOpts = opts.SignIn;
-                signinOpts.RequireConfirmedEmail = true;
-                signinOpts.RequireConfirmedPhoneNumber = false;
+                signinOpts.RequireConfirmedEmail = signinPolicies.RequireConfirmedEmail;
+                signinOpts.RequireConfirmedPhoneNumber = signinPolicies.RequireConfirmedPhoneNumber;
             });
 
             //services.ConfigureApplicationCookie(options =>

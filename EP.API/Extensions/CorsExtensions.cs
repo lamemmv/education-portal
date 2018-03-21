@@ -8,10 +8,10 @@ namespace EP.API.Extensions
         public static IServiceCollection AddCustomCors(this IServiceCollection services, string policyName)
         {
             var corsBuilder = new CorsPolicyBuilder()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
                 .AllowAnyOrigin()
-                .AllowCredentials();
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
                 
             return services.AddCors(opts =>
             {

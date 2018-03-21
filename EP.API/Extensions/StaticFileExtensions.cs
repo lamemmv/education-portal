@@ -1,6 +1,6 @@
 using EP.Data.Entities.Blobs;
+using EP.Services.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace EP.API.Extensions
@@ -11,34 +11,31 @@ namespace EP.API.Extensions
             this IApplicationBuilder app,
             string webRootPath,
             string contentRootPath,
-            IConfiguration configuration)
+            BlobFolders blobFolders)
             => app
-                .EnsureAvailableDirectories(webRootPath, contentRootPath, configuration)
+                .EnsureAvailableDirectories(webRootPath, contentRootPath, blobFolders)
                 .UseStaticFiles();
 
         private static IApplicationBuilder EnsureAvailableDirectories(
             this IApplicationBuilder app,
             string webRootPath,
             string contentRootPath,
-            IConfiguration configuration)
+            BlobFolders blobFolders)
         {
-            var publicFolderName = configuration["AppSettings:PublicFolder"];
-            var publicFolderPath = Path.Combine(webRootPath, publicFolderName);
+            var publicFolderPath = Path.Combine(webRootPath, blobFolders.Public);
             CreateDirectoryIfNotExist(publicFolderPath);
 
-            var privateFolderName = configuration["AppSettings:PrivateFolder"];
-            var privateFolderPath = Path.Combine(contentRootPath, privateFolderName);
+            var privateFolderPath = Path.Combine(contentRootPath, blobFolders.Private);
             CreateDirectoryIfNotExist(privateFolderPath);
 
-            var commonFolderName = configuration["AppSettings:CommonFolder"];
-            var commonFolderPath = Path.Combine(webRootPath, commonFolderName);
+            var commonFolderPath = Path.Combine(webRootPath, blobFolders.Common);
             CreateDirectoryIfNotExist(commonFolderPath);
 
             return app.InitDefaultBlob(new[]
             {
-                BuildBlob(publicFolderName, publicFolderPath, publicFolderName),
-                BuildBlob(privateFolderName, privateFolderPath),
-                BuildBlob(commonFolderName, commonFolderPath, commonFolderName)
+                BuildBlob(blobFolders.Public, publicFolderPath, blobFolders.Public),
+                BuildBlob(blobFolders.Private, privateFolderPath),
+                BuildBlob(blobFolders.Common, commonFolderPath, blobFolders.Common)
             });
         }
 

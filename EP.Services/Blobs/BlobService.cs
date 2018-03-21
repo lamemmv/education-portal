@@ -35,7 +35,7 @@ namespace EP.Services.Blobs
         {
             _blobs = dbContext.Blobs;
             _activityLogService = activityLogService;
-            _commonFolderName = appSettings.CommonFolder;
+            _commonFolderName = appSettings.BlobFolders.Common;
         }
 
         public async Task<IPagedList<Blob>> GetChildListAsync(string id, int? page, int? size)

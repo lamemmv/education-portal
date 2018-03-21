@@ -1,12 +1,13 @@
 ﻿using EP.API.Extensions;
 using EP.API.Filters;
 using EP.API.Infrastructure;
+using EP.Services.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 
@@ -19,6 +20,7 @@ namespace EP.API
         private readonly bool _isDevelopment;
         private readonly string _webRootPath;
         private readonly string _contentRootPath;
+        private readonly AppSettings _appSettings;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -28,6 +30,9 @@ namespace EP.API
             _isDevelopment = env.IsDevelopment();
             _webRootPath = env.WebRootPath;
             _contentRootPath = env.ContentRootPath;
+
+            _appSettings = new AppSettings();
+            _configuration.Bind("AppSettings", _appSettings);
 
             Log.Logger = LogCreator.Create(_connectionString);
             ObjectMapper.RegisterMapping();
@@ -45,8 +50,8 @@ namespace EP.API
                 .AddMongoDbContext(_connectionString);
 
             services
-                .AddCustomIdentity()
-                .AddCustomIdentityServer(_configuration["AppSettings:HostUrl"], _isDevelopment)
+                .AddCustomIdentity(_appSettings.PasswordPolicies, _appSettings.LockoutPolicies, _appSettings.SignInPolicies)
+                .AddCustomIdentityServer(_appSettings.HostUrl, _isDevelopment)
                 .AddMvcCore(opts =>
                 {
                     opts.Filters.Add(typeof(GlobalExceptionFilter));
@@ -78,7 +83,7 @@ namespace EP.API
 
             app
                 .UseResponseCompression()
-                .UseCustomStaticFiles(_webRootPath, _contentRootPath, _configuration)
+                .UseCustomStaticFiles(_webRootPath, _contentRootPath, _appSettings.BlobFolders)
                 .UseCors("AllowAllOrigins")
                 .UseIdentityServer()
                 .UseCustomSwagger()
